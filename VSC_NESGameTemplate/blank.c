@@ -8,7 +8,6 @@
  
 #include "LIB/neslib.h"
 #include "LIB/nesdoug.h"
-#include "NES_ST/ZhaoCena.h"
 
 
 #define BLACK 0x0f
@@ -32,10 +31,6 @@ void main (void) {
 	vram_adr(NAMETABLE_A);
 	// this sets a start position on the BG, top left of screen
 	// vram_adr() and vram_unrle() need to be done with the screen OFF
-	
-	vram_unrle(ZhaoCena);
-	// this unpacks an rle compressed full nametable
-	// created by NES Screen Tool
 	
 	ppu_on_all(); // turn on screen
 	
