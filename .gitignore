@@ -1,0 +1,11 @@
+# Object files
+*.o
+
+# Tools Folders
+cc65/
+FamiStudio/
+FamiTracker/
+Mesen2/
+MesenX/
+NEXXT/
+VSC_NESGameTemplate/BUILD/
