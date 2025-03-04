@@ -19,6 +19,9 @@
 	.import		_pal_fade_to
 	.export		_i
 	.export		_text
+	.export		_lineText
+	.export		_startText
+	.export		_exitText
 	.export		_palette
 	.export		_main
 
@@ -27,6 +30,15 @@
 _text:
 	.byte	$45,$73,$63,$61,$70,$65,$20,$56,$69,$6C,$6C,$61,$76,$61,$6E,$69
 	.byte	$61,$21,$00
+_lineText:
+	.byte	$2D,$2D,$2D,$2D,$2D,$2D,$2D,$2D,$2D,$2D,$2D,$2D,$2D,$2D,$2D,$2D
+	.byte	$2D,$2D,$00
+_startText:
+	.byte	$50,$72,$65,$73,$73,$20,$65,$6E,$74,$65,$72,$20,$74,$6F,$20,$73
+	.byte	$74,$61,$72,$74,$00
+_exitText:
+	.byte	$50,$72,$65,$73,$73,$20,$65,$73,$63,$61,$70,$65,$20,$74,$6F,$20
+	.byte	$65,$78,$69,$74,$00
 _palette:
 	.byte	$0f
 	.byte	$00
@@ -72,10 +84,10 @@ _i:
 	ldx     #>(_palette)
 	jsr     _pal_bg
 ;
-; vram_adr(NTADR_A(8,14)); // screen is 32 x 30 tiles
+; vram_adr(NTADR_A(7,10)); // screen is 32 x 30 tiles
 ;
 	ldx     #$21
-	lda     #$C8
+	lda     #$47
 	jsr     _vram_adr
 ;
 ; i = 0;
@@ -103,13 +115,106 @@ L0004:	ldy     _i
 	lda     _text,y
 	bne     L0002
 ;
+; vram_adr(NTADR_A(7,11)); // screen is 32 x 30 tiles
+;
+	ldx     #$21
+	lda     #$67
+	jsr     _vram_adr
+;
+; i = 0;
+;
+	lda     #$00
+	sta     _i
+;
+; while(lineText[i]){
+;
+	jmp     L0009
+;
+; vram_put(lineText[i]); // this pushes 1 char to the screen
+;
+L0007:	ldy     _i
+	lda     _lineText,y
+	jsr     _vram_put
+;
+; ++i;
+;
+	inc     _i
+;
+; while(lineText[i]){
+;
+L0009:	ldy     _i
+	lda     _lineText,y
+	bne     L0007
+;
+; vram_adr(NTADR_A(6,18)); // screen is 32 x 30 tiles
+;
+	ldx     #$22
+	lda     #$46
+	jsr     _vram_adr
+;
+; i = 0;
+;
+	lda     #$00
+	sta     _i
+;
+; while(startText[i]){
+;
+	jmp     L000E
+;
+; vram_put(startText[i]);
+;
+L000C:	ldy     _i
+	lda     _startText,y
+	jsr     _vram_put
+;
+; ++i;
+;
+	inc     _i
+;
+; while(startText[i]){
+;
+L000E:	ldy     _i
+	lda     _startText,y
+	bne     L000C
+;
+; vram_adr(NTADR_A(6,21)); // screen is 32 x 30 tiles
+;
+	ldx     #$22
+	lda     #$A6
+	jsr     _vram_adr
+;
+; i = 0;
+;
+	lda     #$00
+	sta     _i
+;
+; while(exitText[i]){
+;
+	jmp     L0013
+;
+; vram_put(exitText[i]);
+;
+L0011:	ldy     _i
+	lda     _exitText,y
+	jsr     _vram_put
+;
+; ++i;
+;
+	inc     _i
+;
+; while(exitText[i]){
+;
+L0013:	ldy     _i
+	lda     _exitText,y
+	bne     L0011
+;
 ; ppu_on_all(); // turn on screen
 ;
 	jsr     _ppu_on_all
 ;
 ; pal_fade_to(0,4); // fade from black to normal
 ;
-L0007:	lda     #$00
+L0016:	lda     #$00
 	jsr     pusha
 	lda     #$04
 	jsr     _pal_fade_to
@@ -123,7 +228,7 @@ L0007:	lda     #$00
 ;
 ; while (1){
 ;
-	jmp     L0007
+	jmp     L0016
 
 .endproc
 
