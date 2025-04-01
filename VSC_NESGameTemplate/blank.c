@@ -9,97 +9,42 @@
 #include "LIB/neslib.h"
 #include "LIB/nesdoug.h" 
 
-#define BLACK 0x0f
-#define DK_GY 0x00
-#define LT_GY 0x10
+//#link "chr _generic.s"
+
+#define BLUE 0x02
+#define FUSCHIA 0x14
+#define GREY 0x20
 #define WHITE 0x30
 // there's some oddities in the palette code, black must be 0x0f, white must be 0x30
- 
- 
- 
-#pragma bss-name(push, "ZEROPAGE")
-
-// GLOBAL VARIABLES
-// all variables should be global for speed
-// zeropage global is even faster
-
-unsigned char i;
-
-
-
-const unsigned char text[]="Escape Villavania!"; // zero terminated c string
-
-const unsigned char lineText[]="------------------"; // zero terminated c string
-
-const unsigned char startText[] = "Press enter to start"; 
-
-const unsigned char exitText[] = "Press escape to exit";
 
 const unsigned char palette[]={
-BLACK, DK_GY, LT_GY, WHITE,
+BLUE, FUSCHIA, GREY, WHITE,
 0,0,0,0,
 0,0,0,0,
 0,0,0,0
 }; 
 
+// main function, run after console reset
+void main(void) {
+	int x;
 
+	//------------ WAITING CODE --------------------//
+	//for (x=0; x<500; x++) { // <-- add these lines
+		//ppu_wait_frame(); // <-- after
+	//} // <-- ppu_on_all()
+	//----------------------------------------------//
 
-	
+	ppu_off();
+	pal_bg(palette);
 
-void main (void) {
-	
-	ppu_off(); // screen off
-	pal_bg(palette); //	load the BG palette
+	// write text to name table
+	vram_adr(NTADR_A(2,2));		// set address
+	vram_write("HELLO, WORLD!", 13);	// write bytes to video RAM
 
-	// ------------------------------------------------------------
-	//title
-	vram_adr(NTADR_A(7,10)); // screen is 32 x 30 tiles
-	i = 0;
-	while(text[i]){
-		vram_put(text[i]); // this pushes 1 char to the screen
-		++i;
-	}	
+	// enable PPU rendering (turn on screen)
+	ppu_on_all();
 
-	//title
-	vram_adr(NTADR_A(7,11)); // screen is 32 x 30 tiles
-	i = 0;
-	while(lineText[i]){
-		vram_put(lineText[i]); // this pushes 1 char to the screen
-		++i;
-	}	
-
-	//start text
-	vram_adr(NTADR_A(6,18)); // screen is 32 x 30 tiles
-	i = 0;
-	while(startText[i]){
-		vram_put(startText[i]);
-		++i;
-	}
-	
-	//Exit text
-	vram_adr(NTADR_A(6,21)); // screen is 32 x 30 tiles
-	i = 0;
-	while(exitText[i]){
-		vram_put(exitText[i]);
-		++i;
-	}
-	// ------------------------------------------------------------
-
-	// vram_adr and vram_put only work with screen off
-	// NOTE, you could replace everything between i = 0; and here with...
-	// vram_write(text,sizeof(text));
-	// does the same thing
-	ppu_on_all(); //	turn on screen
-	
-	
-	while (1){
-		// infinite loop
-		// game code can go here later.
-		
-		pal_fade_to(0,4); // fade from black to normal
-
-		pal_fade_to(4,0); // fade from normal to black
-
-	}
+	// infinite loop
+	while (1);
 }
 	
