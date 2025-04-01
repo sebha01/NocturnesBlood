@@ -26,7 +26,9 @@ BLUE, FUSCHIA, GREY, WHITE,
 
 // main function, run after console reset
 void main(void) {
-	int x;
+	int x = 0;	//x scroll position
+	int y = 0;	//y scroll position
+	int dy = 1; //y scroll direction
 
 	//------------ WAITING CODE --------------------//
 	//for (x=0; x<500; x++) { // <-- add these lines
@@ -45,6 +47,17 @@ void main(void) {
 	ppu_on_all();
 
 	// infinite loop
-	while (1);
+	while (1)
+	{
+		ppu_wait_frame();
+
+		//Update y variable
+		if (y <= 5) dy = 1;
+		if (y >= 15) dy = -1;
+
+		y += dy;
+
+		scroll(x, y);
+	}
 }
 	

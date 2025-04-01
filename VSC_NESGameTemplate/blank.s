@@ -15,6 +15,7 @@
 	.import		_ppu_wait_frame
 	.import		_ppu_off
 	.import		_ppu_on_all
+	.import		_scroll
 	.import		_vram_adr
 	.import		_vram_write
 	.export		_palette
@@ -53,40 +54,22 @@ S0001:
 .segment	"CODE"
 
 ;
-; for (x=0; x<500; x++) { // <-- add these lines
+; int x = 0; //x scroll position
 ;
-	jsr     decsp2
-	ldy     #$00
-	tya
-	sta     (sp),y
-	iny
-	sta     (sp),y
-L0002:	ldy     #$01
-	lda     (sp),y
-	tax
-	dey
-	lda     (sp),y
-	cmp     #$F4
-	txa
-	sbc     #$01
-	bvc     L0006
-	eor     #$80
-L0006:	bpl     L0003
+	jsr     push0
 ;
-; ppu_wait_frame(); // <-- after
+; int y = 0; //y scroll position
 ;
-	jsr     _ppu_wait_frame
+	jsr     push0
 ;
-; for (x=0; x<500; x++) { // <-- add these lines
+; int dy = 1; //y scroll direction
 ;
-	ldx     #$00
 	lda     #$01
-	jsr     addeq0sp
-	jmp     L0002
+	jsr     pusha0
 ;
 ; ppu_off();
 ;
-L0003:	jsr     _ppu_off
+	jsr     _ppu_off
 ;
 ; pal_bg(palette);
 ;
@@ -113,9 +96,77 @@ L0003:	jsr     _ppu_off
 ;
 	jsr     _ppu_on_all
 ;
-; while (1);
+; ppu_wait_frame();
 ;
-L000A:	jmp     L000A
+L0002:	jsr     _ppu_wait_frame
+;
+; if (y <= 5) dy = 1;
+;
+	ldy     #$03
+	lda     (sp),y
+	tax
+	dey
+	lda     (sp),y
+	cmp     #$06
+	txa
+	sbc     #$00
+	bvc     L0006
+	eor     #$80
+L0006:	bpl     L0005
+	ldy     #$00
+	lda     #$01
+	sta     (sp),y
+	tya
+	iny
+	sta     (sp),y
+;
+; if (y >= 15) dy = -1;
+;
+L0005:	ldy     #$03
+	lda     (sp),y
+	tax
+	dey
+	lda     (sp),y
+	cmp     #$0F
+	txa
+	sbc     #$00
+	bvs     L0008
+	eor     #$80
+L0008:	bpl     L0007
+	ldy     #$00
+	lda     #$FF
+	sta     (sp),y
+	iny
+	sta     (sp),y
+;
+; y += dy;
+;
+L0007:	ldy     #$00
+	lda     (sp),y
+	ldy     #$02
+	clc
+	adc     (sp),y
+	sta     (sp),y
+	dey
+	lda     (sp),y
+	ldy     #$03
+	adc     (sp),y
+	sta     (sp),y
+;
+; scroll(x, y);
+;
+	ldy     #$07
+	jsr     pushwysp
+	ldy     #$05
+	lda     (sp),y
+	tax
+	dey
+	lda     (sp),y
+	jsr     _scroll
+;
+; while (1)
+;
+	jmp     L0002
 
 .endproc
 
