@@ -23,7 +23,7 @@
 
 unsigned char i;
 
-const unsigned char text[]="Escape Villavania!"; // zero terminated c string
+const unsigned char text[]="Nocturnes Blood"; // zero terminated c string
 
 const unsigned char palette[]={
 BLACK, DK_GY, LT_GY, WHITE,
@@ -39,7 +39,7 @@ void main (void) {
 	pal_bg(palette); //	load the BG palette
 
 	//Set VRAM address to row 10 and column 12
-	vram_adr(NTADR_A(12, 10)); // places text at screen position
+	vram_adr(NTADR_A(8, 8)); // places text at screen position
 	vram_write(text, sizeof(text)-1); //write Title to screen
 
 	// vram_adr and vram_put only work with screen off
@@ -54,9 +54,9 @@ void main (void) {
 		// game code can go here later.
 		
 		pal_fade_to(0,4); // fade from black to normal
-		delay(100);
+		delay(50);
 		pal_fade_to(4,0); // fade from normal to black
-		delay(100);
+		delay(50);
 	}
 }
 	

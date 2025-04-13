@@ -26,8 +26,7 @@
 .segment	"RODATA"
 
 _text:
-	.byte	$45,$73,$63,$61,$70,$65,$20,$56,$69,$6C,$6C,$61,$76,$61,$6E,$69
-	.byte	$61,$21,$00
+	.byte	$4E,$6F,$63,$74,$75,$72,$6E,$65,$73,$20,$42,$6C,$6F,$6F,$64,$00
 _palette:
 	.byte	$0f
 	.byte	$00
@@ -73,10 +72,10 @@ _i:
 	ldx     #>(_palette)
 	jsr     _pal_bg
 ;
-; vram_adr(NTADR_A(12, 10)); // places text at screen position
+; vram_adr(NTADR_A(8, 8)); // places text at screen position
 ;
 	ldx     #$21
-	lda     #$4C
+	lda     #$08
 	jsr     _vram_adr
 ;
 ; vram_write(text, sizeof(text)-1); //write Title to screen
@@ -85,7 +84,7 @@ _i:
 	ldx     #>(_text)
 	jsr     pushax
 	ldx     #$00
-	lda     #$12
+	lda     #$0F
 	jsr     _vram_write
 ;
 ; ppu_on_all(); // turn on screen
@@ -99,9 +98,9 @@ L0002:	lda     #$00
 	lda     #$04
 	jsr     _pal_fade_to
 ;
-; delay(100);
+; delay(50);
 ;
-	lda     #$64
+	lda     #$32
 	jsr     _delay
 ;
 ; pal_fade_to(4,0); // fade from normal to black
@@ -111,9 +110,9 @@ L0002:	lda     #$00
 	lda     #$00
 	jsr     _pal_fade_to
 ;
-; delay(100);
+; delay(50);
 ;
-	lda     #$64
+	lda     #$32
 	jsr     _delay
 ;
 ; while (1){
