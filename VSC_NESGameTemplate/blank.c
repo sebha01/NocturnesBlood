@@ -75,6 +75,8 @@ const unsigned char gameLoopText[] = "This is the game loop";
 const unsigned char endScreenTitle[] = "End Screen";
 const unsigned char endScreenPrompt[] = "To play again";
 
+unsigned char pad;
+
 //palette colours
 const unsigned char palette[]={
 BLACK, DK_GY, LT_GY, WHITE,
@@ -97,9 +99,19 @@ void main (void)
 	{
 		//Waits for next frame
 		ppu_wait_nmi();
-		pad_poll(0);       // poll the controller
+		pad = pad_trigger(0);
 
-		if (pad_trigger(0) & PAD_START)
+		if (pad)
+		{
+			
+			// Show something if *any* button is pressed
+			vram_adr(NTADR_A(2, 20));
+			vram_put('0' + (pad >> 4)); // just a crude test
+			vram_put('0' + (pad & 0x0F));
+
+		}
+
+		if (pad & PAD_START)
 		{
 			currentGameState = GAME_LOOP;
 			GameLoop();
@@ -142,6 +154,10 @@ void GameLoop(void)
 {
 	//Turn screen off
 	ppu_off(); 
+
+	vram_adr(NAMETABLE_A);   // Set VRAM address to the top-left of the screen
+	vram_fill(0, 32*30);     // Fill 32 columns × 30 rows with tile 0 (blank)
+
 	//Load palette
 	pal_bg(palette);
 

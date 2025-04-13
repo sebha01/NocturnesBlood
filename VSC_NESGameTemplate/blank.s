@@ -15,9 +15,10 @@
 	.import		_ppu_wait_nmi
 	.import		_ppu_off
 	.import		_ppu_on_all
-	.import		_pad_poll
 	.import		_pad_trigger
 	.import		_vram_adr
+	.import		_vram_put
+	.import		_vram_fill
 	.import		_vram_write
 	.import		_delay
 	.import		_pal_fade_to
@@ -28,6 +29,7 @@
 	.export		_gameLoopText
 	.export		_endScreenTitle
 	.export		_endScreenPrompt
+	.export		_pad
 	.export		_palette
 	.export		_DrawTitleScreen
 	.export		_GameLoop
@@ -74,6 +76,8 @@ _palette:
 
 .segment	"ZEROPAGE"
 _i:
+	.res	1,$00
+_pad:
 	.res	1,$00
 
 ; ---------------------------------------------------------------
@@ -147,6 +151,20 @@ _i:
 ; ppu_off(); 
 ;
 	jsr     _ppu_off
+;
+; vram_adr(NAMETABLE_A);   // Set VRAM address to the top-left of the screen
+;
+	ldx     #$20
+	lda     #$00
+	jsr     _vram_adr
+;
+; vram_fill(0, 32*30);     // Fill 32 columns × 30 rows with tile 0 (blank)
+;
+	lda     #$00
+	jsr     pusha
+	ldx     #$03
+	lda     #$C0
+	jsr     _vram_fill
 ;
 ; pal_bg(palette);
 ;
@@ -231,17 +249,47 @@ _i:
 ;
 L0002:	jsr     _ppu_wait_nmi
 ;
-; pad_poll(0);       // poll the controller
-;
-	lda     #$00
-	jsr     _pad_poll
-;
-; if (pad_trigger(0) & PAD_START)
+; pad = pad_trigger(0);
 ;
 	lda     #$00
 	jsr     _pad_trigger
+	sta     _pad
+;
+; if (pad)
+;
+	lda     _pad
+	beq     L0005
+;
+; vram_adr(NTADR_A(2, 20));
+;
+	ldx     #$22
+	lda     #$82
+	jsr     _vram_adr
+;
+; vram_put('0' + (pad >> 4)); // just a crude test
+;
+	lda     _pad
+	lsr     a
+	lsr     a
+	lsr     a
+	lsr     a
+	clc
+	adc     #$30
+	jsr     _vram_put
+;
+; vram_put('0' + (pad & 0x0F));
+;
+	lda     _pad
+	and     #$0F
+	clc
+	adc     #$30
+	jsr     _vram_put
+;
+; if (pad & PAD_START)
+;
+L0005:	lda     _pad
 	and     #$10
-	beq     L000A
+	beq     L000D
 ;
 ; currentGameState = GAME_LOOP;
 ;
@@ -254,18 +302,18 @@ L0002:	jsr     _ppu_wait_nmi
 ;
 ; switch(currentGameState)
 ;
-L000A:	lda     _currentGameState
+L000D:	lda     _currentGameState
 ;
 ; }
 ;
-	beq     L0008
+	beq     L000B
 	cmp     #$01
-	beq     L0009
+	beq     L000C
 	jmp     L0002
 ;
 ; Fade();
 ;
-L0008:	jsr     _Fade
+L000B:	jsr     _Fade
 ;
 ; break;
 ;
@@ -273,7 +321,7 @@ L0008:	jsr     _Fade
 ;
 ; Fade();
 ;
-L0009:	jsr     _Fade
+L000C:	jsr     _Fade
 ;
 ; break;
 ;
