@@ -113,7 +113,7 @@ void main (void)
 		{
 			case START_SCREEN:
 				//Check if player has pressed start
-				if (pad & PAD_START)
+				if (pad_state(0) & PAD_START)
 				{
 					currentGameState = GAME_LOOP;
 					GameLoop();
@@ -169,13 +169,14 @@ void Fade(void)
 
 void MovePlayer(void)
 {
-	if(pad & PAD_LEFT)
+	if(pad_state(0) & PAD_LEFT)
 	{
-		playerX --;
+		playerX--;
 	}
-	else if (pad & PAD_RIGHT)
+	
+	if (pad_state(0) & PAD_RIGHT)
 	{
-		playerX ++;
+		playerX++;
 	}
 }
 

@@ -19,7 +19,7 @@
 	.import		_oam_clear
 	.import		_oam_spr
 	.import		_pad_poll
-	.import		_pad_trigger
+	.import		_pad_state
 	.import		_vram_adr
 	.import		_vram_write
 	.import		_get_pad_new
@@ -1252,30 +1252,31 @@ _pad:
 .segment	"CODE"
 
 ;
-; if(pad & PAD_LEFT)
+; if(pad_state(0) & PAD_LEFT)
 ;
-	lda     _pad
+	lda     #$00
+	jsr     _pad_state
 	and     #$02
-	beq     L0006
+	beq     L0005
 ;
-; playerX -= 1;
+; playerX--;
 ;
 	dec     _playerX
 ;
-; else if (pad & PAD_RIGHT)
+; if (pad_state(0) & PAD_RIGHT)
 ;
-	rts
-L0006:	lda     _pad
+	lda     #$00
+L0005:	jsr     _pad_state
 	and     #$01
-	beq     L0004
+	beq     L0003
 ;
-; playerX += 1;
+; playerX++;
 ;
 	inc     _playerX
 ;
 ; }
 ;
-L0004:	rts
+L0003:	rts
 
 .endproc
 
@@ -1352,9 +1353,9 @@ L0002:	jsr     _ppu_wait_nmi
 	beq     L000A
 	jmp     L0002
 ;
-; if (pad_trigger(0) & PAD_START)
+; if (pad_state(0) & PAD_START)
 ;
-L000C:	jsr     _pad_trigger
+L000C:	jsr     _pad_state
 	and     #$10
 	beq     L0008
 ;
