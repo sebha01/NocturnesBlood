@@ -84,7 +84,8 @@ const unsigned char endScreenPrompt[] = "To play again";
 unsigned char pad;
 //Player variables
 unsigned char playerX = 10;
-unsigned cha playerY = 10;
+unsigned char playerY = 223;
+
 
 
 //function prototypes
@@ -102,7 +103,7 @@ void main (void)
 	while (1)
 	{
 		//Waits for next frame
-		//ppu_wait_nmi();
+		ppu_wait_nmi();
 		pad_poll(0);
 		pad = get_pad_new(0);
 
@@ -122,6 +123,27 @@ void main (void)
 				break;
 			case GAME_LOOP:
 				//Fade();
+
+				if(pad & PAD_LEFT)
+				{
+					playerX -= 1;
+				}
+				else if (pad & PAD_RIGHT)
+				{
+					playerX += 1;
+				}
+				if(pad & PAD_UP)
+				{
+					playerY -= 1;
+				}
+				else if (pad & PAD_DOWN)
+				{
+					playerY += 1;
+				}
+				
+				oam_clear();
+				oam_spr(playerX, playerY, 0x03, 0x00);
+
 				break;
 		}
 	}

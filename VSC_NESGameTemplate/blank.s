@@ -12,23 +12,26 @@
 	.macpack	longbranch
 	.forceimport	__STARTUP__
 	.import		_pal_bg
+	.import		_ppu_wait_nmi
 	.import		_ppu_off
 	.import		_ppu_on_all
+	.import		_oam_clear
+	.import		_oam_spr
 	.import		_pad_poll
 	.import		_vram_adr
 	.import		_vram_write
 	.import		_get_pad_new
 	.import		_pal_fade_to
 	.export		_TestLevel
-	.export		_i
+	.export		_palette
 	.export		_currentGameState
 	.export		_text
 	.export		_titlePrompt
-	.export		_gameLoopText
 	.export		_endScreenTitle
 	.export		_endScreenPrompt
 	.export		_pad
-	.export		_palette
+	.export		_playerX
+	.export		_playerY
 	.export		_DrawTitleScreen
 	.export		_GameLoop
 	.export		_Fade
@@ -38,6 +41,10 @@
 
 _currentGameState:
 	.byte	$00
+_playerX:
+	.byte	$0a
+_playerY:
+	.byte	$df
 
 .segment	"RODATA"
 
@@ -1066,17 +1073,6 @@ _TestLevel:
 	.byte	$00
 	.byte	$00
 	.byte	$00
-_text:
-	.byte	$4E,$6F,$63,$74,$75,$72,$6E,$65,$73,$20,$42,$6C,$6F,$6F,$64,$00
-_titlePrompt:
-	.byte	$50,$72,$65,$73,$73,$20,$53,$54,$41,$52,$54,$00
-_gameLoopText:
-	.byte	$54,$68,$69,$73,$20,$69,$73,$20,$74,$68,$65,$20,$67,$61,$6D,$65
-	.byte	$20,$6C,$6F,$6F,$70,$00
-_endScreenTitle:
-	.byte	$45,$6E,$64,$20,$53,$63,$72,$65,$65,$6E,$00
-_endScreenPrompt:
-	.byte	$54,$6F,$20,$70,$6C,$61,$79,$20,$61,$67,$61,$69,$6E,$00
 _palette:
 	.byte	$0f
 	.byte	$00
@@ -1094,12 +1090,18 @@ _palette:
 	.byte	$00
 	.byte	$00
 	.byte	$00
+_text:
+	.byte	$4E,$6F,$63,$74,$75,$72,$6E,$65,$73,$20,$42,$6C,$6F,$6F,$64,$00
+_titlePrompt:
+	.byte	$50,$72,$65,$73,$73,$20,$53,$54,$41,$52,$54,$00
+_endScreenTitle:
+	.byte	$45,$6E,$64,$20,$53,$63,$72,$65,$65,$6E,$00
+_endScreenPrompt:
+	.byte	$54,$6F,$20,$70,$6C,$61,$79,$20,$61,$67,$61,$69,$6E,$00
 
 .segment	"BSS"
 
 .segment	"ZEROPAGE"
-_i:
-	.res	1,$00
 _pad:
 	.res	1,$00
 
@@ -1244,9 +1246,13 @@ _pad:
 ;
 	jsr     _DrawTitleScreen
 ;
+; ppu_wait_nmi();
+;
+L0002:	jsr     _ppu_wait_nmi
+;
 ; pad_poll(0);
 ;
-L000B:	lda     #$00
+	lda     #$00
 	jsr     _pad_poll
 ;
 ; pad = get_pad_new(0);
@@ -1261,14 +1267,14 @@ L000B:	lda     #$00
 ;
 ; }
 ;
-	beq     L000C
+	beq     L0013
 	cmp     #$01
-	beq     L000B
-	jmp     L000B
+	beq     L0014
+	jmp     L0002
 ;
 ; if (pad & PAD_START)
 ;
-L000C:	lda     _pad
+L0013:	lda     _pad
 	and     #$10
 	beq     L0008
 ;
@@ -1283,7 +1289,7 @@ L000C:	lda     _pad
 ;
 ; else
 ;
-	jmp     L000B
+	jmp     L0002
 ;
 ; Fade();
 ;
@@ -1291,7 +1297,72 @@ L0008:	jsr     _Fade
 ;
 ; break;
 ;
-	jmp     L000B
+	jmp     L0002
+;
+; if(pad & PAD_LEFT)
+;
+L0014:	lda     _pad
+	and     #$02
+	beq     L0015
+;
+; playerX -= 1;
+;
+	dec     _playerX
+;
+; else if (pad & PAD_RIGHT)
+;
+	jmp     L0016
+L0015:	lda     _pad
+	and     #$01
+	beq     L0016
+;
+; playerX += 1;
+;
+	inc     _playerX
+;
+; if(pad & PAD_UP)
+;
+L0016:	lda     _pad
+	and     #$08
+	beq     L0017
+;
+; playerY -= 1;
+;
+	dec     _playerY
+;
+; else if (pad & PAD_DOWN)
+;
+	jmp     L0010
+L0017:	lda     _pad
+	and     #$04
+	beq     L0010
+;
+; playerY += 1;
+;
+	inc     _playerY
+;
+; oam_clear();
+;
+L0010:	jsr     _oam_clear
+;
+; oam_spr(playerX, playerY, 0x03, 0x00);
+;
+	jsr     decsp3
+	lda     _playerX
+	ldy     #$02
+	sta     (sp),y
+	lda     _playerY
+	dey
+	sta     (sp),y
+	lda     #$03
+	dey
+	sta     (sp),y
+	tya
+	jsr     _oam_spr
+;
+; break;
+;
+	jmp     L0002
 
 .endproc
 
