@@ -101,7 +101,7 @@ void main (void)
 	while (1)
 	{
 		//Waits for next frame
-		ppu_wait_nmi();
+		//ppu_wait_nmi();
 		pad_poll(0);
 		pad = get_pad_new(0);
 
@@ -114,8 +114,10 @@ void main (void)
 					currentGameState = GAME_LOOP;
 					GameLoop();
 				}
-
-				//Fade();
+				else
+				{
+					Fade();
+				}
 				break;
 			case GAME_LOOP:
 				//Fade();
@@ -129,17 +131,14 @@ void DrawTitleScreen(void)
 {
 	ppu_off(); // screen off
 	pal_bg(palette); //	load the BG palette
-
 	// vram_adr and vram_put only work with screen off NOTE, you could replace everything between i = 0; and here with...
 	// vram_write(text,sizeof(text)); does the same thing
-
 	//Set VRAM address to row 10 and column 12
 	vram_adr(NTADR_A(8, 8)); // places text at screen position
 	vram_write(text, sizeof(text) - 1); //write Title to screen
-
-	vram_adr(NTADR_A(3, 6));
+	//Write prompt to start game
+	vram_adr(NTADR_A(10, 14));
 	vram_write(titlePrompt, sizeof(titlePrompt) - 1);
-
 	ppu_on_all(); //	turn on screen
 }
 
@@ -147,24 +146,17 @@ void GameLoop(void)
 {
 	//Turn screen off
 	ppu_off(); 
-
 	vram_adr(NAMETABLE_A);   // Set VRAM address to the top-left of the screen
 	vram_write(TestLevel, 1024);
-
 	//Load palette
 	pal_bg(palette);
-
-	// //Set VRAM ADDRESS TO ROW 10 COL 10
-	// vram_adr(NTADR_A(10, 10));
-	// vram_write(gameLoopText, sizeof(gameLoopText) - 1);
-
 	ppu_on_all();
 }
 
 void Fade(void)
 {
-	pal_fade_to(0,4); // fade from black to normal
-	//delay(50);
 	pal_fade_to(4,0); // fade from normal to black
+	//delay(50);
+	pal_fade_to(0,4); // fade from black to normal
 	//delay(50);
 }

@@ -12,7 +12,6 @@
 	.macpack	longbranch
 	.forceimport	__STARTUP__
 	.import		_pal_bg
-	.import		_ppu_wait_nmi
 	.import		_ppu_off
 	.import		_ppu_on_all
 	.import		_pad_poll
@@ -1140,10 +1139,10 @@ _pad:
 	lda     #$0F
 	jsr     _vram_write
 ;
-; vram_adr(NTADR_A(3, 6));
+; vram_adr(NTADR_A(10, 14));
 ;
-	ldx     #$20
-	lda     #$C3
+	ldx     #$21
+	lda     #$CA
 	jsr     _vram_adr
 ;
 ; vram_write(titlePrompt, sizeof(titlePrompt) - 1);
@@ -1214,18 +1213,18 @@ _pad:
 .segment	"CODE"
 
 ;
-; pal_fade_to(0,4); // fade from black to normal
-;
-	lda     #$00
-	jsr     pusha
-	lda     #$04
-	jsr     _pal_fade_to
-;
 ; pal_fade_to(4,0); // fade from normal to black
 ;
 	lda     #$04
 	jsr     pusha
 	lda     #$00
+	jsr     _pal_fade_to
+;
+; pal_fade_to(0,4); // fade from black to normal
+;
+	lda     #$00
+	jsr     pusha
+	lda     #$04
 	jmp     _pal_fade_to
 
 .endproc
@@ -1245,13 +1244,9 @@ _pad:
 ;
 	jsr     _DrawTitleScreen
 ;
-; ppu_wait_nmi();
-;
-L0002:	jsr     _ppu_wait_nmi
-;
 ; pad_poll(0);
 ;
-	lda     #$00
+L000B:	lda     #$00
 	jsr     _pad_poll
 ;
 ; pad = get_pad_new(0);
@@ -1266,16 +1261,16 @@ L0002:	jsr     _ppu_wait_nmi
 ;
 ; }
 ;
-	beq     L000A
+	beq     L000C
 	cmp     #$01
-	beq     L0002
-	jmp     L0002
+	beq     L000B
+	jmp     L000B
 ;
 ; if (pad & PAD_START)
 ;
-L000A:	lda     _pad
+L000C:	lda     _pad
 	and     #$10
-	beq     L0002
+	beq     L0008
 ;
 ; currentGameState = GAME_LOOP;
 ;
@@ -1286,9 +1281,17 @@ L000A:	lda     _pad
 ;
 	jsr     _GameLoop
 ;
+; else
+;
+	jmp     L000B
+;
+; Fade();
+;
+L0008:	jsr     _Fade
+;
 ; break;
 ;
-	jmp     L0002
+	jmp     L000B
 
 .endproc
 
