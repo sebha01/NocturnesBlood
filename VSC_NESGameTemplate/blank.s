@@ -12,6 +12,7 @@
 	.macpack	longbranch
 	.forceimport	__STARTUP__
 	.import		_pal_bg
+	.import		_pal_spr
 	.import		_ppu_wait_nmi
 	.import		_ppu_off
 	.import		_ppu_on_all
@@ -1198,6 +1199,12 @@ _pad:
 	ldx     #>(_palette)
 	jsr     _pal_bg
 ;
+; pal_spr(palette);
+;
+	lda     #<(_palette)
+	ldx     #>(_palette)
+	jsr     _pal_spr
+;
 ; ppu_on_all();
 ;
 	jmp     _ppu_on_all
@@ -1345,7 +1352,7 @@ L0017:	lda     _pad
 ;
 L0010:	jsr     _oam_clear
 ;
-; oam_spr(playerX, playerY, 0x03, 0x00);
+; oam_spr(playerX, playerY, 0x04, 0x00);
 ;
 	jsr     decsp3
 	lda     _playerX
@@ -1354,7 +1361,7 @@ L0010:	jsr     _oam_clear
 	lda     _playerY
 	dey
 	sta     (sp),y
-	lda     #$03
+	lda     #$04
 	dey
 	sta     (sp),y
 	tya

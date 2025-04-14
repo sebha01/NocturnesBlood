@@ -142,7 +142,7 @@ void main (void)
 				}
 				
 				oam_clear();
-				oam_spr(playerX, playerY, 0x03, 0x00);
+				oam_spr(playerX, playerY, 0x04, 0x00);
 
 				break;
 		}
@@ -173,6 +173,7 @@ void GameLoop(void)
 	vram_write(TestLevel, 1024);
 	//Load palette
 	pal_bg(palette);
+	pal_spr(palette);
 	ppu_on_all();
 }
 
