@@ -76,7 +76,6 @@ const unsigned char endScreenTitle[] = "End Screen";
 const unsigned char endScreenPrompt[] = "To play again";
 
 unsigned char pad;
-unsigned char prevPad = 0;
 
 //palette colours
 const unsigned char palette[]={
@@ -103,7 +102,7 @@ void main (void)
 		//Waits for next frame
 		ppu_wait_nmi();
 		pad_poll(0);
-		pad = pad_state(0);
+		pad = get_pad_new(0);
 
 		
 
@@ -111,19 +110,11 @@ void main (void)
 		{
 			case START_SCREEN:
 				//Check if player has pressed start
-				// if (pad & PAD_START)
-				// {
-				// 	currentGameState = GAME_LOOP;
-				// 	GameLoop();
-				// }
-
-				if ((pad & PAD_START) && !(prevPad & PAD_START))
+				if (pad & PAD_START)
 				{
 					currentGameState = GAME_LOOP;
-				 	GameLoop();
+					GameLoop();
 				}
-
-				prevPad = pad;
 
 				Fade();
 				break;
