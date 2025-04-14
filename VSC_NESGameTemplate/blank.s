@@ -19,6 +19,7 @@
 	.import		_oam_clear
 	.import		_oam_spr
 	.import		_pad_poll
+	.import		_pad_trigger
 	.import		_vram_adr
 	.import		_vram_write
 	.import		_get_pad_new
@@ -36,6 +37,8 @@
 	.export		_DrawTitleScreen
 	.export		_GameLoop
 	.export		_Fade
+	.export		_MovePlayer
+	.export		_DrawPlayer
 	.export		_main
 
 .segment	"DATA"
@@ -1239,6 +1242,76 @@ _pad:
 .endproc
 
 ; ---------------------------------------------------------------
+; void __near__ MovePlayer (void)
+; ---------------------------------------------------------------
+
+.segment	"CODE"
+
+.proc	_MovePlayer: near
+
+.segment	"CODE"
+
+;
+; if(pad & PAD_LEFT)
+;
+	lda     _pad
+	and     #$02
+	beq     L0006
+;
+; playerX -= 1;
+;
+	dec     _playerX
+;
+; else if (pad & PAD_RIGHT)
+;
+	rts
+L0006:	lda     _pad
+	and     #$01
+	beq     L0004
+;
+; playerX += 1;
+;
+	inc     _playerX
+;
+; }
+;
+L0004:	rts
+
+.endproc
+
+; ---------------------------------------------------------------
+; void __near__ DrawPlayer (void)
+; ---------------------------------------------------------------
+
+.segment	"CODE"
+
+.proc	_DrawPlayer: near
+
+.segment	"CODE"
+
+;
+; oam_clear();
+;
+	jsr     _oam_clear
+;
+; oam_spr(playerX, playerY, 0x04, 0x00);
+;
+	jsr     decsp3
+	lda     _playerX
+	ldy     #$02
+	sta     (sp),y
+	lda     _playerY
+	dey
+	sta     (sp),y
+	lda     #$04
+	dey
+	sta     (sp),y
+	tya
+	jmp     _oam_spr
+
+.endproc
+
+; ---------------------------------------------------------------
 ; void __near__ main (void)
 ; ---------------------------------------------------------------
 
@@ -1274,14 +1347,14 @@ L0002:	jsr     _ppu_wait_nmi
 ;
 ; }
 ;
-	beq     L0013
+	beq     L000C
 	cmp     #$01
-	beq     L0014
+	beq     L000A
 	jmp     L0002
 ;
-; if (pad & PAD_START)
+; if (pad_trigger(0) & PAD_START)
 ;
-L0013:	lda     _pad
+L000C:	jsr     _pad_trigger
 	and     #$10
 	beq     L0008
 ;
@@ -1306,66 +1379,13 @@ L0008:	jsr     _Fade
 ;
 	jmp     L0002
 ;
-; if(pad & PAD_LEFT)
+; MovePlayer();
 ;
-L0014:	lda     _pad
-	and     #$02
-	beq     L0015
+L000A:	jsr     _MovePlayer
 ;
-; playerX -= 1;
+; DrawPlayer();
 ;
-	dec     _playerX
-;
-; else if (pad & PAD_RIGHT)
-;
-	jmp     L0016
-L0015:	lda     _pad
-	and     #$01
-	beq     L0016
-;
-; playerX += 1;
-;
-	inc     _playerX
-;
-; if(pad & PAD_UP)
-;
-L0016:	lda     _pad
-	and     #$08
-	beq     L0017
-;
-; playerY -= 1;
-;
-	dec     _playerY
-;
-; else if (pad & PAD_DOWN)
-;
-	jmp     L0010
-L0017:	lda     _pad
-	and     #$04
-	beq     L0010
-;
-; playerY += 1;
-;
-	inc     _playerY
-;
-; oam_clear();
-;
-L0010:	jsr     _oam_clear
-;
-; oam_spr(playerX, playerY, 0x04, 0x00);
-;
-	jsr     decsp3
-	lda     _playerX
-	ldy     #$02
-	sta     (sp),y
-	lda     _playerY
-	dey
-	sta     (sp),y
-	lda     #$04
-	dey
-	sta     (sp),y
-	tya
-	jsr     _oam_spr
+	jsr     _DrawPlayer
 ;
 ; break;
 ;

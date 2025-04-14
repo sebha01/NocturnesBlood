@@ -92,6 +92,8 @@ unsigned char playerY = 223;
 void DrawTitleScreen(void);
 void GameLoop(void);
 void Fade(void);
+void MovePlayer(void);
+void DrawPlayer(void);
 
 
 //MAIN
@@ -122,28 +124,8 @@ void main (void)
 				}
 				break;
 			case GAME_LOOP:
-				//Fade();
-
-				if(pad & PAD_LEFT)
-				{
-					playerX -= 1;
-				}
-				else if (pad & PAD_RIGHT)
-				{
-					playerX += 1;
-				}
-				if(pad & PAD_UP)
-				{
-					playerY -= 1;
-				}
-				else if (pad & PAD_DOWN)
-				{
-					playerY += 1;
-				}
-				
-				oam_clear();
-				oam_spr(playerX, playerY, 0x04, 0x00);
-
+				MovePlayer();
+				DrawPlayer();
 				break;
 		}
 	}
@@ -183,4 +165,22 @@ void Fade(void)
 	//delay(50);
 	pal_fade_to(0,4); // fade from black to normal
 	//delay(50);
+}
+
+void MovePlayer(void)
+{
+	if(pad & PAD_LEFT)
+	{
+		playerX --;
+	}
+	else if (pad & PAD_RIGHT)
+	{
+		playerX ++;
+	}
+}
+
+void DrawPlayer(void)
+{
+	oam_clear();
+	oam_spr(playerX, playerY, 0x04, 0x00);
 }
