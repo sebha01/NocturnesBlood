@@ -62,22 +62,6 @@
 #define GAME_LOOP 1
 #define END_SCREEN 2
 
-
-#pragma bss-name(push, "ZEROPAGE")
-
-// GLOBAL VARIABLES
-unsigned char i;
-//Defines which state the game is currently in (START_SCREEN, GAME_LOOP or END_SCREEN)
-unsigned char currentGameState = START_SCREEN;
-
-const unsigned char text[] = "Nocturnes Blood"; 
-const unsigned char titlePrompt[] = "Press START";
-const unsigned char gameLoopText[] = "This is the game loop";
-const unsigned char endScreenTitle[] = "End Screen";
-const unsigned char endScreenPrompt[] = "To play again";
-
-unsigned char pad;
-
 //palette colours
 const unsigned char palette[]={
 BLACK, DK_GY, LT_GY, WHITE,
@@ -85,6 +69,23 @@ BLACK, DK_GY, LT_GY, WHITE,
 0,0,0,0,
 0,0,0,0
 }; 
+
+#pragma bss-name(push, "ZEROPAGE")
+
+// GLOBAL VARIABLES
+//Defines which state the game is currently in (START_SCREEN, GAME_LOOP or END_SCREEN)
+unsigned char currentGameState = START_SCREEN;
+//Text
+const unsigned char text[] = "Nocturnes Blood"; 
+const unsigned char titlePrompt[] = "Press START";
+const unsigned char endScreenTitle[] = "End Screen";
+const unsigned char endScreenPrompt[] = "To play again";
+//variable for getting input from controller
+unsigned char pad;
+//Player variables
+unsigned char playerX = 10;
+unsigned cha playerY = 10;
+
 
 //function prototypes
 void DrawTitleScreen(void);
