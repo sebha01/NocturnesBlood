@@ -1260,15 +1260,15 @@ _pad:
 	and     #$02
 	beq     L0010
 ;
-; if (TestLevel[GetTileIndex(playerX - 1, playerY -1)] != 0x01)
+; if (TestLevel[GetTileIndex(playerX - 1, playerY + 1)] != 0x01)
 ;
 	lda     _playerX
 	sec
 	sbc     #$01
 	jsr     pusha
 	lda     _playerY
-	sec
-	sbc     #$01
+	clc
+	adc     #$01
 	jsr     _GetTileIndex
 	sta     ptr1
 	txa
@@ -1291,15 +1291,15 @@ L0010:	jsr     _pad_state
 	and     #$01
 	beq     L0012
 ;
-; if (TestLevel[GetTileIndex(playerX + 8, playerY -1)] != 0x01)
+; if (TestLevel[GetTileIndex(playerX + 8, playerY + 1)] != 0x01)
 ;
 	lda     _playerX
 	clc
 	adc     #$08
 	jsr     pusha
 	lda     _playerY
-	sec
-	sbc     #$01
+	clc
+	adc     #$01
 	jsr     _GetTileIndex
 	sta     ptr1
 	txa
@@ -1424,7 +1424,7 @@ L000D:	rts
 ;
 	jsr     pusha
 ;
-; unsigned char tileX = playerX / 8;  // Divide by 8 to get the tile column
+; unsigned char tileX = playerX / 8; 
 ;
 	ldy     #$01
 	lda     (sp),y
@@ -1433,7 +1433,7 @@ L000D:	rts
 	lsr     a
 	jsr     pusha
 ;
-; unsigned char tileY = playerY / 8;  // Divide by 8 to get the tile row
+; unsigned char tileY = playerY / 8;
 ;
 	ldy     #$01
 	lda     (sp),y
@@ -1442,7 +1442,7 @@ L000D:	rts
 	lsr     a
 	jsr     pusha
 ;
-; unsigned int tileIndex = tileY * 32 + tileX;  // 32 is the width of the map (adjust if needed)
+; unsigned int tileIndex = tileY * 32 + tileX;
 ;
 	ldx     #$00
 	lda     (sp,x)

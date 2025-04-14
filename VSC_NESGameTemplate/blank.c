@@ -169,10 +169,13 @@ void Fade(void)
 
 void MovePlayer(void)
 {
+	// In the collission checks for the x coordinates having the playerY 
+	// Param just be playerY made it not let you move left and right when
+	// Collided with the top of the map
 	if(pad_state(0) & PAD_LEFT)
 	{
 		//Check for collision 1 pixel to left of player
-        if (TestLevel[GetTileIndex(playerX - 1, playerY)] != 0x01)
+        if (TestLevel[GetTileIndex(playerX - 1, playerY + 1)] != 0x01)
         {
 			//If false allow player to move
             playerX--;
@@ -182,7 +185,7 @@ void MovePlayer(void)
 	if (pad_state(0) & PAD_RIGHT)
 	{
 		// Check for collision 9 pixels to the right of the player
-        if (TestLevel[GetTileIndex(playerX + 8, playerY)] != 0x01)
+        if (TestLevel[GetTileIndex(playerX + 8, playerY + 1)] != 0x01)
         {
 			//If false then allow player to move
             playerX++;
@@ -228,6 +231,6 @@ unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY)
 	//We multiply by 32 to get the correct row
 	//Then we add tileX to find the column and the index of the tile
     unsigned int tileIndex = tileY * 32 + tileX;
-	
+
     return tileIndex;
 }
