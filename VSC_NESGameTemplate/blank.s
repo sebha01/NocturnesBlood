@@ -15,12 +15,11 @@
 	.import		_ppu_wait_nmi
 	.import		_ppu_off
 	.import		_ppu_on_all
-	.import		_pad_trigger
+	.import		_pad_poll
+	.import		_pad_state
 	.import		_vram_adr
-	.import		_vram_put
 	.import		_vram_fill
 	.import		_vram_write
-	.import		_delay
 	.import		_pal_fade_to
 	.export		_i
 	.export		_currentGameState
@@ -30,6 +29,7 @@
 	.export		_endScreenTitle
 	.export		_endScreenPrompt
 	.export		_pad
+	.export		_prevPad
 	.export		_palette
 	.export		_DrawTitleScreen
 	.export		_GameLoop
@@ -39,6 +39,8 @@
 .segment	"DATA"
 
 _currentGameState:
+	.byte	$00
+_prevPad:
 	.byte	$00
 
 .segment	"RODATA"
@@ -211,22 +213,12 @@ _pad:
 	lda     #$04
 	jsr     _pal_fade_to
 ;
-; delay(50);
-;
-	lda     #$32
-	jsr     _delay
-;
 ; pal_fade_to(4,0); // fade from normal to black
 ;
 	lda     #$04
 	jsr     pusha
 	lda     #$00
-	jsr     _pal_fade_to
-;
-; delay(50);
-;
-	lda     #$32
-	jmp     _delay
+	jmp     _pal_fade_to
 
 .endproc
 
@@ -249,47 +241,36 @@ _pad:
 ;
 L0002:	jsr     _ppu_wait_nmi
 ;
-; pad = pad_trigger(0);
+; pad_poll(0);
 ;
 	lda     #$00
-	jsr     _pad_trigger
+	jsr     _pad_poll
+;
+; pad = pad_state(0);
+;
+	lda     #$00
+	jsr     _pad_state
 	sta     _pad
 ;
-; if (pad)
+; switch(currentGameState)
 ;
-	lda     _pad
-	beq     L0005
+	lda     _currentGameState
 ;
-; vram_adr(NTADR_A(2, 20));
+; }
 ;
-	ldx     #$22
-	lda     #$82
-	jsr     _vram_adr
-;
-; vram_put('0' + (pad >> 4)); // just a crude test
-;
-	lda     _pad
-	lsr     a
-	lsr     a
-	lsr     a
-	lsr     a
-	clc
-	adc     #$30
-	jsr     _vram_put
-;
-; vram_put('0' + (pad & 0x0F));
-;
-	lda     _pad
-	and     #$0F
-	clc
-	adc     #$30
-	jsr     _vram_put
-;
-; if (pad & PAD_START)
-;
-L0005:	lda     _pad
-	and     #$10
 	beq     L000D
+	cmp     #$01
+	beq     L000C
+	jmp     L0002
+;
+; if ((pad & PAD_START) && !(prevPad & PAD_START))
+;
+L000D:	lda     _pad
+	and     #$10
+	beq     L0011
+	lda     _prevPad
+	and     #$10
+	bne     L0011
 ;
 ; currentGameState = GAME_LOOP;
 ;
@@ -300,20 +281,14 @@ L0005:	lda     _pad
 ;
 	jsr     _GameLoop
 ;
-; switch(currentGameState)
+; prevPad = pad;
 ;
-L000D:	lda     _currentGameState
-;
-; }
-;
-	beq     L000B
-	cmp     #$01
-	beq     L000C
-	jmp     L0002
+L0011:	lda     _pad
+	sta     _prevPad
 ;
 ; Fade();
 ;
-L000B:	jsr     _Fade
+	jsr     _Fade
 ;
 ; break;
 ;

@@ -76,6 +76,7 @@ const unsigned char endScreenTitle[] = "End Screen";
 const unsigned char endScreenPrompt[] = "To play again";
 
 unsigned char pad;
+unsigned char prevPad = 0;
 
 //palette colours
 const unsigned char palette[]={
@@ -90,6 +91,8 @@ void DrawTitleScreen(void);
 void GameLoop(void);
 void Fade(void);
 
+
+//MAIN
 void main (void) 
 {
 	DrawTitleScreen();
@@ -99,35 +102,37 @@ void main (void)
 	{
 		//Waits for next frame
 		ppu_wait_nmi();
-		pad = pad_trigger(0);
+		pad_poll(0);
+		pad = pad_state(0);
 
-		if (pad)
-		{
-			
-			// Show something if *any* button is pressed
-			vram_adr(NTADR_A(2, 20));
-			vram_put('0' + (pad >> 4)); // just a crude test
-			vram_put('0' + (pad & 0x0F));
-
-		}
-
-		if (pad & PAD_START)
-		{
-			currentGameState = GAME_LOOP;
-			GameLoop();
-		}
+		
 
 		switch(currentGameState)
 		{
 			case START_SCREEN:
 				//Check if player has pressed start
+				// if (pad & PAD_START)
+				// {
+				// 	currentGameState = GAME_LOOP;
+				// 	GameLoop();
+				// }
+
+				if ((pad & PAD_START) && !(prevPad & PAD_START))
+				{
+					currentGameState = GAME_LOOP;
+				 	GameLoop();
+				}
+
+				prevPad = pad;
+
 				Fade();
-				//DrawTitleScreen();
 				break;
 			case GAME_LOOP:
 				Fade();
 				break;
 		}
+
+		
 	}
 }
 	
@@ -171,7 +176,7 @@ void GameLoop(void)
 void Fade(void)
 {
 	pal_fade_to(0,4); // fade from black to normal
-	delay(50);
+	//delay(50);
 	pal_fade_to(4,0); // fade from normal to black
-	delay(50);
+	//delay(50);
 }
