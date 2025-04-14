@@ -42,7 +42,7 @@
         {
             "label": "Run in Mesen",
             "type": "shell",
-            "command": "${workspaceFolder}/../MesenX/mesen.exe",
+            "command": "${workspaceFolder}/../Mesen2/mesen.exe",
             "presentation": {
                 "echo": true,
                 "reveal": "always",
