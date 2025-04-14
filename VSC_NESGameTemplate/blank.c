@@ -83,9 +83,8 @@ const unsigned char endScreenPrompt[] = "To play again";
 //variable for getting input from controller
 unsigned char pad;
 //Player variables
-unsigned char playerX = 10;
+unsigned char playerX = 15;
 unsigned char playerY = 223;
-
 
 
 //function prototypes
@@ -94,6 +93,7 @@ void GameLoop(void);
 void Fade(void);
 void MovePlayer(void);
 void DrawPlayer(void);
+unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY);
 
 
 //MAIN
@@ -171,12 +171,42 @@ void MovePlayer(void)
 {
 	if(pad_state(0) & PAD_LEFT)
 	{
-		playerX--;
+		//Check for collision 1 pixel to left of player
+        if (TestLevel[GetTileIndex(playerX - 1, playerY)] != 0x01)
+        {
+			//If false allow player to move
+            playerX--;
+        }
 	}
 	
 	if (pad_state(0) & PAD_RIGHT)
 	{
-		playerX++;
+		// Check for collision 9 pixels to the right of the player
+        if (TestLevel[GetTileIndex(playerX + 8, playerY)] != 0x01)
+        {
+			//If false then allow player to move
+            playerX++;
+        }
+	}
+
+	if(pad_state(0) & PAD_UP)
+	{
+		//Check for collision 1 pixel to left of player
+        if (TestLevel[GetTileIndex(playerX, playerY)] != 0x01)
+        {
+			//If false allow player to move
+            playerY--;
+        }
+	}
+	
+	if (pad_state(0) & PAD_DOWN)
+	{
+		// Check for collision 9 pixels to the right of the player
+        if (TestLevel[GetTileIndex(playerX, playerY + 9)] != 0x01)
+        {
+			//If false then allow player to move
+            playerY++;
+        }
 	}
 }
 
@@ -184,4 +214,20 @@ void DrawPlayer(void)
 {
 	oam_clear();
 	oam_spr(playerX, playerY, 0x04, 0x00);
+}
+
+unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY)
+{
+    // Get the x and y tile that the player is currently on
+	//Divide by 8 as the players current position is in pixels
+	//Each tile has 8 pixels so we need to divide by 8 to find the tile
+    unsigned char tileX = playerX / 8; 
+    unsigned char tileY = playerY / 8;
+    
+    // As we play in a 32x32 map to first find the correct y position
+	//We multiply by 32 to get the correct row
+	//Then we add tileX to find the column and the index of the tile
+    unsigned int tileIndex = tileY * 32 + tileX;
+	
+    return tileIndex;
 }
