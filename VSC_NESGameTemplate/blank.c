@@ -49,6 +49,7 @@
  
 #include "LIB/neslib.h"
 #include "LIB/nesdoug.h" 
+#include "NES_ST/TestLevel.h"
 
 //Define colours
 #define BLACK 0x0f
@@ -104,8 +105,6 @@ void main (void)
 		pad_poll(0);
 		pad = get_pad_new(0);
 
-		
-
 		switch(currentGameState)
 		{
 			case START_SCREEN:
@@ -116,14 +115,12 @@ void main (void)
 					GameLoop();
 				}
 
-				Fade();
+				//Fade();
 				break;
 			case GAME_LOOP:
-				Fade();
+				//Fade();
 				break;
 		}
-
-		
 	}
 }
 	
@@ -152,14 +149,14 @@ void GameLoop(void)
 	ppu_off(); 
 
 	vram_adr(NAMETABLE_A);   // Set VRAM address to the top-left of the screen
-	vram_fill(0, 32*30);     // Fill 32 columns × 30 rows with tile 0 (blank)
+	vram_write(TestLevel, 1024);
 
 	//Load palette
 	pal_bg(palette);
 
-	//Set VRAM ADDRESS TO ROW 10 COL 10
-	vram_adr(NTADR_A(10, 10));
-	vram_write(gameLoopText, sizeof(gameLoopText) - 1);
+	// //Set VRAM ADDRESS TO ROW 10 COL 10
+	// vram_adr(NTADR_A(10, 10));
+	// vram_write(gameLoopText, sizeof(gameLoopText) - 1);
 
 	ppu_on_all();
 }
