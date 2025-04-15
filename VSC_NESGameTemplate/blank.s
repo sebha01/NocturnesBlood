@@ -64,7 +64,7 @@ _goalY:
 _gravity:
 	.byte	$01
 _maxJump:
-	.byte	$fb
+	.byte	$ec
 _playerJumping:
 	.byte	$00
 
@@ -1249,7 +1249,7 @@ _movementPad:
 ;
 	lda     _movementPad
 	and     #$02
-	beq     L0021
+	beq     L0023
 ;
 ; if (TestLevel[GetTileIndex(playerX - 1, playerY + 1)] != 0x01)
 ;
@@ -1269,7 +1269,7 @@ _movementPad:
 	ldy     #<(_TestLevel)
 	lda     (ptr1),y
 	cmp     #$01
-	beq     L0021
+	beq     L0023
 ;
 ; playerX--;
 ;
@@ -1277,9 +1277,9 @@ _movementPad:
 ;
 ; if(movementPad & PAD_RIGHT)
 ;
-L0021:	lda     _movementPad
+L0023:	lda     _movementPad
 	and     #$01
-	beq     L0022
+	beq     L0024
 ;
 ; if (TestLevel[GetTileIndex(playerX + 8, playerY + 1)] != 0x01)
 ;
@@ -1299,33 +1299,15 @@ L0021:	lda     _movementPad
 	ldy     #<(_TestLevel)
 	lda     (ptr1),y
 	cmp     #$01
-	beq     L0022
+	beq     L0024
 ;
 ; playerX++;
 ;
 	inc     _playerX
 ;
-; if(inputPad & PAD_A)
-;
-L0022:	lda     _inputPad
-	and     #$80
-	beq     L0025
-;
-; playerJumping = maxJump;
-;
-	lda     _maxJump
-	sta     _playerJumping
-;
-; playerY += playerJumping;
-;
-	cmp     #$80
-	clc
-	adc     _playerY
-	sta     _playerY
-;
 ; if (TestLevel[GetTileIndex(playerX, playerY + 9)] != 0x01)
 ;
-L0025:	lda     _playerX
+L0024:	lda     _playerX
 	jsr     pusha
 	lda     _playerY
 	clc
@@ -1339,7 +1321,7 @@ L0025:	lda     _playerX
 	ldy     #<(_TestLevel)
 	lda     (ptr1),y
 	cmp     #$01
-	beq     L0027
+	beq     L0026
 ;
 ; playerY += gravity;
 ;
@@ -1348,27 +1330,50 @@ L0025:	lda     _playerX
 	clc
 	adc     _playerY
 	sta     _playerY
+	bpl     L0029
+;
+; else
+;
+	jmp     L0029
+;
+; if(inputPad & PAD_A)
+;
+L0026:	lda     _inputPad
+	and     #$80
+	beq     L0029
+;
+; playerJumping = maxJump;
+;
+	lda     _maxJump
+	sta     _playerJumping
+;
+; playerY += playerJumping;
+;
+	cmp     #$80
+	clc
+	adc     _playerY
+	sta     _playerY
 ;
 ; if(playerJumping < 0)
 ;
-L0027:	lda     _playerJumping
+L0029:	lda     _playerJumping
 	asl     a
-	bcc     L0028
+	bcc     L002A
 ;
 ; playerJumping += 1;
 ;
 	inc     _playerJumping
-	bpl     L001E
+	bpl     L001F
 ;
 ; else if(playerJumping > 0)
 ;
 	rts
-L0028:	lda     _playerJumping
+L002A:	lda     _playerJumping
 	sec
 	sbc     #$01
-	bvs     L0020
+	bvs     L0021
 	eor     #$80
-L0020:	bpl     L001E
+L0021:	bpl     L001F
 ;
 ; playerJumping = 0;
 ;
@@ -1377,7 +1382,7 @@ L0020:	bpl     L001E
 ;
 ; }
 ;
-L001E:	rts
+L001F:	rts
 
 .endproc
 
