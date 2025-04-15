@@ -37,6 +37,9 @@
 	.export		_playerY
 	.export		_goalX
 	.export		_goalY
+	.export		_gravity
+	.export		_maxJump
+	.export		_playerJumping
 	.export		_DrawTitleScreen
 	.export		_GameLoop
 	.export		_MovePlayer
@@ -58,6 +61,12 @@ _goalX:
 	.byte	$c8
 _goalY:
 	.byte	$c8
+_gravity:
+	.byte	$01
+_maxJump:
+	.byte	$fb
+_playerJumping:
+	.byte	$00
 
 .segment	"RODATA"
 
@@ -1240,7 +1249,7 @@ _movementPad:
 ;
 	lda     _movementPad
 	and     #$02
-	beq     L000F
+	beq     L0021
 ;
 ; if (TestLevel[GetTileIndex(playerX - 1, playerY + 1)] != 0x01)
 ;
@@ -1260,17 +1269,17 @@ _movementPad:
 	ldy     #<(_TestLevel)
 	lda     (ptr1),y
 	cmp     #$01
-	beq     L000F
+	beq     L0021
 ;
 ; playerX--;
 ;
 	dec     _playerX
 ;
-; if (movementPad & PAD_RIGHT)
+; if(movementPad & PAD_RIGHT)
 ;
-L000F:	lda     _movementPad
+L0021:	lda     _movementPad
 	and     #$01
-	beq     L0010
+	beq     L0022
 ;
 ; if (TestLevel[GetTileIndex(playerX + 8, playerY + 1)] != 0x01)
 ;
@@ -1290,47 +1299,33 @@ L000F:	lda     _movementPad
 	ldy     #<(_TestLevel)
 	lda     (ptr1),y
 	cmp     #$01
-	beq     L0010
+	beq     L0022
 ;
 ; playerX++;
 ;
 	inc     _playerX
 ;
-; if(movementPad & PAD_UP)
+; if(inputPad & PAD_A)
 ;
-L0010:	lda     _movementPad
-	and     #$08
-	beq     L0011
+L0022:	lda     _inputPad
+	and     #$80
+	beq     L0025
 ;
-; if (TestLevel[GetTileIndex(playerX, playerY)] != 0x01)
+; playerJumping = maxJump;
 ;
-	lda     _playerX
-	jsr     pusha
-	lda     _playerY
-	jsr     _GetTileIndex
-	sta     ptr1
-	txa
+	lda     _maxJump
+	sta     _playerJumping
+;
+; playerY += playerJumping;
+;
+	cmp     #$80
 	clc
-	adc     #>(_TestLevel)
-	sta     ptr1+1
-	ldy     #<(_TestLevel)
-	lda     (ptr1),y
-	cmp     #$01
-	beq     L0011
-;
-; playerY--;
-;
-	dec     _playerY
-;
-; if (movementPad & PAD_DOWN)
-;
-L0011:	lda     _movementPad
-	and     #$04
-	beq     L000D
+	adc     _playerY
+	sta     _playerY
 ;
 ; if (TestLevel[GetTileIndex(playerX, playerY + 9)] != 0x01)
 ;
-	lda     _playerX
+L0025:	lda     _playerX
 	jsr     pusha
 	lda     _playerY
 	clc
@@ -1344,15 +1339,45 @@ L0011:	lda     _movementPad
 	ldy     #<(_TestLevel)
 	lda     (ptr1),y
 	cmp     #$01
-	beq     L000D
+	beq     L0027
 ;
-; playerY++;
+; playerY += gravity;
 ;
-	inc     _playerY
+	lda     _gravity
+	cmp     #$80
+	clc
+	adc     _playerY
+	sta     _playerY
+;
+; if(playerJumping < 0)
+;
+L0027:	lda     _playerJumping
+	asl     a
+	bcc     L0028
+;
+; playerJumping += 1;
+;
+	inc     _playerJumping
+	bpl     L001E
+;
+; else if(playerJumping > 0)
+;
+	rts
+L0028:	lda     _playerJumping
+	sec
+	sbc     #$01
+	bvs     L0020
+	eor     #$80
+L0020:	bpl     L001E
+;
+; playerJumping = 0;
+;
+	lda     #$00
+	sta     _playerJumping
 ;
 ; }
 ;
-L000D:	rts
+L001E:	rts
 
 .endproc
 
@@ -1483,54 +1508,62 @@ L0002:	jsr     pushax
 ;
 	ldx     #$00
 	lda     _playerX
-	clc
-	adc     #$04
-	bcc     L0003
-	inx
-L0003:	jsr     pushax
-	ldx     #$00
-	lda     _goalX
-	clc
+	bpl     L0003
+	dex
+L0003:	clc
 	adc     #$04
 	bcc     L0004
 	inx
-L0004:	jsr     tossubax
+L0004:	jsr     pushax
+	ldx     #$00
+	lda     _goalX
+	bpl     L0005
+	dex
+L0005:	clc
+	adc     #$04
+	bcc     L0006
+	inx
+L0006:	jsr     tossubax
 	jsr     _abs
 	cmp     #$06
 	txa
 	sbc     #$00
-	bvc     L0005
+	bvc     L0007
 	eor     #$80
-L0005:	bpl     L000D
+L0007:	bpl     L0011
 ;
 ; abs((playerY + 4) - (goalY + 4)) < 6)
 ;
 	ldx     #$00
 	lda     _playerY
-	clc
+	bpl     L0009
+	dex
+L0009:	clc
 	adc     #$04
-	bcc     L0007
+	bcc     L000A
 	inx
-L0007:	jsr     pushax
+L000A:	jsr     pushax
 	ldx     #$00
 	lda     _goalY
-	clc
+	bpl     L000B
+	dex
+L000B:	clc
 	adc     #$04
-	bcc     L0008
+	bcc     L000C
 	inx
-L0008:	jsr     tossubax
+L000C:	jsr     tossubax
 	jsr     _abs
 	cmp     #$06
 	txa
 	sbc     #$00
-	bvc     L0009
+	bvc     L000D
 	eor     #$80
-L0009:	bmi     L000E
-L000D:	rts
+L000D:	bmi     L0012
+L0011:	rts
 ;
 ; currentGameState = END_SCREEN;
 ;
-L000E:	lda     #$02
+L0012:	lda     #$02
 	sta     _currentGameState
 ;
 ; DrawEndScreen();

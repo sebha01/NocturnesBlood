@@ -85,11 +85,15 @@ const unsigned char endScreenPrompt[] = "To play again";
 unsigned char inputPad;
 unsigned char movementPad;
 //Player variables
-unsigned char playerX = 15;
-unsigned char playerY = 223;
+signed char playerX = 15;
+signed char playerY = 223;
 //Goal variables
-unsigned char goalX = 200;
-unsigned char goalY = 200;
+signed char goalX = 200;
+signed char goalY = 200;
+//Gravity and jumping variables
+unsigned char gravity = 1;
+signed char maxJump = -5;
+signed char playerJumping = 0;
 
 //function prototypes
 void DrawTitleScreen(void);
@@ -191,7 +195,7 @@ void MovePlayer(void)
         }
 	}
 	
-	if (movementPad & PAD_RIGHT)
+	if(movementPad & PAD_RIGHT)
 	{
 		// Check for collision 9 pixels to the right of the player
         if (TestLevel[GetTileIndex(playerX + 8, playerY + 1)] != 0x01)
@@ -201,6 +205,28 @@ void MovePlayer(void)
         }
 	}
 
+	//if jump button pressed apply jump max to player jumping
+	if(inputPad & PAD_A)
+	{
+		playerJumping = maxJump;
+		playerY += playerJumping;
+	}
+
+	if (TestLevel[GetTileIndex(playerX, playerY + 9)] != 0x01)
+	{
+		//If false then allow player to jump and have gravity applied
+		playerY += gravity;
+	}
+
+	if(playerJumping < 0)
+	{
+		playerJumping += 1;
+	}
+	else if(playerJumping > 0)
+	{
+		playerJumping = 0;
+	}
+	
 	// if(movementPad & PAD_UP)
 	// {
 	// 	//Check for collision 1 pixel to left of player
