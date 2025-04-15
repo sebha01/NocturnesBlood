@@ -215,7 +215,13 @@ void MovePlayer(void)
 
 void DrawPlayer(void)
 {
+	//Clears all sprite entries in Object Attribute Memory
+	//OAM special memopry area that holds info about sprites
+	//Such as pos, tile index, palette etc.
 	oam_clear();
+	//Draw the player sprite at default starting position
+	//Using the fourth sprite in the character sheet
+	//0x00 is the attribute, controls flipping and priority
 	oam_spr(playerX, playerY, 0x04, 0x00);
 }
 
