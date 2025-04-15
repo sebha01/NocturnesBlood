@@ -1475,11 +1475,6 @@ L004D:	lda     #$00
 	lda     #$14
 	sta     _dashCooldown
 ;
-; break;
-;
-	jsr     incsp4
-	jmp     L004E
-;
 ; }
 ;
 L002A:	jsr     incsp4
@@ -1487,7 +1482,7 @@ L002A:	jsr     incsp4
 ; for (i = 0; i < DASH_SPEED; i++) 
 ;
 	inc     _i
-	jne     L001D
+	bne     L001D
 	inc     _i+1
 	jmp     L001D
 ;

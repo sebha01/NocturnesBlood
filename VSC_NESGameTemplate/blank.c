@@ -220,57 +220,68 @@ void MovePlayer(void)
     }
 
     // Dash mechanic
-	//Checks if B pressed 
+	//Checks if B pressed, the player is not dashing and the dashCoolDown has not been activated
 	if ((inputPad & PAD_B) && !isDashing && dashCooldown == 0) 
 	{
-		// Only allow midair dash if hasn't dashed already midair
+		// Only allow midair dash if the player has not dashed in the air yet
 		if (OnGround() || !hasDashedInAir)
 		{
+			//Set's the dash direction to the left and other variables needed to execute the dash 
 			if (movementPad & PAD_LEFT) 
 			{
 				isDashing = 1;
 				dashDirection = -1;
 				dashTimer = DASH_DURATION;
 
+				//makes sure player cannot double dash in the air
 				if (!OnGround())
 					hasDashedInAir = 1;
 			} 
+			//Sets the dash direction to the right and other variables needed to execute the dash
 			else if (movementPad & PAD_RIGHT) 
 			{
 				isDashing = 1;
 				dashDirection = 1;
 				dashTimer = DASH_DURATION;
 
+				//Makes sure no double air dashing
 				if (!OnGround())
 					hasDashedInAir = 1;
 			}
 		}
 	}
 
-	//Checks for if player will hit collidable while dashing
+	//Handles collisions and updates the player movement so that they don't "phase" through
+	//collidable tiles
 	if (isDashing) 
 	{
+		//Checks each pixel individually to make sure it doesn't let the player phase through collidables
 		for (i = 0; i < DASH_SPEED; i++) 
 		{
+			//Calculates the next X position depending on direction
 			int nextX = playerX + dashDirection;
+			//Make sure checkX is correct for collision checking
+			//If direction is right then 7 pixels will be added on to account for the width of the player
+			//If left then nothing will be added on as already checking in to the left
 			int checkX = nextX + (dashDirection == 1 ? 7 : 0);
 
-			// Only move if the next position is not a wall
+			//Check that there is not a collidable and if there is not then the player can move
 			if (TestLevel[GetTileIndex(checkX, playerY + 1)] != 0x01) 
 			{
 				playerX = nextX;
 			} 
 			else 
 			{
-				// Hit a wall, end the dash early
+				//If a collidable is hit then the dash will end early and the dash cool down starts
 				isDashing = 0;
 				dashCooldown = DASH_COOLDOWN;
-				break;
 			}
 		}
 
+		//Decrement the dash timer so that when it runs out player stops dashing
 		dashTimer--;
 
+		//When the timer runs out isDashing bool is set to false and cooldown begins
 		if (dashTimer <= 0) 
 		{
 			isDashing = 0;
@@ -348,7 +359,7 @@ void MovePlayer(void)
         }
     }
 
-    // Dash cooldown
+    // Dash cooldown. begin counting down if dash has finished the time until player can dash again
     if (dashCooldown > 0) 
 	{
         dashCooldown--;
