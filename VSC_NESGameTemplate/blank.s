@@ -19,7 +19,6 @@
 	.import		_oam_clear
 	.import		_oam_spr
 	.import		_pad_poll
-	.import		_pad_state
 	.import		_vram_adr
 	.import		_vram_fill
 	.import		_vram_write
@@ -33,7 +32,8 @@
 	.export		_titlePrompt
 	.export		_endScreenTitle
 	.export		_endScreenPrompt
-	.export		_pad
+	.export		_inputPad
+	.export		_movementPad
 	.export		_playerX
 	.export		_playerY
 	.export		_goalX
@@ -1117,7 +1117,9 @@ _endScreenPrompt:
 .segment	"BSS"
 
 .segment	"ZEROPAGE"
-_pad:
+_inputPad:
+	.res	1,$00
+_movementPad:
 	.res	1,$00
 
 ; ---------------------------------------------------------------
@@ -1213,7 +1215,7 @@ _pad:
 	ldx     #>(_palette)
 	jsr     _pal_bg
 ;
-; pal_spr(palette);
+; pal_spr((const char*)palette);
 ;
 	lda     #<(_palette)
 	ldx     #>(_palette)
@@ -1263,12 +1265,11 @@ _pad:
 .segment	"CODE"
 
 ;
-; if(pad_state(0) & PAD_LEFT)
+; if(movementPad & PAD_LEFT)
 ;
-	lda     #$00
-	jsr     _pad_state
+	lda     _movementPad
 	and     #$02
-	beq     L0010
+	beq     L000F
 ;
 ; if (TestLevel[GetTileIndex(playerX - 1, playerY + 1)] != 0x01)
 ;
@@ -1294,12 +1295,11 @@ _pad:
 ;
 	dec     _playerX
 ;
-; if (pad_state(0) & PAD_RIGHT)
+; if (movementPad & PAD_RIGHT)
 ;
-L000F:	lda     #$00
-L0010:	jsr     _pad_state
+L000F:	lda     _movementPad
 	and     #$01
-	beq     L0012
+	beq     L0010
 ;
 ; if (TestLevel[GetTileIndex(playerX + 8, playerY + 1)] != 0x01)
 ;
@@ -1319,18 +1319,17 @@ L0010:	jsr     _pad_state
 	ldy     #<(_TestLevel)
 	lda     (ptr1),y
 	cmp     #$01
-	beq     L0011
+	beq     L0010
 ;
 ; playerX++;
 ;
 	inc     _playerX
 ;
-; if(pad_state(0) & PAD_UP)
+; if(movementPad & PAD_UP)
 ;
-L0011:	lda     #$00
-L0012:	jsr     _pad_state
+L0010:	lda     _movementPad
 	and     #$08
-	beq     L0014
+	beq     L0011
 ;
 ; if (TestLevel[GetTileIndex(playerX, playerY)] != 0x01)
 ;
@@ -1346,16 +1345,15 @@ L0012:	jsr     _pad_state
 	ldy     #<(_TestLevel)
 	lda     (ptr1),y
 	cmp     #$01
-	beq     L0013
+	beq     L0011
 ;
 ; playerY--;
 ;
 	dec     _playerY
 ;
-; if (pad_state(0) & PAD_DOWN)
+; if (movementPad & PAD_DOWN)
 ;
-L0013:	lda     #$00
-L0014:	jsr     _pad_state
+L0011:	lda     _movementPad
 	and     #$04
 	beq     L000D
 ;
@@ -1682,22 +1680,23 @@ L000E:	lda     #$02
 ;
 ; DrawTitleScreen();
 ;
-L0011:	jsr     _DrawTitleScreen
+L000D:	jsr     _DrawTitleScreen
 ;
 ; ppu_wait_nmi();
 ;
 L0002:	jsr     _ppu_wait_nmi
 ;
-; pad_poll(0);
+; movementPad = pad_poll(0);
 ;
 	lda     #$00
 	jsr     _pad_poll
+	sta     _movementPad
 ;
-; pad = get_pad_new(0);
+; inputPad = get_pad_new(0);
 ;
 	lda     #$00
 	jsr     _get_pad_new
-	sta     _pad
+	sta     _inputPad
 ;
 ; switch(currentGameState)
 ;
@@ -1705,18 +1704,18 @@ L0002:	jsr     _ppu_wait_nmi
 ;
 ; }
 ;
-	beq     L000F
+	beq     L000E
 	cmp     #$01
-	beq     L000A
+	beq     L0009
 	cmp     #$02
-	beq     L0010
+	beq     L000F
 	jmp     L0002
 ;
-; if (pad_state(0) & PAD_START)
+; if (inputPad & PAD_START)
 ;
-L000F:	jsr     _pad_state
+L000E:	lda     _inputPad
 	and     #$10
-	beq     L0008
+	beq     L0002
 ;
 ; currentGameState = GAME_LOOP;
 ;
@@ -1727,21 +1726,9 @@ L000F:	jsr     _pad_state
 ;
 	jsr     _GameLoop
 ;
-; else
-;
-	jmp     L0002
-;
-; Fade();
-;
-L0008:	jsr     _Fade
-;
-; break;
-;
-	jmp     L0002
-;
 ; MovePlayer();
 ;
-L000A:	jsr     _MovePlayer
+L0009:	jsr     _MovePlayer
 ;
 ; DrawPlayer();
 ;
@@ -1755,29 +1742,20 @@ L000A:	jsr     _MovePlayer
 ;
 	jmp     L0002
 ;
-; if (pad_state(0) & PAD_START)
+; if (inputPad & PAD_START)
 ;
-L0010:	lda     #$00
-	jsr     _pad_state
+L000F:	lda     _inputPad
 	and     #$10
-	beq     L000C
+	beq     L0002
 ;
 ; currentGameState = START_SCREEN;
 ;
 	lda     #$00
 	sta     _currentGameState
 ;
-; else
-;
-	jmp     L0011
-;
-; Fade();
-;
-L000C:	jsr     _Fade
-;
 ; break;
 ;
-	jmp     L0002
+	jmp     L000D
 
 .endproc
 

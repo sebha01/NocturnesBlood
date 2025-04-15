@@ -82,7 +82,8 @@ const unsigned char titlePrompt[] = "Press START";
 const unsigned char endScreenTitle[] = "End Screen";
 const unsigned char endScreenPrompt[] = "To play again";
 //variable for getting input from controller
-unsigned char pad;
+unsigned char inputPad;
+unsigned char movementPad;
 //Player variables
 unsigned char playerX = 15;
 unsigned char playerY = 223;
@@ -112,22 +113,23 @@ void main (void)
 	{
 		//Waits for next frame
 		ppu_wait_nmi();
-		pad_poll(0);
-		pad = get_pad_new(0);
+		movementPad = pad_poll(0);
+		inputPad = get_pad_new(0);
+		
 
 		switch(currentGameState)
 		{
 			case START_SCREEN:
 				//Check if player has pressed start
-				if (pad_state(0) & PAD_START)
+				if (inputPad & PAD_START)
 				{
 					currentGameState = GAME_LOOP;
 					GameLoop();
 				}
 				else
-				{
-					Fade();
-				}
+				//{
+				//	Fade();
+				//}
 				break;
 			case GAME_LOOP:
 				//Player code
@@ -139,15 +141,15 @@ void main (void)
 				break;
 			case END_SCREEN:
 				//Check if player has pressed start
-				if (pad_state(0) & PAD_START)
+				if (inputPad & PAD_START)
 				{
 					currentGameState = START_SCREEN;
 					DrawTitleScreen();
 				}
-				else
-				{
-					Fade();
-				}
+				// else
+				// {
+				// 	Fade();
+				// }
 				break;
 		}
 	}
@@ -166,6 +168,7 @@ void DrawTitleScreen(void)
 	//Write prompt to start game
 	vram_adr(NTADR_A(10, 14));
 	vram_write(titlePrompt, sizeof(titlePrompt) - 1);
+	
 	ppu_on_all(); //	turn on screen
 }
 
@@ -177,7 +180,7 @@ void GameLoop(void)
 	vram_write(TestLevel, 1024);
 	//Load palette
 	pal_bg(palette);
-	pal_spr(palette);
+	pal_spr((const char*)palette);
 
 	ppu_on_all();
 }
@@ -195,7 +198,7 @@ void MovePlayer(void)
 	// In the collission checks for the x coordinates having the playerY 
 	// Param just be playerY made it not let you move left and right when
 	// Collided with the top of the map
-	if(pad_state(0) & PAD_LEFT)
+	if(movementPad & PAD_LEFT)
 	{
 		//Check for collision 1 pixel to left of player
         if (TestLevel[GetTileIndex(playerX - 1, playerY + 1)] != 0x01)
@@ -205,7 +208,7 @@ void MovePlayer(void)
         }
 	}
 	
-	if (pad_state(0) & PAD_RIGHT)
+	if (movementPad & PAD_RIGHT)
 	{
 		// Check for collision 9 pixels to the right of the player
         if (TestLevel[GetTileIndex(playerX + 8, playerY + 1)] != 0x01)
@@ -215,7 +218,7 @@ void MovePlayer(void)
         }
 	}
 
-	if(pad_state(0) & PAD_UP)
+	if(movementPad & PAD_UP)
 	{
 		//Check for collision 1 pixel to left of player
         if (TestLevel[GetTileIndex(playerX, playerY)] != 0x01)
@@ -225,7 +228,7 @@ void MovePlayer(void)
         }
 	}
 	
-	if (pad_state(0) & PAD_DOWN)
+	if (movementPad & PAD_DOWN)
 	{
 		// Check for collision 9 pixels to the right of the player
         if (TestLevel[GetTileIndex(playerX, playerY + 9)] != 0x01)
