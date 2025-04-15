@@ -49,6 +49,8 @@
  
 #include "LIB/neslib.h"
 #include "LIB/nesdoug.h" 
+#include "NES_ST/TestLevel.h"
+#include <stdlib.h>
 
 //Define colours
 #define BLACK 0x0f
@@ -61,23 +63,6 @@
 #define GAME_LOOP 1
 #define END_SCREEN 2
 
-
-#pragma bss-name(push, "ZEROPAGE")
-
-// GLOBAL VARIABLES
-unsigned char i;
-//Defines which state the game is currently in (START_SCREEN, GAME_LOOP or END_SCREEN)
-unsigned char currentGameState = START_SCREEN;
-
-const unsigned char text[] = "Nocturnes Blood"; 
-const unsigned char titlePrompt[] = "Press START";
-const unsigned char gameLoopText[] = "This is the game loop";
-const unsigned char endScreenTitle[] = "End Screen";
-const unsigned char endScreenPrompt[] = "To play again";
-
-unsigned char pad;
-unsigned char prevPad = 0;
-
 //palette colours
 const unsigned char palette[]={
 BLACK, DK_GY, LT_GY, WHITE,
@@ -86,10 +71,35 @@ BLACK, DK_GY, LT_GY, WHITE,
 0,0,0,0
 }; 
 
+#pragma bss-name(push, "ZEROPAGE")
+
+// GLOBAL VARIABLES
+//Defines which state the game is currently in (START_SCREEN, GAME_LOOP or END_SCREEN)
+unsigned char currentGameState = START_SCREEN;
+//Text
+const unsigned char text[] = "Nocturnes Blood"; 
+const unsigned char titlePrompt[] = "Press START";
+const unsigned char endScreenTitle[] = "End Screen";
+const unsigned char endScreenPrompt[] = "To play again";
+//variable for getting input from controller
+unsigned char inputPad;
+unsigned char movementPad;
+//Player variables
+unsigned char playerX = 15;
+unsigned char playerY = 223;
+//Goal variables
+unsigned char goalX = 200;
+unsigned char goalY = 200;
+
 //function prototypes
 void DrawTitleScreen(void);
 void GameLoop(void);
 void Fade(void);
+void MovePlayer(void);
+void DrawPlayer(void);
+unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY);
+void CheckIfEnd(void);
+void DrawEndScreen(void);
 
 
 //MAIN
@@ -102,37 +112,37 @@ void main (void)
 	{
 		//Waits for next frame
 		ppu_wait_nmi();
-		pad_poll(0);
-		pad = pad_state(0);
-
+		movementPad = pad_poll(0);
+		inputPad = get_pad_new(0);
 		
 
 		switch(currentGameState)
 		{
 			case START_SCREEN:
 				//Check if player has pressed start
-				// if (pad & PAD_START)
-				// {
-				// 	currentGameState = GAME_LOOP;
-				// 	GameLoop();
-				// }
-
-				if ((pad & PAD_START) && !(prevPad & PAD_START))
+				if (inputPad & PAD_START)
 				{
 					currentGameState = GAME_LOOP;
-				 	GameLoop();
+					GameLoop();
 				}
-
-				prevPad = pad;
-
-				Fade();
 				break;
 			case GAME_LOOP:
-				Fade();
+				//Player code
+				MovePlayer();
+				DrawPlayer();
+
+				//Check if player has reached end goal
+				CheckIfEnd();
+				break;
+			case END_SCREEN:
+				//Check if player has pressed start
+				if (inputPad & PAD_START)
+				{
+					currentGameState = START_SCREEN;
+					DrawTitleScreen();
+				}
 				break;
 		}
-
-		
 	}
 }
 	
@@ -141,17 +151,15 @@ void DrawTitleScreen(void)
 {
 	ppu_off(); // screen off
 	pal_bg(palette); //	load the BG palette
-
 	// vram_adr and vram_put only work with screen off NOTE, you could replace everything between i = 0; and here with...
 	// vram_write(text,sizeof(text)); does the same thing
-
 	//Set VRAM address to row 10 and column 12
 	vram_adr(NTADR_A(8, 8)); // places text at screen position
 	vram_write(text, sizeof(text) - 1); //write Title to screen
-
-	vram_adr(NTADR_A(3, 6));
+	//Write prompt to start game
+	vram_adr(NTADR_A(10, 14));
 	vram_write(titlePrompt, sizeof(titlePrompt) - 1);
-
+	
 	ppu_on_all(); //	turn on screen
 }
 
@@ -159,24 +167,125 @@ void GameLoop(void)
 {
 	//Turn screen off
 	ppu_off(); 
-
 	vram_adr(NAMETABLE_A);   // Set VRAM address to the top-left of the screen
-	vram_fill(0, 32*30);     // Fill 32 columns × 30 rows with tile 0 (blank)
-
+	vram_write(TestLevel, 1024);
 	//Load palette
 	pal_bg(palette);
-
-	//Set VRAM ADDRESS TO ROW 10 COL 10
-	vram_adr(NTADR_A(10, 10));
-	vram_write(gameLoopText, sizeof(gameLoopText) - 1);
+	pal_spr((const char*)palette);
 
 	ppu_on_all();
 }
 
-void Fade(void)
+void MovePlayer(void)
 {
-	pal_fade_to(0,4); // fade from black to normal
-	//delay(50);
-	pal_fade_to(4,0); // fade from normal to black
-	//delay(50);
+	// In the collission checks for the x coordinates having the playerY 
+	// Param just be playerY made it not let you move left and right when
+	// Collided with the top of the map
+	if(movementPad & PAD_LEFT)
+	{
+		//Check for collision 1 pixel to left of player
+        if (TestLevel[GetTileIndex(playerX - 1, playerY + 1)] != 0x01)
+        {
+			//If false allow player to move
+            playerX--;
+        }
+	}
+	
+	if (movementPad & PAD_RIGHT)
+	{
+		// Check for collision 9 pixels to the right of the player
+        if (TestLevel[GetTileIndex(playerX + 8, playerY + 1)] != 0x01)
+        {
+			//If false then allow player to move
+            playerX++;
+        }
+	}
+
+	if(movementPad & PAD_UP)
+	{
+		//Check for collision 1 pixel to left of player
+        if (TestLevel[GetTileIndex(playerX, playerY)] != 0x01)
+        {
+			//If false allow player to move
+            playerY--;
+        }
+	}
+	
+	if (movementPad & PAD_DOWN)
+	{
+		// Check for collision 9 pixels to the right of the player
+        if (TestLevel[GetTileIndex(playerX, playerY + 9)] != 0x01)
+        {
+			//If false then allow player to move
+            playerY++;
+        }
+	}
+}
+
+void DrawPlayer(void)
+{
+	//Clears all sprite entries in Object Attribute Memory
+	//OAM special memopry area that holds info about sprites
+	//Such as pos, tile index, palette etc.
+	oam_clear();
+	//Draw the player sprite at default starting position
+	//Using the fourth sprite in the character sheet
+	//0x00 is the attribute, controls flipping and priority
+	oam_spr(playerX, playerY, 0x04, 0x00);
+	oam_spr(goalX, goalY, 0x05, 0x00);
+}
+
+unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY)
+{
+    // Get the x and y tile that the player is currently on
+	//Divide by 8 as the players current position is in pixels
+	//Each tile has 8 pixels so we need to divide by 8 to find the tile
+    unsigned char tileX = playerX / 8; 
+    unsigned char tileY = playerY / 8;
+    
+    // As we play in a 32x32 map to first find the correct y position
+	//We multiply by 32 to get the correct row
+	//Then we add tileX to find the column and the index of the tile
+    unsigned int tileIndex = tileY * 32 + tileX;
+
+    return tileIndex;
+}
+
+void CheckIfEnd()
+{
+	// Calculate the distance between the middle of both sprites
+	if (abs((playerX + 4) - (goalX + 4)) < 6 && 
+	abs((playerY + 4) - (goalY + 4)) < 6)
+	{
+		currentGameState = END_SCREEN;
+		DrawEndScreen();
+	}
+}
+
+void DrawEndScreen()
+{
+	ppu_off(); // screen off
+	pal_bg(palette); //	load the BG palette
+
+	//Clear all sprite data
+	oam_clear();
+
+	//Set varirables back to their default value
+	playerX = 15;
+	playerY = 223;
+
+	//Clear the screen
+	vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
+	vram_fill(0x00, 1024);
+
+	vram_adr(NTADR_A(8, 8)); // places text at screen position
+	vram_write(endScreenTitle, sizeof(endScreenTitle) - 1); //write Title to screen
+	//Write prompt to start game
+	vram_adr(NTADR_A(10, 14));
+	vram_write(titlePrompt, sizeof(titlePrompt) - 1);
+
+	vram_adr(NTADR_A(10, 18));
+	vram_write(endScreenPrompt, sizeof(endScreenPrompt) - 1);
+
+	ppu_on_all(); //	turn on screen
 }
