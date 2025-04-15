@@ -91,9 +91,10 @@ signed char playerY = 223;
 signed char goalX = 200;
 signed char goalY = 200;
 //Gravity and jumping variables
-unsigned char gravity = 1;
-signed char maxJump = -20;
+unsigned char gravity = 3;
+signed char maxJump = -30;
 signed char playerJumping = 0;
+unsigned char i;
 
 //function prototypes
 void DrawTitleScreen(void);
@@ -205,29 +206,29 @@ void MovePlayer(void)
         }
 	}
 
-	//if jump button pressed apply jump max to player jumping
+	
+
 	if (TestLevel[GetTileIndex(playerX, playerY + 9)] != 0x01)
 	{
-		//If false then allow player to jump and have gravity applied
-		playerY += gravity;
+		//If false then allow player to move
+		playerY += 1;
 	}
-	else //only allows player to jump while on the floor, if mid air cannot jump again
+	else
 	{
-		if(inputPad & PAD_A)
+			/// Handle jumping (if the player is pressing the jump button)
+		if (inputPad & PAD_A)
 		{
-			playerJumping = maxJump;
-			playerY += playerJumping;
+			playerJumping = 30;
 		}
 	}
 
-	if(playerJumping < 0)
+	if (playerJumping >= 0)
 	{
-		playerJumping += 1;
+		playerY -= gravity;
+		playerJumping -= gravity;
 	}
-	else if(playerJumping > 0)
-	{
-		playerJumping = 0;
-	}
+
+
 	
 	// if(movementPad & PAD_UP)
 	// {

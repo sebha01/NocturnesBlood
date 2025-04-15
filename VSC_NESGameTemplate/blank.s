@@ -40,6 +40,7 @@
 	.export		_gravity
 	.export		_maxJump
 	.export		_playerJumping
+	.export		_i
 	.export		_DrawTitleScreen
 	.export		_GameLoop
 	.export		_MovePlayer
@@ -62,9 +63,9 @@ _goalX:
 _goalY:
 	.byte	$c8
 _gravity:
-	.byte	$01
+	.byte	$03
 _maxJump:
-	.byte	$ec
+	.byte	$e2
 _playerJumping:
 	.byte	$00
 
@@ -1128,6 +1129,8 @@ _inputPad:
 	.res	1,$00
 _movementPad:
 	.res	1,$00
+_i:
+	.res	1,$00
 
 ; ---------------------------------------------------------------
 ; void __near__ DrawTitleScreen (void)
@@ -1249,7 +1252,7 @@ _movementPad:
 ;
 	lda     _movementPad
 	and     #$02
-	beq     L0023
+	beq     L001C
 ;
 ; if (TestLevel[GetTileIndex(playerX - 1, playerY + 1)] != 0x01)
 ;
@@ -1269,7 +1272,7 @@ _movementPad:
 	ldy     #<(_TestLevel)
 	lda     (ptr1),y
 	cmp     #$01
-	beq     L0023
+	beq     L001C
 ;
 ; playerX--;
 ;
@@ -1277,9 +1280,9 @@ _movementPad:
 ;
 ; if(movementPad & PAD_RIGHT)
 ;
-L0023:	lda     _movementPad
+L001C:	lda     _movementPad
 	and     #$01
-	beq     L0024
+	beq     L001D
 ;
 ; if (TestLevel[GetTileIndex(playerX + 8, playerY + 1)] != 0x01)
 ;
@@ -1299,7 +1302,7 @@ L0023:	lda     _movementPad
 	ldy     #<(_TestLevel)
 	lda     (ptr1),y
 	cmp     #$01
-	beq     L0024
+	beq     L001D
 ;
 ; playerX++;
 ;
@@ -1307,7 +1310,7 @@ L0023:	lda     _movementPad
 ;
 ; if (TestLevel[GetTileIndex(playerX, playerY + 9)] != 0x01)
 ;
-L0024:	lda     _playerX
+L001D:	lda     _playerX
 	jsr     pusha
 	lda     _playerY
 	clc
@@ -1321,68 +1324,54 @@ L0024:	lda     _playerX
 	ldy     #<(_TestLevel)
 	lda     (ptr1),y
 	cmp     #$01
-	beq     L0026
+	beq     L001E
 ;
-; playerY += gravity;
+; playerY += 1;
 ;
-	lda     _gravity
-	cmp     #$80
-	clc
-	adc     _playerY
-	sta     _playerY
-	bpl     L0029
+	inc     _playerY
+	bpl     L001F
 ;
 ; else
 ;
-	jmp     L0029
+	jmp     L001F
 ;
-; if(inputPad & PAD_A)
+; if (inputPad & PAD_A)
 ;
-L0026:	lda     _inputPad
+L001E:	lda     _inputPad
 	and     #$80
-	beq     L0029
+	beq     L001F
 ;
-; playerJumping = maxJump;
+; playerJumping = 30;
 ;
-	lda     _maxJump
+	lda     #$1E
 	sta     _playerJumping
 ;
-; playerY += playerJumping;
+; if (playerJumping >= 0)
 ;
+L001F:	ldx     _playerJumping
+	bmi     L001B
+;
+; playerY -= gravity;
+;
+	lda     _gravity
 	cmp     #$80
-	clc
+	eor     #$FF
+	sec
 	adc     _playerY
 	sta     _playerY
 ;
-; if(playerJumping < 0)
+; playerJumping -= gravity;
 ;
-L0029:	lda     _playerJumping
-	asl     a
-	bcc     L002A
-;
-; playerJumping += 1;
-;
-	inc     _playerJumping
-	bpl     L001F
-;
-; else if(playerJumping > 0)
-;
-	rts
-L002A:	lda     _playerJumping
+	lda     _gravity
+	cmp     #$80
+	eor     #$FF
 	sec
-	sbc     #$01
-	bvs     L0021
-	eor     #$80
-L0021:	bpl     L001F
-;
-; playerJumping = 0;
-;
-	lda     #$00
+	adc     _playerJumping
 	sta     _playerJumping
 ;
 ; }
 ;
-L001F:	rts
+L001B:	rts
 
 .endproc
 
