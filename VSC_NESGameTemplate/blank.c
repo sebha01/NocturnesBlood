@@ -201,25 +201,25 @@ void MovePlayer(void)
         }
 	}
 
-	if(movementPad & PAD_UP)
-	{
-		//Check for collision 1 pixel to left of player
-        if (TestLevel[GetTileIndex(playerX, playerY)] != 0x01)
-        {
-			//If false allow player to move
-            playerY--;
-        }
-	}
+	// if(movementPad & PAD_UP)
+	// {
+	// 	//Check for collision 1 pixel to left of player
+    //     if (TestLevel[GetTileIndex(playerX, playerY)] != 0x01)
+    //     {
+	// 		//If false allow player to move
+    //         playerY--;
+    //     }
+	// }
 	
-	if (movementPad & PAD_DOWN)
-	{
-		// Check for collision 9 pixels to the right of the player
-        if (TestLevel[GetTileIndex(playerX, playerY + 9)] != 0x01)
-        {
-			//If false then allow player to move
-            playerY++;
-        }
-	}
+	// if (movementPad & PAD_DOWN)
+	// {
+	// 	// Check for collision 9 pixels to the right of the player
+    //     if (TestLevel[GetTileIndex(playerX, playerY + 9)] != 0x01)
+    //     {
+	// 		//If false then allow player to move
+    //         playerY++;
+    //     }
+	// }
 }
 
 void DrawPlayer(void)
