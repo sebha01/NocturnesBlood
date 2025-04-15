@@ -37,7 +37,6 @@
 	.export		_playerY
 	.export		_goalX
 	.export		_goalY
-	.export		_brightness
 	.export		_DrawTitleScreen
 	.export		_GameLoop
 	.export		_MovePlayer
@@ -59,8 +58,6 @@ _goalX:
 	.byte	$c8
 _goalY:
 	.byte	$c8
-_brightness:
-	.byte	$04
 
 .segment	"RODATA"
 
@@ -1482,7 +1479,7 @@ L0002:	jsr     pushax
 .segment	"CODE"
 
 ;
-; if (abs((playerX + 4) - (goalX + 4)) < 4 && 
+; if (abs((playerX + 4) - (goalX + 4)) < 6 && 
 ;
 	ldx     #$00
 	lda     _playerX
@@ -1499,14 +1496,14 @@ L0003:	jsr     pushax
 	inx
 L0004:	jsr     tossubax
 	jsr     _abs
-	cmp     #$04
+	cmp     #$06
 	txa
 	sbc     #$00
 	bvc     L0005
 	eor     #$80
 L0005:	bpl     L000D
 ;
-; abs((playerY + 4) - (goalY + 4)) < 4)
+; abs((playerY + 4) - (goalY + 4)) < 6)
 ;
 	ldx     #$00
 	lda     _playerY
@@ -1523,7 +1520,7 @@ L0007:	jsr     pushax
 	inx
 L0008:	jsr     tossubax
 	jsr     _abs
-	cmp     #$04
+	cmp     #$06
 	txa
 	sbc     #$00
 	bvc     L0009

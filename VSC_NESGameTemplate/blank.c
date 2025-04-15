@@ -254,8 +254,8 @@ unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY)
 void CheckIfEnd()
 {
 	// Calculate the distance between the middle of both sprites
-	if (abs((playerX + 4) - (goalX + 4)) < 4 && 
-	abs((playerY + 4) - (goalY + 4)) < 4)
+	if (abs((playerX + 4) - (goalX + 4)) < 6 && 
+	abs((playerY + 4) - (goalY + 4)) < 6)
 	{
 		currentGameState = END_SCREEN;
 		DrawEndScreen();
