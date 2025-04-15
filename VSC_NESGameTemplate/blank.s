@@ -37,10 +37,8 @@
 	.export		_playerY
 	.export		_goalX
 	.export		_goalY
-	.export		_gravity
-	.export		_maxJump
-	.export		_playerJumping
-	.export		_i
+	.export		_velocity_y
+	.export		_is_jumping
 	.export		_DrawTitleScreen
 	.export		_GameLoop
 	.export		_MovePlayer
@@ -48,6 +46,7 @@
 	.export		_GetTileIndex
 	.export		_CheckIfEnd
 	.export		_DrawEndScreen
+	.export		_is_on_ground
 	.export		_main
 
 .segment	"DATA"
@@ -62,11 +61,9 @@ _goalX:
 	.byte	$c8
 _goalY:
 	.byte	$c8
-_gravity:
-	.byte	$03
-_maxJump:
-	.byte	$e2
-_playerJumping:
+_velocity_y:
+	.word	$0000
+_is_jumping:
 	.byte	$00
 
 .segment	"RODATA"
@@ -1129,8 +1126,6 @@ _inputPad:
 	.res	1,$00
 _movementPad:
 	.res	1,$00
-_i:
-	.res	1,$00
 
 ; ---------------------------------------------------------------
 ; void __near__ DrawTitleScreen (void)
@@ -1252,7 +1247,7 @@ _i:
 ;
 	lda     _movementPad
 	and     #$02
-	beq     L001C
+	beq     L0025
 ;
 ; if (TestLevel[GetTileIndex(playerX - 1, playerY + 1)] != 0x01)
 ;
@@ -1272,7 +1267,7 @@ _i:
 	ldy     #<(_TestLevel)
 	lda     (ptr1),y
 	cmp     #$01
-	beq     L001C
+	beq     L0025
 ;
 ; playerX--;
 ;
@@ -1280,9 +1275,9 @@ _i:
 ;
 ; if(movementPad & PAD_RIGHT)
 ;
-L001C:	lda     _movementPad
+L0025:	lda     _movementPad
 	and     #$01
-	beq     L001D
+	beq     L0026
 ;
 ; if (TestLevel[GetTileIndex(playerX + 8, playerY + 1)] != 0x01)
 ;
@@ -1302,76 +1297,121 @@ L001C:	lda     _movementPad
 	ldy     #<(_TestLevel)
 	lda     (ptr1),y
 	cmp     #$01
-	beq     L001D
+	beq     L0026
 ;
 ; playerX++;
 ;
 	inc     _playerX
 ;
-; if (TestLevel[GetTileIndex(playerX, playerY + 9)] != 0x01)
+; if ((inputPad & PAD_A) && !is_jumping && is_on_ground()) 
 ;
-L001D:	lda     _playerX
-	jsr     pusha
-	lda     _playerY
-	clc
-	adc     #$09
-	jsr     _GetTileIndex
-	sta     ptr1
-	txa
-	clc
-	adc     #>(_TestLevel)
-	sta     ptr1+1
-	ldy     #<(_TestLevel)
-	lda     (ptr1),y
-	cmp     #$01
-	beq     L001E
-;
-; playerY += 1;
-;
-	inc     _playerY
-	bpl     L001F
-;
-; else
-;
-	jmp     L001F
-;
-; if (inputPad & PAD_A)
-;
-L001E:	lda     _inputPad
+L0026:	lda     _inputPad
 	and     #$80
-	beq     L001F
+	beq     L0010
+	lda     _is_jumping
+	bne     L0010
+	jsr     _is_on_ground
+	tax
+	beq     L0010
 ;
-; playerJumping = 30;
+; is_jumping = 1;
 ;
-	lda     #$1E
-	sta     _playerJumping
+	lda     #$01
+	sta     _is_jumping
 ;
-; if (playerJumping >= 0)
+; velocity_y = JUMP_VELOCITY;
 ;
-L001F:	ldx     _playerJumping
-	bmi     L001B
+	ldx     #$FF
+	lda     #$F8
+	sta     _velocity_y
+	stx     _velocity_y+1
 ;
-; playerY -= gravity;
+; if (is_jumping) 
 ;
-	lda     _gravity
+L0010:	lda     _is_jumping
+	beq     L0014
+;
+; velocity_y += GRAVITY;
+;
+	inc     _velocity_y
+	bne     L0015
+	inc     _velocity_y+1
+;
+; if (velocity_y > MAX_FALL_SPEED)
+;
+L0015:	lda     _velocity_y
+	cmp     #$05
+	lda     _velocity_y+1
+	sbc     #$00
+	bvs     L0017
+	eor     #$80
+L0017:	bpl     L0016
+;
+; velocity_y = MAX_FALL_SPEED;
+;
+	ldx     #$00
+	lda     #$04
+	sta     _velocity_y
+	stx     _velocity_y+1
+;
+; playerY += velocity_y;
+;
+L0016:	lda     _velocity_y
 	cmp     #$80
-	eor     #$FF
-	sec
+	clc
 	adc     _playerY
 	sta     _playerY
 ;
-; playerJumping -= gravity;
+; if (velocity_y >= 0 && is_on_ground()) 
 ;
-	lda     _gravity
-	cmp     #$80
-	eor     #$FF
-	sec
-	adc     _playerJumping
-	sta     _playerJumping
+	ldx     _velocity_y+1
+	bmi     L001A
+	jsr     _is_on_ground
+	tax
+	bne     L0021
+	rts
+;
+; playerY -= 1; // Move up until no longer inside solid tile
+;
+L001E:	dec     _playerY
+;
+; while (is_on_ground()) 
+;
+L0021:	jsr     _is_on_ground
+	tax
+	bne     L001E
+;
+; playerY += 1; // Then move back down to "land"
+;
+	inc     _playerY
+;
+; velocity_y = 0;
+;
+	sta     _velocity_y
+	sta     _velocity_y+1
+;
+; is_jumping = 0;
+;
+	sta     _is_jumping
+;
+; else 
+;
+L001A:	rts
+;
+; if (!is_on_ground()) 
+;
+L0014:	jsr     _is_on_ground
+	tax
+	bne     L0024
+;
+; is_jumping = 1; // Start falling
+;
+	lda     #$01
+	sta     _is_jumping
 ;
 ; }
 ;
-L001B:	rts
+L0024:	rts
 
 .endproc
 
@@ -1662,6 +1702,37 @@ L0012:	lda     #$02
 ; ppu_on_all(); // turn on screen
 ;
 	jmp     _ppu_on_all
+
+.endproc
+
+; ---------------------------------------------------------------
+; char __near__ is_on_ground (void)
+; ---------------------------------------------------------------
+
+.segment	"CODE"
+
+.proc	_is_on_ground: near
+
+.segment	"CODE"
+
+;
+; return TestLevel[GetTileIndex(playerX, playerY + 9)] == 0x01;
+;
+	lda     _playerX
+	jsr     pusha
+	lda     _playerY
+	clc
+	adc     #$09
+	jsr     _GetTileIndex
+	sta     ptr1
+	txa
+	clc
+	adc     #>(_TestLevel)
+	sta     ptr1+1
+	ldy     #<(_TestLevel)
+	lda     (ptr1),y
+	cmp     #$01
+	jmp     booleq
 
 .endproc
 

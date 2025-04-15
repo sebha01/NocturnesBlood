@@ -62,13 +62,17 @@
 #define START_SCREEN 0
 #define GAME_LOOP 1
 #define END_SCREEN 2
+#define GRAVITY 1
+#define JUMP_VELOCITY -8
+#define MAX_FALL_SPEED 4
 
 //palette colours
-const unsigned char palette[]={
-BLACK, DK_GY, LT_GY, WHITE,
-0,0,0,0,
-0,0,0,0,
-0,0,0,0
+const unsigned char palette[]=
+{
+	BLACK, DK_GY, LT_GY, WHITE,
+	0,0,0,0,
+	0,0,0,0,
+	0,0,0,0
 }; 
 
 #pragma bss-name(push, "ZEROPAGE")
@@ -90,11 +94,9 @@ signed char playerY = 223;
 //Goal variables
 signed char goalX = 200;
 signed char goalY = 200;
-//Gravity and jumping variables
-unsigned char gravity = 3;
-signed char maxJump = -30;
-signed char playerJumping = 0;
-unsigned char i;
+//jumping variables 
+int velocity_y = 0;
+char is_jumping = 0;
 
 //function prototypes
 void DrawTitleScreen(void);
@@ -105,6 +107,34 @@ void DrawPlayer(void);
 unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY);
 void CheckIfEnd(void);
 void DrawEndScreen(void);
+char is_on_ground(void); 
+
+/*
+unsigned char frameCounter = 0;
+code for flashing 
+frameCounter++;
+
+if (frameCounter < 30) {
+	vram_adr(NTADR_A(10, 14));
+	vram_write("Press START", 11);
+}
+else if (frameCounter < 60) {
+	vram_adr(NTADR_A(10, 14));
+	vram_fill(0x00, 11); // clear same space
+} else {
+	frameCounter = 0;
+}
+
+// Handle start press
+if (inputPad & PAD_START)
+{
+	currentGameState = GAME_LOOP;
+	GameLoop();
+}
+*/ 
+
+
+
 
 
 //MAIN
@@ -206,49 +236,47 @@ void MovePlayer(void)
         }
 	}
 
-	
+	//If jump button pressed 
+	if ((inputPad & PAD_A) && !is_jumping && is_on_ground()) 
+	{
+        is_jumping = 1;
+        velocity_y = JUMP_VELOCITY;
+    }
 
-	if (TestLevel[GetTileIndex(playerX, playerY + 9)] != 0x01)
+    // If jumping or falling
+    if (is_jumping) 
 	{
-		//If false then allow player to move
-		playerY += 1;
-	}
-	else
-	{
-			/// Handle jumping (if the player is pressing the jump button)
-		if (inputPad & PAD_A)
+        velocity_y += GRAVITY;
+        
+		if (velocity_y > MAX_FALL_SPEED)
 		{
-			playerJumping = 30;
+            velocity_y = MAX_FALL_SPEED;
 		}
-	}
 
-	if (playerJumping >= 0)
+        playerY += velocity_y;
+
+        // Check if player has landed
+        if (velocity_y >= 0 && is_on_ground()) 
+		{
+            // Snap to ground and stop jump
+            while (is_on_ground()) 
+			{
+                playerY -= 1; // Move up until no longer inside solid tile
+            }
+        
+		    playerY += 1; // Then move back down to "land"
+            velocity_y = 0;
+            is_jumping = 0;
+        }
+    }
+	else 
 	{
-		playerY -= gravity;
-		playerJumping -= gravity;
-	}
-
-
-	
-	// if(movementPad & PAD_UP)
-	// {
-	// 	//Check for collision 1 pixel to left of player
-    //     if (TestLevel[GetTileIndex(playerX, playerY)] != 0x01)
-    //     {
-	// 		//If false allow player to move
-    //         playerY--;
-    //     }
-	// }
-	
-	// if (movementPad & PAD_DOWN)
-	// {
-	// 	// Check for collision 9 pixels to the right of the player
-    //     if (TestLevel[GetTileIndex(playerX, playerY + 9)] != 0x01)
-    //     {
-	// 		//If false then allow player to move
-    //         playerY++;
-    //     }
-	// }
+        // If not jumping, simulate falling if not grounded
+        if (!is_on_ground()) 
+		{
+            is_jumping = 1; // Start falling
+        }
+    }
 }
 
 void DrawPlayer(void)
@@ -317,4 +345,9 @@ void DrawEndScreen()
 	vram_write(endScreenPrompt, sizeof(endScreenPrompt) - 1);
 
 	ppu_on_all(); //	turn on screen
+}
+
+char is_on_ground(void) 
+{
+    return TestLevel[GetTileIndex(playerX, playerY + 9)] == 0x01;
 }
