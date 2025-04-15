@@ -23,7 +23,6 @@
 	.import		_vram_fill
 	.import		_vram_write
 	.import		_get_pad_new
-	.import		_pal_fade_to
 	.export		_TestLevel
 	.import		_abs
 	.export		_palette
@@ -38,9 +37,9 @@
 	.export		_playerY
 	.export		_goalX
 	.export		_goalY
+	.export		_brightness
 	.export		_DrawTitleScreen
 	.export		_GameLoop
-	.export		_Fade
 	.export		_MovePlayer
 	.export		_DrawPlayer
 	.export		_GetTileIndex
@@ -60,6 +59,8 @@ _goalX:
 	.byte	$c8
 _goalY:
 	.byte	$c8
+_brightness:
+	.byte	$04
 
 .segment	"RODATA"
 
@@ -1228,33 +1229,6 @@ _movementPad:
 .endproc
 
 ; ---------------------------------------------------------------
-; void __near__ Fade (void)
-; ---------------------------------------------------------------
-
-.segment	"CODE"
-
-.proc	_Fade: near
-
-.segment	"CODE"
-
-;
-; pal_fade_to(4,0); // fade from normal to black
-;
-	lda     #$04
-	jsr     pusha
-	lda     #$00
-	jsr     _pal_fade_to
-;
-; pal_fade_to(0,4); // fade from black to normal
-;
-	lda     #$00
-	jsr     pusha
-	lda     #$04
-	jmp     _pal_fade_to
-
-.endproc
-
-; ---------------------------------------------------------------
 ; void __near__ MovePlayer (void)
 ; ---------------------------------------------------------------
 
@@ -1680,7 +1654,7 @@ L000E:	lda     #$02
 ;
 ; DrawTitleScreen();
 ;
-L000D:	jsr     _DrawTitleScreen
+L000C:	jsr     _DrawTitleScreen
 ;
 ; ppu_wait_nmi();
 ;
@@ -1704,16 +1678,16 @@ L0002:	jsr     _ppu_wait_nmi
 ;
 ; }
 ;
-	beq     L000E
+	beq     L000D
 	cmp     #$01
 	beq     L0009
 	cmp     #$02
-	beq     L000F
+	beq     L000E
 	jmp     L0002
 ;
 ; if (inputPad & PAD_START)
 ;
-L000E:	lda     _inputPad
+L000D:	lda     _inputPad
 	and     #$10
 	beq     L0002
 ;
@@ -1725,6 +1699,10 @@ L000E:	lda     _inputPad
 ; GameLoop();
 ;
 	jsr     _GameLoop
+;
+; break;
+;
+	jmp     L0002
 ;
 ; MovePlayer();
 ;
@@ -1744,7 +1722,7 @@ L0009:	jsr     _MovePlayer
 ;
 ; if (inputPad & PAD_START)
 ;
-L000F:	lda     _inputPad
+L000E:	lda     _inputPad
 	and     #$10
 	beq     L0002
 ;
@@ -1755,7 +1733,7 @@ L000F:	lda     _inputPad
 ;
 ; break;
 ;
-	jmp     L000D
+	jmp     L000C
 
 .endproc
 

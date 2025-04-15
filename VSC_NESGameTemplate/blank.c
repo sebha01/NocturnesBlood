@@ -91,7 +91,6 @@ unsigned char playerY = 223;
 unsigned char goalX = 200;
 unsigned char goalY = 200;
 
-
 //function prototypes
 void DrawTitleScreen(void);
 void GameLoop(void);
@@ -126,10 +125,6 @@ void main (void)
 					currentGameState = GAME_LOOP;
 					GameLoop();
 				}
-				else
-				//{
-				//	Fade();
-				//}
 				break;
 			case GAME_LOOP:
 				//Player code
@@ -146,10 +141,6 @@ void main (void)
 					currentGameState = START_SCREEN;
 					DrawTitleScreen();
 				}
-				// else
-				// {
-				// 	Fade();
-				// }
 				break;
 		}
 	}
@@ -183,14 +174,6 @@ void GameLoop(void)
 	pal_spr((const char*)palette);
 
 	ppu_on_all();
-}
-
-void Fade(void)
-{
-	pal_fade_to(4,0); // fade from normal to black
-	//delay(50);
-	pal_fade_to(0,4); // fade from black to normal
-	//delay(50);
 }
 
 void MovePlayer(void)
