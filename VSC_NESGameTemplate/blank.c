@@ -62,16 +62,26 @@
 #define START_SCREEN 0
 #define GAME_LOOP 1
 #define END_SCREEN 2
-
-//palette colours
-const unsigned char palette[]={
-BLACK, DK_GY, LT_GY, WHITE,
-0,0,0,0,
-0,0,0,0,
-0,0,0,0
-}; 
+//define constants used for player movement
+//Jumping
+#define GRAVITY 1
+#define JUMP_VELOCITY -8
+#define MAX_FALL_SPEED 4
+//dashing
+#define DASH_SPEED 4
+#define DASH_DURATION 10
+#define DASH_COOLDOWN 20
 
 #pragma bss-name(push, "ZEROPAGE")
+
+//palette colours
+const unsigned char palette[]=
+{
+	BLACK, DK_GY, LT_GY, WHITE,
+	0,0,0,0,
+	0,0,0,0,
+	0,0,0,0
+}; 
 
 // GLOBAL VARIABLES
 //Defines which state the game is currently in (START_SCREEN, GAME_LOOP or END_SCREEN)
@@ -85,11 +95,23 @@ const unsigned char endScreenPrompt[] = "To play again";
 unsigned char inputPad;
 unsigned char movementPad;
 //Player variables
-unsigned char playerX = 15;
-unsigned char playerY = 223;
+signed char playerX = 15;
+signed char playerY = 223;
 //Goal variables
-unsigned char goalX = 200;
-unsigned char goalY = 200;
+signed char goalX = 200;
+signed char goalY = 200;
+//jumping variables 
+int velocityY = 0;
+char isJumping = 0;
+//Dash variables 
+char isDashing = 0;
+char dashTimer = 0;
+char dashCooldown = 0;
+char hasDashedInAir = 0;
+// -1 = left, 1 = right
+char dashDirection = 0; 
+//other variables
+int i = 0;
 
 //function prototypes
 void DrawTitleScreen(void);
@@ -100,7 +122,7 @@ void DrawPlayer(void);
 unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY);
 void CheckIfEnd(void);
 void DrawEndScreen(void);
-
+char OnGround(void); 
 
 //MAIN
 void main (void) 
@@ -178,48 +200,170 @@ void GameLoop(void)
 
 void MovePlayer(void)
 {
-	// In the collission checks for the x coordinates having the playerY 
-	// Param just be playerY made it not let you move left and right when
-	// Collided with the top of the map
-	if(movementPad & PAD_LEFT)
-	{
-		//Check for collision 1 pixel to left of player
+    // Horizontal movement
+	//left
+    if (movementPad & PAD_LEFT)
+    {
         if (TestLevel[GetTileIndex(playerX - 1, playerY + 1)] != 0x01)
         {
-			//If false allow player to move
             playerX--;
         }
-	}
-	
-	if (movementPad & PAD_RIGHT)
-	{
-		// Check for collision 9 pixels to the right of the player
+    }
+
+	//Right
+    if (movementPad & PAD_RIGHT)
+    {
         if (TestLevel[GetTileIndex(playerX + 8, playerY + 1)] != 0x01)
         {
-			//If false then allow player to move
             playerX++;
         }
+    }
+
+    // Dash mechanic
+	//Checks if B pressed, the player is not dashing and the dashCoolDown has not been activated
+	if ((inputPad & PAD_B) && !isDashing && dashCooldown == 0) 
+	{
+		// Only allow midair dash if the player has not dashed in the air yet
+		if (OnGround() || !hasDashedInAir)
+		{
+			//Set's the dash direction to the left and other variables needed to execute the dash 
+			if (movementPad & PAD_LEFT) 
+			{
+				isDashing = 1;
+				dashDirection = -1;
+				dashTimer = DASH_DURATION;
+
+				//makes sure player cannot double dash in the air
+				if (!OnGround())
+					hasDashedInAir = 1;
+			} 
+			//Sets the dash direction to the right and other variables needed to execute the dash
+			else if (movementPad & PAD_RIGHT) 
+			{
+				isDashing = 1;
+				dashDirection = 1;
+				dashTimer = DASH_DURATION;
+
+				//Makes sure no double air dashing
+				if (!OnGround())
+					hasDashedInAir = 1;
+			}
+		}
 	}
 
-	if(movementPad & PAD_UP)
+	//Handles collisions and updates the player movement so that they don't "phase" through
+	//collidable tiles
+	if (isDashing) 
 	{
-		//Check for collision 1 pixel to left of player
-        if (TestLevel[GetTileIndex(playerX, playerY)] != 0x01)
-        {
-			//If false allow player to move
-            playerY--;
-        }
+		//Checks each pixel individually to make sure it doesn't let the player phase through collidables
+		for (i = 0; i < DASH_SPEED; i++) 
+		{
+			//Calculates the next X position depending on direction
+			int nextX = playerX + dashDirection;
+			//Make sure checkX is correct for collision checking
+			//If direction is right then 7 pixels will be added on to account for the width of the player
+			//If left then nothing will be added on as already checking in to the left
+			int checkX = nextX + (dashDirection == 1 ? 7 : 0);
+
+			//Check that there is not a collidable and if there is not then the player can move
+			if (TestLevel[GetTileIndex(checkX, playerY + 1)] != 0x01) 
+			{
+				playerX = nextX;
+			} 
+			else 
+			{
+				//If a collidable is hit then the dash will end early and the dash cool down starts
+				isDashing = 0;
+				dashCooldown = DASH_COOLDOWN;
+			}
+		}
+
+		//Decrement the dash timer so that when it runs out player stops dashing
+		dashTimer--;
+
+		//When the timer runs out isDashing bool is set to false and cooldown begins
+		if (dashTimer <= 0) 
+		{
+			isDashing = 0;
+			dashCooldown = dashCooldown;
+		}
 	}
-	
-	if (movementPad & PAD_DOWN)
+    else 
+    {
+        // ----------------------------
+		// Jumping mechanic
+		// Only runs if player is not dashing on the ground
+		// ----------------------------
+
+		// Check if jump button (A) is pressed,
+		// player is not already jumping, 
+		// and player is currently standing on solid ground
+        if ((inputPad & PAD_A) && !isJumping && OnGround()) 
+        {
+			//Set the "bool" variable to true
+            isJumping = 1;
+
+			//Set the velocity to be the constant we defined
+			//Applies an upward force to the player by being a 
+			//negative value
+            velocityY = JUMP_VELOCITY;
+        }
+
+		//Checks for if the player is jumping
+        if (isJumping) 
+        {
+			//Apply gravity to bring the player back down
+            velocityY += GRAVITY;
+
+			//makeSure hte fall speed doesn't exceed the 
+			//max value so player doesn't fall too fast
+            if (velocityY > MAX_FALL_SPEED)
+			{
+                velocityY = MAX_FALL_SPEED;
+			}
+
+			//Move the player depending on the value of the velocity
+			// Velocity starts off negative so it acts as an upwards force
+			//As it becomes positive it becomes a downward force to pull
+			//the player back
+            playerY += velocityY;
+
+			//Checks to see if player is stil falling but on the ground
+            if (velocityY >= 0 && OnGround()) 
+            {
+				//makes sure that the player doesn't go into the collidable tile
+                while (OnGround()) 
+				{
+					playerY -= 1;
+				}
+
+				//Reset all variables to do with jumping and dashing
+				// now that the player is on the ground
+				//Also make sure that the player is at ground level so
+				//the player is not floating slightly
+                playerY += 1;
+                velocityY = 0;
+                isJumping = 0;
+				hasDashedInAir = 0;
+            }
+        } 
+        else 
+        {
+			//More of a just in case the player is not on the ground
+			//But the value for isJumping is not set to true
+			//So it gets set to 1 so gravity can bring the player back down
+            if (!OnGround()) 
+            {
+                isJumping = 1;
+            }
+        }
+    }
+
+    // Dash cooldown. begin counting down if dash has finished the time until player can dash again
+    if (dashCooldown > 0) 
 	{
-		// Check for collision 9 pixels to the right of the player
-        if (TestLevel[GetTileIndex(playerX, playerY + 9)] != 0x01)
-        {
-			//If false then allow player to move
-            playerY++;
-        }
-	}
+        dashCooldown--;
+    }
 }
 
 void DrawPlayer(void)
@@ -288,4 +432,9 @@ void DrawEndScreen()
 	vram_write(endScreenPrompt, sizeof(endScreenPrompt) - 1);
 
 	ppu_on_all(); //	turn on screen
+}
+
+char OnGround(void) 
+{
+    return TestLevel[GetTileIndex(playerX, playerY + 9)] == 0x01;
 }
