@@ -21,6 +21,7 @@
 	.import		_pad_poll
 	.import		_pad_state
 	.import		_vram_adr
+	.import		_vram_fill
 	.import		_vram_write
 	.import		_get_pad_new
 	.import		_pal_fade_to
@@ -34,12 +35,16 @@
 	.export		_pad
 	.export		_playerX
 	.export		_playerY
+	.export		_goalX
+	.export		_goalY
 	.export		_DrawTitleScreen
 	.export		_GameLoop
 	.export		_Fade
 	.export		_MovePlayer
 	.export		_DrawPlayer
 	.export		_GetTileIndex
+	.export		_CheckIfEnd
+	.export		_DrawEndScreen
 	.export		_main
 
 .segment	"DATA"
@@ -50,6 +55,10 @@ _playerX:
 	.byte	$0f
 _playerY:
 	.byte	$df
+_goalX:
+	.byte	$c8
+_goalY:
+	.byte	$c8
 
 .segment	"RODATA"
 
@@ -1405,6 +1414,21 @@ L000D:	rts
 	dey
 	sta     (sp),y
 	tya
+	jsr     _oam_spr
+;
+; oam_spr(goalX, goalY, 0x05, 0x00);
+;
+	jsr     decsp3
+	lda     _goalX
+	ldy     #$02
+	sta     (sp),y
+	lda     _goalY
+	dey
+	sta     (sp),y
+	lda     #$05
+	dey
+	sta     (sp),y
+	tya
 	jmp     _oam_spr
 
 .endproc
@@ -1475,6 +1499,144 @@ L0002:	jsr     pushax
 .endproc
 
 ; ---------------------------------------------------------------
+; void __near__ CheckIfEnd (void)
+; ---------------------------------------------------------------
+
+.segment	"CODE"
+
+.proc	_CheckIfEnd: near
+
+.segment	"CODE"
+
+;
+; if (playerX == goalX & playerY == goalY)
+;
+	lda     _playerX
+	cmp     _goalX
+	jsr     booleq
+	jsr     pusha0
+	lda     _playerY
+	cmp     _goalY
+	jsr     booleq
+	jsr     tosanda0
+	cmp     #$00
+	beq     L0002
+;
+; currentGameState = END_SCREEN;
+;
+	lda     #$02
+	sta     _currentGameState
+;
+; DrawEndScreen();
+;
+	jmp     _DrawEndScreen
+;
+; }
+;
+L0002:	rts
+
+.endproc
+
+; ---------------------------------------------------------------
+; void __near__ DrawEndScreen (void)
+; ---------------------------------------------------------------
+
+.segment	"CODE"
+
+.proc	_DrawEndScreen: near
+
+.segment	"CODE"
+
+;
+; ppu_off(); // screen off
+;
+	jsr     _ppu_off
+;
+; pal_bg(palette); // load the BG palette
+;
+	lda     #<(_palette)
+	ldx     #>(_palette)
+	jsr     _pal_bg
+;
+; oam_clear();
+;
+	jsr     _oam_clear
+;
+; playerX = 15;
+;
+	lda     #$0F
+	sta     _playerX
+;
+; playerY = 223;
+;
+	lda     #$DF
+	sta     _playerY
+;
+; vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
+;
+	ldx     #$20
+	lda     #$00
+	jsr     _vram_adr
+;
+; vram_fill(0x00, 1024);
+;
+	lda     #$00
+	jsr     pusha
+	ldx     #$04
+	jsr     _vram_fill
+;
+; vram_adr(NTADR_A(8, 8)); // places text at screen position
+;
+	ldx     #$21
+	lda     #$08
+	jsr     _vram_adr
+;
+; vram_write(endScreenTitle, sizeof(endScreenTitle) - 1); //write Title to screen
+;
+	lda     #<(_endScreenTitle)
+	ldx     #>(_endScreenTitle)
+	jsr     pushax
+	ldx     #$00
+	lda     #$0A
+	jsr     _vram_write
+;
+; vram_adr(NTADR_A(10, 14));
+;
+	ldx     #$21
+	lda     #$CA
+	jsr     _vram_adr
+;
+; vram_write(titlePrompt, sizeof(titlePrompt) - 1);
+;
+	lda     #<(_titlePrompt)
+	ldx     #>(_titlePrompt)
+	jsr     pushax
+	ldx     #$00
+	lda     #$0B
+	jsr     _vram_write
+;
+; vram_adr(NTADR_A(10, 18));
+;
+	ldx     #$22
+	lda     #$4A
+	jsr     _vram_adr
+;
+; vram_write(endScreenPrompt, sizeof(endScreenPrompt) - 1);
+;
+	lda     #<(_endScreenPrompt)
+	ldx     #>(_endScreenPrompt)
+	jsr     pushax
+	ldx     #$00
+	lda     #$0D
+	jsr     _vram_write
+;
+; ppu_on_all(); // turn on screen
+;
+	jmp     _ppu_on_all
+
+.endproc
+
+; ---------------------------------------------------------------
 ; void __near__ main (void)
 ; ---------------------------------------------------------------
 
@@ -1487,7 +1649,7 @@ L0002:	jsr     pushax
 ;
 ; DrawTitleScreen();
 ;
-	jsr     _DrawTitleScreen
+L0011:	jsr     _DrawTitleScreen
 ;
 ; ppu_wait_nmi();
 ;
@@ -1510,14 +1672,16 @@ L0002:	jsr     _ppu_wait_nmi
 ;
 ; }
 ;
-	beq     L000C
+	beq     L000F
 	cmp     #$01
 	beq     L000A
+	cmp     #$02
+	beq     L0010
 	jmp     L0002
 ;
 ; if (pad_state(0) & PAD_START)
 ;
-L000C:	jsr     _pad_state
+L000F:	jsr     _pad_state
 	and     #$10
 	beq     L0008
 ;
@@ -1549,6 +1713,34 @@ L000A:	jsr     _MovePlayer
 ; DrawPlayer();
 ;
 	jsr     _DrawPlayer
+;
+; CheckIfEnd();
+;
+	jsr     _CheckIfEnd
+;
+; break;
+;
+	jmp     L0002
+;
+; if (pad_state(0) & PAD_START)
+;
+L0010:	lda     #$00
+	jsr     _pad_state
+	and     #$10
+	beq     L000C
+;
+; currentGameState = START_SCREEN;
+;
+	lda     #$00
+	sta     _currentGameState
+;
+; else
+;
+	jmp     L0011
+;
+; Fade();
+;
+L000C:	jsr     _Fade
 ;
 ; break;
 ;

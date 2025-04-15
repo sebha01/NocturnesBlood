@@ -85,6 +85,9 @@ unsigned char pad;
 //Player variables
 unsigned char playerX = 15;
 unsigned char playerY = 223;
+//Goal variables
+unsigned char goalX = 200;
+unsigned char goalY = 200;
 
 
 //function prototypes
@@ -94,6 +97,8 @@ void Fade(void);
 void MovePlayer(void);
 void DrawPlayer(void);
 unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY);
+void CheckIfEnd(void);
+void DrawEndScreen(void);
 
 
 //MAIN
@@ -124,8 +129,24 @@ void main (void)
 				}
 				break;
 			case GAME_LOOP:
+				//Player code
 				MovePlayer();
 				DrawPlayer();
+
+				//Check if player has reached end goal
+				CheckIfEnd();
+				break;
+			case END_SCREEN:
+				//Check if player has pressed start
+				if (pad_state(0) & PAD_START)
+				{
+					currentGameState = START_SCREEN;
+					DrawTitleScreen();
+				}
+				else
+				{
+					Fade();
+				}
 				break;
 		}
 	}
@@ -156,6 +177,7 @@ void GameLoop(void)
 	//Load palette
 	pal_bg(palette);
 	pal_spr(palette);
+
 	ppu_on_all();
 }
 
@@ -223,6 +245,7 @@ void DrawPlayer(void)
 	//Using the fourth sprite in the character sheet
 	//0x00 is the attribute, controls flipping and priority
 	oam_spr(playerX, playerY, 0x04, 0x00);
+	oam_spr(goalX, goalY, 0x05, 0x00);
 }
 
 unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY)
@@ -239,4 +262,41 @@ unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY)
     unsigned int tileIndex = tileY * 32 + tileX;
 
     return tileIndex;
+}
+
+void CheckIfEnd()
+{
+	if (playerX == goalX & playerY == goalY)
+	{
+		currentGameState = END_SCREEN;
+		DrawEndScreen();
+	}
+}
+
+void DrawEndScreen()
+{
+	ppu_off(); // screen off
+	pal_bg(palette); //	load the BG palette
+
+	//Clear all sprite data
+	oam_clear();
+
+	//Set varirables back to their default value
+	playerX = 15;
+	playerY = 223;
+
+	//Clear the screen
+	vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
+	vram_fill(0x00, 1024);
+
+	vram_adr(NTADR_A(8, 8)); // places text at screen position
+	vram_write(endScreenTitle, sizeof(endScreenTitle) - 1); //write Title to screen
+	//Write prompt to start game
+	vram_adr(NTADR_A(10, 14));
+	vram_write(titlePrompt, sizeof(titlePrompt) - 1);
+
+	vram_adr(NTADR_A(10, 18));
+	vram_write(endScreenPrompt, sizeof(endScreenPrompt) - 1);
+
+	ppu_on_all(); //	turn on screen
 }
