@@ -220,7 +220,8 @@ void MovePlayer(void)
     }
 
     // Dash mechanic
-	if ((movementPad & PAD_B) && !isDashing && dashCooldown == 0) 
+	//Checks if B pressed 
+	if ((inputPad & PAD_B) && !isDashing && dashCooldown == 0) 
 	{
 		// Only allow midair dash if hasn't dashed already midair
 		if (OnGround() || !hasDashedInAir)
@@ -278,26 +279,48 @@ void MovePlayer(void)
 	}
     else 
     {
-        // JUMPING & GRAVITY LOGIC — only happens when NOT dashing
+        // ----------------------------
+		// Jumping mechanic
+		// Only runs if player is not dashing on the ground
+		// ----------------------------
+
+		// Check if jump button (A) is pressed,
+		// player is not already jumping, 
+		// and player is currently standing on solid ground
         if ((inputPad & PAD_A) && !isJumping && OnGround()) 
         {
+			//Set the "bool" variable to true
             isJumping = 1;
+
+			//Set the velocity to be the constant we defined
+			//Applies an upward force to the player by being a 
+			//negative value
             velocityY = JUMP_VELOCITY;
         }
 
+		//Checks for if the player is jumping
         if (isJumping) 
         {
+			//Apply gravity to bring the player back down
             velocityY += GRAVITY;
 
+			//makeSure hte fall speed doesn't exceed the 
+			//max value so player doesn't fall too fast
             if (velocityY > MAX_FALL_SPEED)
 			{
                 velocityY = MAX_FALL_SPEED;
 			}
 
+			//Move the player depending on the value of the velocity
+			// Velocity starts off negative so it acts as an upwards force
+			//As it becomes positive it becomes a downward force to pull
+			//the player back
             playerY += velocityY;
 
+			//Checks to see if player is stil falling but on the ground
             if (velocityY >= 0 && OnGround()) 
             {
+				//makes sure that the player doesn't go into the collidable tile
                 while (OnGround()) 
 				{
 					playerY -= 1;
@@ -305,6 +328,8 @@ void MovePlayer(void)
 
 				//Reset all variables to do with jumping and dashing
 				// now that the player is on the ground
+				//Also make sure that the player is at ground level so
+				//the player is not floating slightly
                 playerY += 1;
                 velocityY = 0;
                 isJumping = 0;
@@ -313,6 +338,9 @@ void MovePlayer(void)
         } 
         else 
         {
+			//More of a just in case the player is not on the ground
+			//But the value for isJumping is not set to true
+			//So it gets set to 1 so gravity can bring the player back down
             if (!OnGround()) 
             {
                 isJumping = 1;
@@ -320,7 +348,7 @@ void MovePlayer(void)
         }
     }
 
-    // DASH COOLDOWN TIMER
+    // Dash cooldown
     if (dashCooldown > 0) 
 	{
         dashCooldown--;

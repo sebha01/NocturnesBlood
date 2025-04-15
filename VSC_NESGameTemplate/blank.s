@@ -1321,9 +1321,9 @@ L0045:	lda     _movementPad
 ;
 	inc     _playerX
 ;
-; if ((movementPad & PAD_B) && !isDashing && dashCooldown == 0) 
+; if ((inputPad & PAD_B) && !isDashing && dashCooldown == 0) 
 ;
-L0046:	lda     _movementPad
+L0046:	lda     _inputPad
 	and     #$40
 	beq     L001B
 	lda     _isDashing
