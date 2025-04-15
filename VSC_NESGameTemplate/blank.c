@@ -50,6 +50,7 @@
 #include "LIB/neslib.h"
 #include "LIB/nesdoug.h" 
 #include "NES_ST/TestLevel.h"
+#include <stdlib.h>
 
 //Define colours
 #define BLACK 0x0f
@@ -266,7 +267,9 @@ unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY)
 
 void CheckIfEnd()
 {
-	if (playerX == goalX & playerY == goalY)
+	// Calculate the distance between the middle of both sprites
+	if (abs((playerX + 4) - (goalX + 4)) < 4 && 
+	abs((playerY + 4) - (goalY + 4)) < 4)
 	{
 		currentGameState = END_SCREEN;
 		DrawEndScreen();

@@ -26,6 +26,7 @@
 	.import		_get_pad_new
 	.import		_pal_fade_to
 	.export		_TestLevel
+	.import		_abs
 	.export		_palette
 	.export		_currentGameState
 	.export		_text
@@ -1509,31 +1510,63 @@ L0002:	jsr     pushax
 .segment	"CODE"
 
 ;
-; if (playerX == goalX & playerY == goalY)
+; if (abs((playerX + 4) - (goalX + 4)) < 4 && 
 ;
+	ldx     #$00
 	lda     _playerX
-	cmp     _goalX
-	jsr     booleq
-	jsr     pusha0
+	clc
+	adc     #$04
+	bcc     L0003
+	inx
+L0003:	jsr     pushax
+	ldx     #$00
+	lda     _goalX
+	clc
+	adc     #$04
+	bcc     L0004
+	inx
+L0004:	jsr     tossubax
+	jsr     _abs
+	cmp     #$04
+	txa
+	sbc     #$00
+	bvc     L0005
+	eor     #$80
+L0005:	bpl     L000D
+;
+; abs((playerY + 4) - (goalY + 4)) < 4)
+;
+	ldx     #$00
 	lda     _playerY
-	cmp     _goalY
-	jsr     booleq
-	jsr     tosanda0
-	cmp     #$00
-	beq     L0002
+	clc
+	adc     #$04
+	bcc     L0007
+	inx
+L0007:	jsr     pushax
+	ldx     #$00
+	lda     _goalY
+	clc
+	adc     #$04
+	bcc     L0008
+	inx
+L0008:	jsr     tossubax
+	jsr     _abs
+	cmp     #$04
+	txa
+	sbc     #$00
+	bvc     L0009
+	eor     #$80
+L0009:	bmi     L000E
+L000D:	rts
 ;
 ; currentGameState = END_SCREEN;
 ;
-	lda     #$02
+L000E:	lda     #$02
 	sta     _currentGameState
 ;
 ; DrawEndScreen();
 ;
 	jmp     _DrawEndScreen
-;
-; }
-;
-L0002:	rts
 
 .endproc
 
