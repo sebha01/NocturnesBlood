@@ -37,8 +37,14 @@
 	.export		_playerY
 	.export		_goalX
 	.export		_goalY
-	.export		_velocity_y
-	.export		_is_jumping
+	.export		_velocityY
+	.export		_isJumping
+	.export		_isDashing
+	.export		_dashTimer
+	.export		_dashCooldown
+	.export		_hasDashedInAir
+	.export		_dashDirection
+	.export		_i
 	.export		_DrawTitleScreen
 	.export		_GameLoop
 	.export		_MovePlayer
@@ -46,7 +52,7 @@
 	.export		_GetTileIndex
 	.export		_CheckIfEnd
 	.export		_DrawEndScreen
-	.export		_is_on_ground
+	.export		_OnGround
 	.export		_main
 
 .segment	"DATA"
@@ -61,10 +67,22 @@ _goalX:
 	.byte	$c8
 _goalY:
 	.byte	$c8
-_velocity_y:
+_velocityY:
 	.word	$0000
-_is_jumping:
+_isJumping:
 	.byte	$00
+_isDashing:
+	.byte	$00
+_dashTimer:
+	.byte	$00
+_dashCooldown:
+	.byte	$00
+_hasDashedInAir:
+	.byte	$00
+_dashDirection:
+	.byte	$00
+_i:
+	.word	$0000
 
 .segment	"RODATA"
 
@@ -1243,11 +1261,11 @@ _movementPad:
 .segment	"CODE"
 
 ;
-; if(movementPad & PAD_LEFT)
+; if (movementPad & PAD_LEFT)
 ;
 	lda     _movementPad
 	and     #$02
-	beq     L0025
+	beq     L0045
 ;
 ; if (TestLevel[GetTileIndex(playerX - 1, playerY + 1)] != 0x01)
 ;
@@ -1267,17 +1285,17 @@ _movementPad:
 	ldy     #<(_TestLevel)
 	lda     (ptr1),y
 	cmp     #$01
-	beq     L0025
+	beq     L0045
 ;
 ; playerX--;
 ;
 	dec     _playerX
 ;
-; if(movementPad & PAD_RIGHT)
+; if (movementPad & PAD_RIGHT)
 ;
-L0025:	lda     _movementPad
+L0045:	lda     _movementPad
 	and     #$01
-	beq     L0026
+	beq     L0046
 ;
 ; if (TestLevel[GetTileIndex(playerX + 8, playerY + 1)] != 0x01)
 ;
@@ -1297,121 +1315,326 @@ L0025:	lda     _movementPad
 	ldy     #<(_TestLevel)
 	lda     (ptr1),y
 	cmp     #$01
-	beq     L0026
+	beq     L0046
 ;
 ; playerX++;
 ;
 	inc     _playerX
 ;
-; if ((inputPad & PAD_A) && !is_jumping && is_on_ground()) 
+; if ((movementPad & PAD_B) && !isDashing && dashCooldown == 0) 
 ;
-L0026:	lda     _inputPad
-	and     #$80
-	beq     L0010
-	lda     _is_jumping
-	bne     L0010
-	jsr     _is_on_ground
+L0046:	lda     _movementPad
+	and     #$40
+	beq     L001B
+	lda     _isDashing
+	bne     L001B
+	lda     _dashCooldown
+	bne     L001B
+;
+; if (OnGround() || !hasDashedInAir)
+;
+	jsr     _OnGround
 	tax
-	beq     L0010
+	bne     L004A
+	lda     _hasDashedInAir
+	bne     L001B
 ;
-; is_jumping = 1;
+; if (movementPad & PAD_LEFT) 
+;
+L004A:	lda     _movementPad
+	and     #$02
+	beq     L004B
+;
+; isDashing = 1;
 ;
 	lda     #$01
-	sta     _is_jumping
+	sta     _isDashing
 ;
-; velocity_y = JUMP_VELOCITY;
+; dashDirection = -1;
+;
+	lda     #$FF
+;
+; else if (movementPad & PAD_RIGHT) 
+;
+	jmp     L005A
+L004B:	lda     _movementPad
+	and     #$01
+	beq     L001B
+;
+; isDashing = 1;
+;
+	lda     #$01
+	sta     _isDashing
+;
+; dashDirection = 1;
+;
+L005A:	sta     _dashDirection
+;
+; dashTimer = DASH_DURATION;
+;
+	lda     #$0A
+	sta     _dashTimer
+;
+; if (!OnGround())
+;
+	jsr     _OnGround
+	tax
+	bne     L001B
+;
+; hasDashedInAir = 1;
+;
+	lda     #$01
+	sta     _hasDashedInAir
+;
+; if (isDashing) 
+;
+L001B:	lda     _isDashing
+	jeq     L001C
+;
+; for (i = 0; i < DASH_SPEED; i++) 
+;
+	lda     #$00
+	sta     _i
+	sta     _i+1
+L001D:	lda     _i
+	cmp     #$04
+	lda     _i+1
+	sbc     #$00
+	bvc     L0021
+	eor     #$80
+L0021:	bpl     L004E
+;
+; int nextX = playerX + dashDirection;
+;
+	ldx     #$00
+	lda     _playerX
+	bpl     L0023
+	dex
+L0023:	clc
+	adc     _dashDirection
+	bcc     L0043
+	inx
+L0043:	jsr     pushax
+;
+; int checkX = nextX + (dashDirection == 1 ? 7 : 0);
+;
+	ldx     #$00
+	lda     _dashDirection
+	cmp     #$01
+	bne     L004C
+	lda     #$07
+	jmp     L0025
+L004C:	txa
+L0025:	clc
+	ldy     #$00
+	adc     (sp),y
+	pha
+	txa
+	iny
+	adc     (sp),y
+	tax
+	pla
+	jsr     pushax
+;
+; if (TestLevel[GetTileIndex(checkX, playerY + 1)] != 0x01) 
+;
+	ldy     #$00
+	lda     (sp),y
+	jsr     pusha
+	lda     _playerY
+	clc
+	adc     #$01
+	jsr     _GetTileIndex
+	sta     ptr1
+	txa
+	clc
+	adc     #>(_TestLevel)
+	sta     ptr1+1
+	ldy     #<(_TestLevel)
+	lda     (ptr1),y
+	cmp     #$01
+	beq     L004D
+;
+; playerX = nextX;
+;
+	ldy     #$02
+	lda     (sp),y
+	sta     _playerX
+;
+; else 
+;
+	jmp     L002A
+;
+; isDashing = 0;
+;
+L004D:	lda     #$00
+	sta     _isDashing
+;
+; dashCooldown = DASH_COOLDOWN;
+;
+	lda     #$14
+	sta     _dashCooldown
+;
+; break;
+;
+	jsr     incsp4
+	jmp     L004E
+;
+; }
+;
+L002A:	jsr     incsp4
+;
+; for (i = 0; i < DASH_SPEED; i++) 
+;
+	inc     _i
+	jne     L001D
+	inc     _i+1
+	jmp     L001D
+;
+; dashTimer--;
+;
+L004E:	dec     _dashTimer
+;
+; if (dashTimer <= 0) 
+;
+	lda     _dashTimer
+	jne     L0053
+;
+; isDashing = 0;
+;
+	sta     _isDashing
+;
+; dashCooldown = dashCooldown;
+;
+	lda     _dashCooldown
+	sta     _dashCooldown
+;
+; else 
+;
+	jmp     L0053
+;
+; if ((inputPad & PAD_A) && !isJumping && OnGround()) 
+;
+L001C:	lda     _inputPad
+	and     #$80
+	beq     L002D
+	lda     _isJumping
+	bne     L002D
+	jsr     _OnGround
+	tax
+	beq     L002D
+;
+; isJumping = 1;
+;
+	lda     #$01
+	sta     _isJumping
+;
+; velocityY = JUMP_VELOCITY;
 ;
 	ldx     #$FF
 	lda     #$F8
-	sta     _velocity_y
-	stx     _velocity_y+1
+	sta     _velocityY
+	stx     _velocityY+1
 ;
-; if (is_jumping) 
+; if (isJumping) 
 ;
-L0010:	lda     _is_jumping
-	beq     L0014
+L002D:	lda     _isJumping
+	beq     L0031
 ;
-; velocity_y += GRAVITY;
+; velocityY += GRAVITY;
 ;
-	inc     _velocity_y
-	bne     L0015
-	inc     _velocity_y+1
+	inc     _velocityY
+	bne     L0032
+	inc     _velocityY+1
 ;
-; if (velocity_y > MAX_FALL_SPEED)
+; if (velocityY > MAX_FALL_SPEED)
 ;
-L0015:	lda     _velocity_y
+L0032:	lda     _velocityY
 	cmp     #$05
-	lda     _velocity_y+1
+	lda     _velocityY+1
 	sbc     #$00
-	bvs     L0017
+	bvs     L0034
 	eor     #$80
-L0017:	bpl     L0016
+L0034:	bpl     L0033
 ;
-; velocity_y = MAX_FALL_SPEED;
+; velocityY = MAX_FALL_SPEED;
 ;
 	ldx     #$00
 	lda     #$04
-	sta     _velocity_y
-	stx     _velocity_y+1
+	sta     _velocityY
+	stx     _velocityY+1
 ;
-; playerY += velocity_y;
+; playerY += velocityY;
 ;
-L0016:	lda     _velocity_y
+L0033:	lda     _velocityY
 	cmp     #$80
 	clc
 	adc     _playerY
 	sta     _playerY
 ;
-; if (velocity_y >= 0 && is_on_ground()) 
+; if (velocityY >= 0 && OnGround()) 
 ;
-	ldx     _velocity_y+1
-	bmi     L001A
-	jsr     _is_on_ground
+	ldx     _velocityY+1
+	bmi     L0053
+	jsr     _OnGround
 	tax
-	bne     L0021
-	rts
+	bne     L003E
+	jmp     L0053
 ;
-; playerY -= 1; // Move up until no longer inside solid tile
+; playerY -= 1;
 ;
-L001E:	dec     _playerY
+L003B:	dec     _playerY
 ;
-; while (is_on_ground()) 
+; while (OnGround()) 
 ;
-L0021:	jsr     _is_on_ground
+L003E:	jsr     _OnGround
 	tax
-	bne     L001E
+	bne     L003B
 ;
-; playerY += 1; // Then move back down to "land"
+; playerY += 1;
 ;
 	inc     _playerY
 ;
-; velocity_y = 0;
+; velocityY = 0;
 ;
-	sta     _velocity_y
-	sta     _velocity_y+1
+	sta     _velocityY
+	sta     _velocityY+1
 ;
-; is_jumping = 0;
+; isJumping = 0;
 ;
-	sta     _is_jumping
+	sta     _isJumping
+;
+; hasDashedInAir = 0;
+;
+	sta     _hasDashedInAir
 ;
 ; else 
 ;
-L001A:	rts
+	jmp     L0053
 ;
-; if (!is_on_ground()) 
+; if (!OnGround()) 
 ;
-L0014:	jsr     _is_on_ground
+L0031:	jsr     _OnGround
 	tax
-	bne     L0024
+	bne     L0053
 ;
-; is_jumping = 1; // Start falling
+; isJumping = 1;
 ;
 	lda     #$01
-	sta     _is_jumping
+	sta     _isJumping
+;
+; if (dashCooldown > 0) 
+;
+L0053:	lda     _dashCooldown
+	beq     L0042
+;
+; dashCooldown--;
+;
+	dec     _dashCooldown
 ;
 ; }
 ;
-L0024:	rts
+L0042:	rts
 
 .endproc
 
@@ -1706,12 +1929,12 @@ L0012:	lda     #$02
 .endproc
 
 ; ---------------------------------------------------------------
-; char __near__ is_on_ground (void)
+; char __near__ OnGround (void)
 ; ---------------------------------------------------------------
 
 .segment	"CODE"
 
-.proc	_is_on_ground: near
+.proc	_OnGround: near
 
 .segment	"CODE"
 

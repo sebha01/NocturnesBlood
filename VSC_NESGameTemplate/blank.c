@@ -62,9 +62,17 @@
 #define START_SCREEN 0
 #define GAME_LOOP 1
 #define END_SCREEN 2
+//define constants used for player movement
+//Jumping
 #define GRAVITY 1
 #define JUMP_VELOCITY -8
 #define MAX_FALL_SPEED 4
+//dashing
+#define DASH_SPEED 4
+#define DASH_DURATION 10
+#define DASH_COOLDOWN 20
+
+#pragma bss-name(push, "ZEROPAGE")
 
 //palette colours
 const unsigned char palette[]=
@@ -74,8 +82,6 @@ const unsigned char palette[]=
 	0,0,0,0,
 	0,0,0,0
 }; 
-
-#pragma bss-name(push, "ZEROPAGE")
 
 // GLOBAL VARIABLES
 //Defines which state the game is currently in (START_SCREEN, GAME_LOOP or END_SCREEN)
@@ -95,8 +101,17 @@ signed char playerY = 223;
 signed char goalX = 200;
 signed char goalY = 200;
 //jumping variables 
-int velocity_y = 0;
-char is_jumping = 0;
+int velocityY = 0;
+char isJumping = 0;
+//Dash variables 
+char isDashing = 0;
+char dashTimer = 0;
+char dashCooldown = 0;
+char hasDashedInAir = 0;
+// -1 = left, 1 = right
+char dashDirection = 0; 
+//other variables
+int i = 0;
 
 //function prototypes
 void DrawTitleScreen(void);
@@ -107,35 +122,7 @@ void DrawPlayer(void);
 unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY);
 void CheckIfEnd(void);
 void DrawEndScreen(void);
-char is_on_ground(void); 
-
-/*
-unsigned char frameCounter = 0;
-code for flashing 
-frameCounter++;
-
-if (frameCounter < 30) {
-	vram_adr(NTADR_A(10, 14));
-	vram_write("Press START", 11);
-}
-else if (frameCounter < 60) {
-	vram_adr(NTADR_A(10, 14));
-	vram_fill(0x00, 11); // clear same space
-} else {
-	frameCounter = 0;
-}
-
-// Handle start press
-if (inputPad & PAD_START)
-{
-	currentGameState = GAME_LOOP;
-	GameLoop();
-}
-*/ 
-
-
-
-
+char OnGround(void); 
 
 //MAIN
 void main (void) 
@@ -213,69 +200,130 @@ void GameLoop(void)
 
 void MovePlayer(void)
 {
-	// In the collission checks for the x coordinates having the playerY 
-	// Param just be playerY made it not let you move left and right when
-	// Collided with the top of the map
-	if(movementPad & PAD_LEFT)
-	{
-		//Check for collision 1 pixel to left of player
+    // Horizontal movement
+	//left
+    if (movementPad & PAD_LEFT)
+    {
         if (TestLevel[GetTileIndex(playerX - 1, playerY + 1)] != 0x01)
         {
-			//If false allow player to move
             playerX--;
         }
-	}
-	
-	if(movementPad & PAD_RIGHT)
-	{
-		// Check for collision 9 pixels to the right of the player
+    }
+
+	//Right
+    if (movementPad & PAD_RIGHT)
+    {
         if (TestLevel[GetTileIndex(playerX + 8, playerY + 1)] != 0x01)
         {
-			//If false then allow player to move
             playerX++;
         }
+    }
+
+    // Dash mechanic
+	if ((movementPad & PAD_B) && !isDashing && dashCooldown == 0) 
+	{
+		// Only allow midair dash if hasn't dashed already midair
+		if (OnGround() || !hasDashedInAir)
+		{
+			if (movementPad & PAD_LEFT) 
+			{
+				isDashing = 1;
+				dashDirection = -1;
+				dashTimer = DASH_DURATION;
+
+				if (!OnGround())
+					hasDashedInAir = 1;
+			} 
+			else if (movementPad & PAD_RIGHT) 
+			{
+				isDashing = 1;
+				dashDirection = 1;
+				dashTimer = DASH_DURATION;
+
+				if (!OnGround())
+					hasDashedInAir = 1;
+			}
+		}
 	}
 
-	//If jump button pressed 
-	if ((inputPad & PAD_A) && !is_jumping && is_on_ground()) 
+	//Checks for if player will hit collidable while dashing
+	if (isDashing) 
 	{
-        is_jumping = 1;
-        velocity_y = JUMP_VELOCITY;
-    }
-
-    // If jumping or falling
-    if (is_jumping) 
-	{
-        velocity_y += GRAVITY;
-        
-		if (velocity_y > MAX_FALL_SPEED)
+		for (i = 0; i < DASH_SPEED; i++) 
 		{
-            velocity_y = MAX_FALL_SPEED;
+			int nextX = playerX + dashDirection;
+			int checkX = nextX + (dashDirection == 1 ? 7 : 0);
+
+			// Only move if the next position is not a wall
+			if (TestLevel[GetTileIndex(checkX, playerY + 1)] != 0x01) 
+			{
+				playerX = nextX;
+			} 
+			else 
+			{
+				// Hit a wall, end the dash early
+				isDashing = 0;
+				dashCooldown = DASH_COOLDOWN;
+				break;
+			}
 		}
 
-        playerY += velocity_y;
+		dashTimer--;
 
-        // Check if player has landed
-        if (velocity_y >= 0 && is_on_ground()) 
+		if (dashTimer <= 0) 
 		{
-            // Snap to ground and stop jump
-            while (is_on_ground()) 
+			isDashing = 0;
+			dashCooldown = dashCooldown;
+		}
+	}
+    else 
+    {
+        // JUMPING & GRAVITY LOGIC — only happens when NOT dashing
+        if ((inputPad & PAD_A) && !isJumping && OnGround()) 
+        {
+            isJumping = 1;
+            velocityY = JUMP_VELOCITY;
+        }
+
+        if (isJumping) 
+        {
+            velocityY += GRAVITY;
+
+            if (velocityY > MAX_FALL_SPEED)
 			{
-                playerY -= 1; // Move up until no longer inside solid tile
+                velocityY = MAX_FALL_SPEED;
+			}
+
+            playerY += velocityY;
+
+            if (velocityY >= 0 && OnGround()) 
+            {
+                while (OnGround()) 
+				{
+					playerY -= 1;
+				}
+
+				//Reset all variables to do with jumping and dashing
+				// now that the player is on the ground
+                playerY += 1;
+                velocityY = 0;
+                isJumping = 0;
+				hasDashedInAir = 0;
             }
-        
-		    playerY += 1; // Then move back down to "land"
-            velocity_y = 0;
-            is_jumping = 0;
+        } 
+        else 
+        {
+            if (!OnGround()) 
+            {
+                isJumping = 1;
+            }
         }
     }
-	else 
+
+    // DASH COOLDOWN TIMER
+    if (dashCooldown > 0) 
 	{
-        // If not jumping, simulate falling if not grounded
-        if (!is_on_ground()) 
-		{
-            is_jumping = 1; // Start falling
-        }
+        dashCooldown--;
     }
 }
 
@@ -347,7 +395,7 @@ void DrawEndScreen()
 	ppu_on_all(); //	turn on screen
 }
 
-char is_on_ground(void) 
+char OnGround(void) 
 {
     return TestLevel[GetTileIndex(playerX, playerY + 9)] == 0x01;
 }
