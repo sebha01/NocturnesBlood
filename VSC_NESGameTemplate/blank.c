@@ -231,7 +231,7 @@ void MovePlayer(void)
     {
         if (!checkIfCollidableTile(TestLevel[GetTileIndex(playerX - 1, playerY + 1)]))
         {
-            playerX--;
+            playerX -= 2;
         }
     }
 
@@ -240,7 +240,7 @@ void MovePlayer(void)
     {
         if (!checkIfCollidableTile(TestLevel[GetTileIndex(playerX + 8, playerY + 1)]))
         {
-            playerX++;
+            playerX += 2;
         }
     }
 

@@ -1307,9 +1307,12 @@ _movementPad:
 	tax
 	bne     L0045
 ;
-; playerX--;
+; playerX -= 2;
 ;
-	dec     _playerX
+	lda     _playerX
+	sec
+	sbc     #$02
+	sta     _playerX
 ;
 ; if (movementPad & PAD_RIGHT)
 ;
@@ -1338,9 +1341,12 @@ L0045:	lda     _movementPad
 	tax
 	bne     L0046
 ;
-; playerX++;
+; playerX += 2;
 ;
-	inc     _playerX
+	lda     #$02
+	clc
+	adc     _playerX
+	sta     _playerX
 ;
 ; if ((inputPad & PAD_B) && !isDashing && dashCooldown == 0) 
 ;
