@@ -400,7 +400,11 @@ void DrawPlayer(void)
 	//Draw the player sprite at default starting position
 	//Using the fourth sprite in the character sheet
 	//0x00 is the attribute, controls flipping and priority
-	oam_spr(playerX, playerY, 0x04, 0x00);
+	
+	// Draw the player using two tiles: 0x08 (top), 0x24 (bottom)
+    oam_spr(playerX, playerY - 8, 0x08, 0x01); // Top tile
+    oam_spr(playerX, playerY, 0x18, 0x01); // Bottom tile
+
 	oam_spr(goalX, goalY, 0x05, 0x00);
 }
 
@@ -440,8 +444,8 @@ void DrawEndScreen()
 	oam_clear();
 
 	//Set varirables back to their default value
-	playerX = 15;
-	playerY = 223;
+	playerX = 30;
+	playerY = 215;
 
 	//Clear the screen
 	vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
