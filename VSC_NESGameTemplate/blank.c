@@ -68,9 +68,9 @@
 #define LT_GREEN     	0x29
 #define MINT         	0x39
 // Reds
-#define DK_RED       	0x06
+#define DK_RED       	0x05
 #define RED          	0x16
-#define LT_RED       	0x26
+#define LT_RED       	0x27
 #define PINK         	0x36
 
 //define game states
@@ -80,7 +80,7 @@
 //define constants used for player movement
 //Jumping
 #define GRAVITY 1
-#define JUMP_VELOCITY -8
+#define JUMP_VELOCITY -10
 #define MAX_FALL_SPEED 4
 //dashing
 #define DASH_SPEED 4
@@ -92,19 +92,19 @@
 //palette colours
 const unsigned char palette[]=
 {
-	BLACK, DK_GY, LT_GY, WHITE,       // background palette 0
-	BLACK, DK_BLUE, BLUE, SKY_BLUE,   // background palette 1
-	BLACK, DK_GREEN, GREEN, LT_GREEN, // background palette 2
-	BLACK, DK_RED, RED, LT_RED        // background palette 3
+	BLACK, DK_GY, LT_GY, WHITE,       
+	BLACK, DK_BLUE, BLUE, SKY_BLUE,  
+	BLACK, DK_RED, RED, LT_RED,        
+	BLACK, DK_GREEN, GREEN, LT_GREEN 
 };  
 
 //Possible use for later
 const unsigned char spritePalette[] =
 {
-	BLACK, DK_GY, LT_GY, WHITE,       // sprite palette 0
-	BLACK, DK_BLUE, BLUE, LT_BLUE,   // sprite palette 1
-	BLACK, DK_GREEN, GREEN, MINT, // sprite palette 2
-	BLACK, DK_RED, RED, PINK          // sprite palette 3
+	BLACK, DK_GY, LT_GY, WHITE, 
+	BLACK, DK_BLUE, BLUE, LT_BLUE,  
+	BLACK, DK_RED, RED, PINK,
+	BLACK, DK_GREEN, GREEN, MINT
 };
 
 // GLOBAL VARIABLES
@@ -122,8 +122,8 @@ unsigned char movementPad;
 signed char playerX = 30;
 signed char playerY = 215;
 //Goal variables
-signed char goalX = 200;
-signed char goalY = 200;
+signed char goalX = 220;
+signed char goalY = 39;
 //jumping variables 
 int velocityY = 0;
 char isJumping = 0;
@@ -218,7 +218,7 @@ void GameLoop(void)
 	vram_write(TestLevel, 1024);
 	//Load palette
 	pal_bg(palette);
-	pal_spr((const char*)palette);
+	pal_spr((const char*)spritePalette);
 
 	ppu_on_all();
 }
@@ -397,15 +397,16 @@ void DrawPlayer(void)
 	//OAM special memopry area that holds info about sprites
 	//Such as pos, tile index, palette etc.
 	oam_clear();
-	//Draw the player sprite at default starting position
-	//Using the fourth sprite in the character sheet
-	//0x00 is the attribute, controls flipping and priority
 	
 	// Draw the player using two tiles: 0x08 (top), 0x24 (bottom)
-    oam_spr(playerX, playerY - 8, 0x08, 0x01); // Top tile
-    oam_spr(playerX, playerY, 0x18, 0x01); // Bottom tile
+    oam_spr(playerX, playerY - 8, 0x08, 0x01);
+    oam_spr(playerX, playerY, 0x18, 0x01);
 
-	oam_spr(goalX, goalY, 0x05, 0x00);
+	//Draw the goal which is now a door
+	oam_spr(goalX, goalY, 0x16, 0x02);
+	oam_spr(goalX + 8, goalY, 0x17, 0x02);
+	oam_spr(goalX, goalY - 8, 0x06, 0x02);
+	oam_spr(goalX + 8, goalY - 8, 0x07, 0x02);
 }
 
 unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY)
