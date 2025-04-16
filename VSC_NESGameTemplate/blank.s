@@ -26,6 +26,7 @@
 	.export		_TestLevel
 	.import		_abs
 	.export		_palette
+	.export		_spritePalette
 	.export		_currentGameState
 	.export		_text
 	.export		_titlePrompt
@@ -53,6 +54,7 @@
 	.export		_CheckIfEnd
 	.export		_DrawEndScreen
 	.export		_OnGround
+	.export		_checkIfCollidableTile
 	.export		_main
 
 .segment	"DATA"
@@ -60,9 +62,9 @@
 _currentGameState:
 	.byte	$00
 _playerX:
-	.byte	$0f
+	.byte	$1e
 _playerY:
-	.byte	$df
+	.byte	$d7
 _goalX:
 	.byte	$c8
 _goalY:
@@ -87,39 +89,72 @@ _i:
 .segment	"RODATA"
 
 _TestLevel:
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
+	.byte	$82
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$83
+	.byte	$92
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$93
+	.byte	$82
+	.byte	$83
 	.byte	$02
 	.byte	$02
 	.byte	$02
@@ -148,10 +183,12 @@ _TestLevel:
 	.byte	$02
 	.byte	$02
 	.byte	$02
+	.byte	$82
+	.byte	$83
+	.byte	$92
+	.byte	$93
 	.byte	$02
 	.byte	$02
-	.byte	$01
-	.byte	$01
 	.byte	$02
 	.byte	$02
 	.byte	$02
@@ -178,12 +215,14 @@ _TestLevel:
 	.byte	$02
 	.byte	$02
 	.byte	$02
+	.byte	$92
+	.byte	$93
+	.byte	$82
+	.byte	$83
 	.byte	$02
 	.byte	$02
 	.byte	$02
 	.byte	$02
-	.byte	$01
-	.byte	$01
 	.byte	$02
 	.byte	$02
 	.byte	$02
@@ -208,14 +247,16 @@ _TestLevel:
 	.byte	$02
 	.byte	$02
 	.byte	$02
+	.byte	$82
+	.byte	$83
+	.byte	$92
+	.byte	$93
 	.byte	$02
 	.byte	$02
 	.byte	$02
 	.byte	$02
 	.byte	$02
 	.byte	$02
-	.byte	$01
-	.byte	$01
 	.byte	$02
 	.byte	$02
 	.byte	$02
@@ -238,6 +279,10 @@ _TestLevel:
 	.byte	$02
 	.byte	$02
 	.byte	$02
+	.byte	$92
+	.byte	$93
+	.byte	$82
+	.byte	$83
 	.byte	$02
 	.byte	$02
 	.byte	$02
@@ -246,8 +291,6 @@ _TestLevel:
 	.byte	$02
 	.byte	$02
 	.byte	$02
-	.byte	$01
-	.byte	$01
 	.byte	$02
 	.byte	$02
 	.byte	$02
@@ -262,6 +305,16 @@ _TestLevel:
 	.byte	$02
 	.byte	$02
 	.byte	$02
+	.byte	$82
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$83
+	.byte	$82
+	.byte	$83
+	.byte	$92
+	.byte	$93
 	.byte	$02
 	.byte	$02
 	.byte	$02
@@ -278,14 +331,22 @@ _TestLevel:
 	.byte	$02
 	.byte	$02
 	.byte	$02
-	.byte	$01
-	.byte	$01
 	.byte	$02
 	.byte	$02
 	.byte	$02
 	.byte	$02
 	.byte	$02
 	.byte	$02
+	.byte	$92
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$93
+	.byte	$92
+	.byte	$93
+	.byte	$82
+	.byte	$83
 	.byte	$02
 	.byte	$02
 	.byte	$02
@@ -310,12 +371,14 @@ _TestLevel:
 	.byte	$02
 	.byte	$02
 	.byte	$02
-	.byte	$01
-	.byte	$01
 	.byte	$02
 	.byte	$02
 	.byte	$02
 	.byte	$02
+	.byte	$82
+	.byte	$83
+	.byte	$92
+	.byte	$93
 	.byte	$02
 	.byte	$02
 	.byte	$02
@@ -342,10 +405,12 @@ _TestLevel:
 	.byte	$02
 	.byte	$02
 	.byte	$02
-	.byte	$01
-	.byte	$01
 	.byte	$02
 	.byte	$02
+	.byte	$92
+	.byte	$93
+	.byte	$82
+	.byte	$83
 	.byte	$02
 	.byte	$02
 	.byte	$02
@@ -360,12 +425,24 @@ _TestLevel:
 	.byte	$02
 	.byte	$02
 	.byte	$02
+	.byte	$82
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$83
 	.byte	$02
 	.byte	$02
 	.byte	$02
 	.byte	$02
 	.byte	$02
 	.byte	$02
+	.byte	$82
+	.byte	$83
+	.byte	$92
+	.byte	$93
 	.byte	$02
 	.byte	$02
 	.byte	$02
@@ -374,20 +451,30 @@ _TestLevel:
 	.byte	$02
 	.byte	$02
 	.byte	$02
-	.byte	$01
-	.byte	$01
 	.byte	$02
 	.byte	$02
 	.byte	$02
 	.byte	$02
 	.byte	$02
 	.byte	$02
+	.byte	$92
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$93
 	.byte	$02
 	.byte	$02
 	.byte	$02
 	.byte	$02
 	.byte	$02
 	.byte	$02
+	.byte	$92
+	.byte	$93
+	.byte	$82
+	.byte	$83
 	.byte	$02
 	.byte	$02
 	.byte	$02
@@ -406,8 +493,6 @@ _TestLevel:
 	.byte	$02
 	.byte	$02
 	.byte	$02
-	.byte	$01
-	.byte	$01
 	.byte	$02
 	.byte	$02
 	.byte	$02
@@ -418,6 +503,10 @@ _TestLevel:
 	.byte	$02
 	.byte	$02
 	.byte	$02
+	.byte	$82
+	.byte	$83
+	.byte	$92
+	.byte	$93
 	.byte	$02
 	.byte	$02
 	.byte	$02
@@ -438,8 +527,6 @@ _TestLevel:
 	.byte	$02
 	.byte	$02
 	.byte	$02
-	.byte	$01
-	.byte	$01
 	.byte	$02
 	.byte	$02
 	.byte	$02
@@ -448,8 +535,20 @@ _TestLevel:
 	.byte	$02
 	.byte	$02
 	.byte	$02
+	.byte	$92
+	.byte	$93
+	.byte	$82
+	.byte	$83
 	.byte	$02
 	.byte	$02
+	.byte	$82
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$83
 	.byte	$02
 	.byte	$02
 	.byte	$02
@@ -468,10 +567,20 @@ _TestLevel:
 	.byte	$02
 	.byte	$02
 	.byte	$02
+	.byte	$82
+	.byte	$83
+	.byte	$92
+	.byte	$93
 	.byte	$02
 	.byte	$02
-	.byte	$01
-	.byte	$01
+	.byte	$92
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$93
 	.byte	$02
 	.byte	$02
 	.byte	$02
@@ -490,6 +599,10 @@ _TestLevel:
 	.byte	$02
 	.byte	$02
 	.byte	$02
+	.byte	$92
+	.byte	$93
+	.byte	$82
+	.byte	$83
 	.byte	$02
 	.byte	$02
 	.byte	$02
@@ -502,8 +615,6 @@ _TestLevel:
 	.byte	$02
 	.byte	$02
 	.byte	$02
-	.byte	$01
-	.byte	$01
 	.byte	$02
 	.byte	$02
 	.byte	$02
@@ -520,6 +631,10 @@ _TestLevel:
 	.byte	$02
 	.byte	$02
 	.byte	$02
+	.byte	$82
+	.byte	$83
+	.byte	$92
+	.byte	$93
 	.byte	$02
 	.byte	$02
 	.byte	$02
@@ -534,8 +649,6 @@ _TestLevel:
 	.byte	$02
 	.byte	$02
 	.byte	$02
-	.byte	$01
-	.byte	$01
 	.byte	$02
 	.byte	$02
 	.byte	$02
@@ -550,6 +663,10 @@ _TestLevel:
 	.byte	$02
 	.byte	$02
 	.byte	$02
+	.byte	$92
+	.byte	$93
+	.byte	$82
+	.byte	$83
 	.byte	$02
 	.byte	$02
 	.byte	$02
@@ -566,12 +683,22 @@ _TestLevel:
 	.byte	$02
 	.byte	$02
 	.byte	$02
-	.byte	$01
-	.byte	$01
 	.byte	$02
 	.byte	$02
+	.byte	$82
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$83
 	.byte	$02
 	.byte	$02
+	.byte	$82
+	.byte	$83
+	.byte	$92
+	.byte	$93
 	.byte	$02
 	.byte	$02
 	.byte	$02
@@ -590,16 +717,26 @@ _TestLevel:
 	.byte	$02
 	.byte	$02
 	.byte	$02
+	.byte	$92
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$93
 	.byte	$02
 	.byte	$02
+	.byte	$92
+	.byte	$93
+	.byte	$82
+	.byte	$83
 	.byte	$02
 	.byte	$02
 	.byte	$02
 	.byte	$02
 	.byte	$02
 	.byte	$02
-	.byte	$01
-	.byte	$01
 	.byte	$02
 	.byte	$02
 	.byte	$02
@@ -622,6 +759,10 @@ _TestLevel:
 	.byte	$02
 	.byte	$02
 	.byte	$02
+	.byte	$82
+	.byte	$83
+	.byte	$92
+	.byte	$93
 	.byte	$02
 	.byte	$02
 	.byte	$02
@@ -630,8 +771,6 @@ _TestLevel:
 	.byte	$02
 	.byte	$02
 	.byte	$02
-	.byte	$01
-	.byte	$01
 	.byte	$02
 	.byte	$02
 	.byte	$02
@@ -652,6 +791,10 @@ _TestLevel:
 	.byte	$02
 	.byte	$02
 	.byte	$02
+	.byte	$92
+	.byte	$93
+	.byte	$82
+	.byte	$83
 	.byte	$02
 	.byte	$02
 	.byte	$02
@@ -660,10 +803,16 @@ _TestLevel:
 	.byte	$02
 	.byte	$02
 	.byte	$02
+	.byte	$82
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$83
 	.byte	$02
 	.byte	$02
-	.byte	$01
-	.byte	$01
 	.byte	$02
 	.byte	$02
 	.byte	$02
@@ -674,6 +823,10 @@ _TestLevel:
 	.byte	$02
 	.byte	$02
 	.byte	$02
+	.byte	$82
+	.byte	$83
+	.byte	$92
+	.byte	$93
 	.byte	$02
 	.byte	$02
 	.byte	$02
@@ -682,6 +835,14 @@ _TestLevel:
 	.byte	$02
 	.byte	$02
 	.byte	$02
+	.byte	$92
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$93
 	.byte	$02
 	.byte	$02
 	.byte	$02
@@ -694,8 +855,10 @@ _TestLevel:
 	.byte	$02
 	.byte	$02
 	.byte	$02
-	.byte	$01
-	.byte	$01
+	.byte	$92
+	.byte	$93
+	.byte	$82
+	.byte	$83
 	.byte	$02
 	.byte	$02
 	.byte	$02
@@ -724,10 +887,12 @@ _TestLevel:
 	.byte	$02
 	.byte	$02
 	.byte	$02
+	.byte	$82
+	.byte	$83
+	.byte	$92
+	.byte	$93
 	.byte	$02
 	.byte	$02
-	.byte	$01
-	.byte	$01
 	.byte	$02
 	.byte	$02
 	.byte	$02
@@ -754,12 +919,14 @@ _TestLevel:
 	.byte	$02
 	.byte	$02
 	.byte	$02
+	.byte	$92
+	.byte	$93
+	.byte	$82
+	.byte	$83
 	.byte	$02
 	.byte	$02
 	.byte	$02
 	.byte	$02
-	.byte	$01
-	.byte	$01
 	.byte	$02
 	.byte	$02
 	.byte	$02
@@ -784,14 +951,16 @@ _TestLevel:
 	.byte	$02
 	.byte	$02
 	.byte	$02
+	.byte	$82
+	.byte	$83
+	.byte	$92
+	.byte	$93
 	.byte	$02
 	.byte	$02
 	.byte	$02
 	.byte	$02
 	.byte	$02
 	.byte	$02
-	.byte	$01
-	.byte	$01
 	.byte	$02
 	.byte	$02
 	.byte	$02
@@ -814,239 +983,72 @@ _TestLevel:
 	.byte	$02
 	.byte	$02
 	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$01
-	.byte	$01
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$01
-	.byte	$01
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$01
-	.byte	$01
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$01
-	.byte	$01
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$01
-	.byte	$01
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$01
-	.byte	$01
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
-	.byte	$01
+	.byte	$92
+	.byte	$93
+	.byte	$82
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$83
+	.byte	$92
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$93
 	.byte	$00
 	.byte	$00
 	.byte	$00
@@ -1061,6 +1063,19 @@ _TestLevel:
 	.byte	$00
 	.byte	$00
 	.byte	$00
+	.byte	$50
+	.byte	$10
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$50
+	.byte	$50
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$50
+	.byte	$50
 	.byte	$00
 	.byte	$00
 	.byte	$00
@@ -1071,27 +1086,14 @@ _TestLevel:
 	.byte	$00
 	.byte	$00
 	.byte	$00
+	.byte	$50
+	.byte	$50
 	.byte	$00
 	.byte	$00
 	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
+	.byte	$40
+	.byte	$50
+	.byte	$10
 	.byte	$00
 	.byte	$00
 	.byte	$00
@@ -1116,18 +1118,35 @@ _palette:
 	.byte	$00
 	.byte	$10
 	.byte	$30
+	.byte	$0f
+	.byte	$01
+	.byte	$11
+	.byte	$31
+	.byte	$0f
+	.byte	$09
+	.byte	$19
+	.byte	$29
+	.byte	$0f
+	.byte	$06
+	.byte	$16
+	.byte	$26
+_spritePalette:
+	.byte	$0f
 	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
+	.byte	$10
+	.byte	$30
+	.byte	$0f
+	.byte	$01
+	.byte	$11
+	.byte	$21
+	.byte	$0f
+	.byte	$09
+	.byte	$19
+	.byte	$39
+	.byte	$0f
+	.byte	$06
+	.byte	$16
+	.byte	$36
 _text:
 	.byte	$4E,$6F,$63,$74,$75,$72,$6E,$65,$73,$20,$42,$6C,$6F,$6F,$64,$00
 _titlePrompt:
@@ -1267,7 +1286,7 @@ _movementPad:
 	and     #$02
 	beq     L0045
 ;
-; if (TestLevel[GetTileIndex(playerX - 1, playerY + 1)] != 0x01)
+; if (!checkIfCollidableTile(TestLevel[GetTileIndex(playerX - 1, playerY + 1)]))
 ;
 	lda     _playerX
 	sec
@@ -1284,8 +1303,9 @@ _movementPad:
 	sta     ptr1+1
 	ldy     #<(_TestLevel)
 	lda     (ptr1),y
-	cmp     #$01
-	beq     L0045
+	jsr     _checkIfCollidableTile
+	tax
+	bne     L0045
 ;
 ; playerX--;
 ;
@@ -1297,7 +1317,7 @@ L0045:	lda     _movementPad
 	and     #$01
 	beq     L0046
 ;
-; if (TestLevel[GetTileIndex(playerX + 8, playerY + 1)] != 0x01)
+; if (!checkIfCollidableTile(TestLevel[GetTileIndex(playerX + 8, playerY + 1)]))
 ;
 	lda     _playerX
 	clc
@@ -1314,8 +1334,9 @@ L0045:	lda     _movementPad
 	sta     ptr1+1
 	ldy     #<(_TestLevel)
 	lda     (ptr1),y
-	cmp     #$01
-	beq     L0046
+	jsr     _checkIfCollidableTile
+	tax
+	bne     L0046
 ;
 ; playerX++;
 ;
@@ -1356,7 +1377,7 @@ L004A:	lda     _movementPad
 ;
 ; else if (movementPad & PAD_RIGHT) 
 ;
-	jmp     L005A
+	jmp     L0059
 L004B:	lda     _movementPad
 	and     #$01
 	beq     L001B
@@ -1368,7 +1389,7 @@ L004B:	lda     _movementPad
 ;
 ; dashDirection = 1;
 ;
-L005A:	sta     _dashDirection
+L0059:	sta     _dashDirection
 ;
 ; dashTimer = DASH_DURATION;
 ;
@@ -1402,7 +1423,7 @@ L001D:	lda     _i
 	sbc     #$00
 	bvc     L0021
 	eor     #$80
-L0021:	bpl     L004E
+L0021:	bpl     L004D
 ;
 ; int nextX = playerX + dashDirection;
 ;
@@ -1436,7 +1457,7 @@ L0025:	clc
 	pla
 	jsr     pushax
 ;
-; if (TestLevel[GetTileIndex(checkX, playerY + 1)] != 0x01) 
+; if (!checkIfCollidableTile(TestLevel[GetTileIndex(checkX, playerY + 1)])) 
 ;
 	ldy     #$00
 	lda     (sp),y
@@ -1452,8 +1473,9 @@ L0025:	clc
 	sta     ptr1+1
 	ldy     #<(_TestLevel)
 	lda     (ptr1),y
-	cmp     #$01
-	beq     L004D
+	jsr     _checkIfCollidableTile
+	tax
+	bne     L0026
 ;
 ; playerX = nextX;
 ;
@@ -1467,7 +1489,7 @@ L0025:	clc
 ;
 ; isDashing = 0;
 ;
-L004D:	lda     #$00
+L0026:	lda     #$00
 	sta     _isDashing
 ;
 ; dashCooldown = DASH_COOLDOWN;
@@ -1488,12 +1510,12 @@ L002A:	jsr     incsp4
 ;
 ; dashTimer--;
 ;
-L004E:	dec     _dashTimer
+L004D:	dec     _dashTimer
 ;
 ; if (dashTimer <= 0) 
 ;
 	lda     _dashTimer
-	jne     L0053
+	jne     L0052
 ;
 ; isDashing = 0;
 ;
@@ -1506,7 +1528,7 @@ L004E:	dec     _dashTimer
 ;
 ; else 
 ;
-	jmp     L0053
+	jmp     L0052
 ;
 ; if ((inputPad & PAD_A) && !isJumping && OnGround()) 
 ;
@@ -1570,11 +1592,11 @@ L0033:	lda     _velocityY
 ; if (velocityY >= 0 && OnGround()) 
 ;
 	ldx     _velocityY+1
-	bmi     L0053
+	bmi     L0052
 	jsr     _OnGround
 	tax
 	bne     L003E
-	jmp     L0053
+	jmp     L0052
 ;
 ; playerY -= 1;
 ;
@@ -1605,13 +1627,13 @@ L003E:	jsr     _OnGround
 ;
 ; else 
 ;
-	jmp     L0053
+	jmp     L0052
 ;
 ; if (!OnGround()) 
 ;
 L0031:	jsr     _OnGround
 	tax
-	bne     L0053
+	bne     L0052
 ;
 ; isJumping = 1;
 ;
@@ -1620,7 +1642,7 @@ L0031:	jsr     _OnGround
 ;
 ; if (dashCooldown > 0) 
 ;
-L0053:	lda     _dashCooldown
+L0052:	lda     _dashCooldown
 	beq     L0042
 ;
 ; dashCooldown--;
@@ -1934,7 +1956,7 @@ L0012:	lda     #$02
 .segment	"CODE"
 
 ;
-; return TestLevel[GetTileIndex(playerX, playerY + 9)] == 0x01;
+; return checkIfCollidableTile(TestLevel[GetTileIndex(playerX, playerY + 9)]);
 ;
 	lda     _playerX
 	jsr     pusha
@@ -1949,8 +1971,63 @@ L0012:	lda     #$02
 	sta     ptr1+1
 	ldy     #<(_TestLevel)
 	lda     (ptr1),y
+	jmp     _checkIfCollidableTile
+
+.endproc
+
+; ---------------------------------------------------------------
+; char __near__ checkIfCollidableTile (unsigned char tile)
+; ---------------------------------------------------------------
+
+.segment	"CODE"
+
+.proc	_checkIfCollidableTile: near
+
+.segment	"CODE"
+
+;
+; {
+;
+	jsr     pusha
+;
+; return tile == 0x80 || tile == 0x81 || tile == 0x82 || tile == 0x83 
+;
+	ldy     #$00
+	lda     (sp),y
+	cmp     #$80
+	beq     L0004
+	cmp     #$81
+	beq     L0004
+	cmp     #$82
+	beq     L0004
+;
+; || tile == 0x90 || tile == 0x91 || tile == 0x92 || tile == 0x93
+;
+	cmp     #$83
+	beq     L0004
+	cmp     #$90
+	beq     L0004
+	cmp     #$91
+	beq     L0004
+	cmp     #$92
+	beq     L0004
+;
+; || tile == 0x01;
+;
+	cmp     #$93
+	beq     L0004
+	ldx     #$00
+	lda     (sp),y
 	cmp     #$01
-	jmp     booleq
+	beq     L0005
+	txa
+	jmp     incsp1
+L0004:	lda     #$01
+	ldx     #$00
+;
+; }
+;
+L0005:	jmp     incsp1
 
 .endproc
 

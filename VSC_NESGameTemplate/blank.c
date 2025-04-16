@@ -53,10 +53,25 @@
 #include <stdlib.h>
 
 //Define colours
-#define BLACK 0x0f
-#define DK_GY 0x00
-#define LT_GY 0x10
-#define WHITE 0x30
+#define BLACK 			0x0f
+#define DK_GY 			0x00
+#define LT_GY 			0x10
+#define WHITE 			0x30
+//Blues
+#define DK_BLUE  		0x01
+#define BLUE     		0x11
+#define LT_BLUE     	0x21
+#define SKY_BLUE     	0x31
+// Greens
+#define DK_GREEN     	0x09
+#define GREEN        	0x19
+#define LT_GREEN     	0x29
+#define MINT         	0x39
+// Reds
+#define DK_RED       	0x06
+#define RED          	0x16
+#define LT_RED       	0x26
+#define PINK         	0x36
 
 //define game states
 #define START_SCREEN 0
@@ -77,11 +92,20 @@
 //palette colours
 const unsigned char palette[]=
 {
-	BLACK, DK_GY, LT_GY, WHITE,
-	0,0,0,0,
-	0,0,0,0,
-	0,0,0,0
-}; 
+	BLACK, DK_GY, LT_GY, WHITE,       // background palette 0
+	BLACK, DK_BLUE, BLUE, SKY_BLUE,   // background palette 1
+	BLACK, DK_GREEN, GREEN, LT_GREEN, // background palette 2
+	BLACK, DK_RED, RED, LT_RED        // background palette 3
+};  
+
+//Possible use for later
+const unsigned char spritePalette[] =
+{
+	BLACK, DK_GY, LT_GY, WHITE,       // sprite palette 0
+	BLACK, DK_BLUE, BLUE, LT_BLUE,   // sprite palette 1
+	BLACK, DK_GREEN, GREEN, MINT, // sprite palette 2
+	BLACK, DK_RED, RED, PINK          // sprite palette 3
+};
 
 // GLOBAL VARIABLES
 //Defines which state the game is currently in (START_SCREEN, GAME_LOOP or END_SCREEN)
@@ -95,8 +119,8 @@ const unsigned char endScreenPrompt[] = "To play again";
 unsigned char inputPad;
 unsigned char movementPad;
 //Player variables
-signed char playerX = 15;
-signed char playerY = 223;
+signed char playerX = 30;
+signed char playerY = 215;
 //Goal variables
 signed char goalX = 200;
 signed char goalY = 200;
@@ -123,6 +147,7 @@ unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY);
 void CheckIfEnd(void);
 void DrawEndScreen(void);
 char OnGround(void); 
+char checkIfCollidableTile(unsigned char tile);
 
 //MAIN
 void main (void) 
@@ -204,7 +229,7 @@ void MovePlayer(void)
 	//left
     if (movementPad & PAD_LEFT)
     {
-        if (TestLevel[GetTileIndex(playerX - 1, playerY + 1)] != 0x01)
+        if (!checkIfCollidableTile(TestLevel[GetTileIndex(playerX - 1, playerY + 1)]))
         {
             playerX--;
         }
@@ -213,7 +238,7 @@ void MovePlayer(void)
 	//Right
     if (movementPad & PAD_RIGHT)
     {
-        if (TestLevel[GetTileIndex(playerX + 8, playerY + 1)] != 0x01)
+        if (!checkIfCollidableTile(TestLevel[GetTileIndex(playerX + 8, playerY + 1)]))
         {
             playerX++;
         }
@@ -266,7 +291,7 @@ void MovePlayer(void)
 			int checkX = nextX + (dashDirection == 1 ? 7 : 0);
 
 			//Check that there is not a collidable and if there is not then the player can move
-			if (TestLevel[GetTileIndex(checkX, playerY + 1)] != 0x01) 
+			if (!checkIfCollidableTile(TestLevel[GetTileIndex(checkX, playerY + 1)])) 
 			{
 				playerX = nextX;
 			} 
@@ -436,5 +461,12 @@ void DrawEndScreen()
 
 char OnGround(void) 
 {
-    return TestLevel[GetTileIndex(playerX, playerY + 9)] == 0x01;
+    return checkIfCollidableTile(TestLevel[GetTileIndex(playerX, playerY + 9)]);
+}
+
+char checkIfCollidableTile(unsigned char tile) 
+{
+	//Stores all of the tiles that are collidable and is used to calculate collisions
+    return tile == 0x80 || tile == 0x81 || tile == 0x82 || tile == 0x83 
+		|| tile == 0x90 || tile == 0x91 || tile == 0x92 || tile == 0x93;
 }
