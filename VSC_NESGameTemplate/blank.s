@@ -155,156 +155,156 @@ _TestLevel:
 	.byte	$93
 	.byte	$82
 	.byte	$83
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
 	.byte	$82
 	.byte	$83
 	.byte	$92
 	.byte	$93
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
 	.byte	$92
 	.byte	$93
 	.byte	$82
 	.byte	$83
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
 	.byte	$82
 	.byte	$83
 	.byte	$92
 	.byte	$93
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
 	.byte	$92
 	.byte	$93
 	.byte	$82
 	.byte	$83
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
 	.byte	$82
 	.byte	$81
 	.byte	$80
@@ -315,28 +315,28 @@ _TestLevel:
 	.byte	$83
 	.byte	$92
 	.byte	$93
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
 	.byte	$92
 	.byte	$91
 	.byte	$90
@@ -347,200 +347,84 @@ _TestLevel:
 	.byte	$93
 	.byte	$82
 	.byte	$83
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
 	.byte	$82
 	.byte	$83
 	.byte	$92
 	.byte	$93
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
 	.byte	$92
 	.byte	$93
 	.byte	$82
 	.byte	$83
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$82
-	.byte	$81
-	.byte	$80
-	.byte	$81
-	.byte	$80
-	.byte	$81
-	.byte	$80
-	.byte	$83
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$82
-	.byte	$83
-	.byte	$92
-	.byte	$93
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$92
-	.byte	$91
-	.byte	$90
-	.byte	$91
-	.byte	$90
-	.byte	$91
-	.byte	$90
-	.byte	$93
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$92
-	.byte	$93
-	.byte	$82
-	.byte	$83
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$82
-	.byte	$83
-	.byte	$92
-	.byte	$93
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$92
-	.byte	$93
-	.byte	$82
-	.byte	$83
-	.byte	$02
-	.byte	$02
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
 	.byte	$82
 	.byte	$81
 	.byte	$80
@@ -549,30 +433,30 @@ _TestLevel:
 	.byte	$81
 	.byte	$80
 	.byte	$83
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
 	.byte	$82
 	.byte	$83
 	.byte	$92
 	.byte	$93
-	.byte	$02
-	.byte	$02
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
 	.byte	$92
 	.byte	$91
 	.byte	$90
@@ -581,110 +465,82 @@ _TestLevel:
 	.byte	$91
 	.byte	$90
 	.byte	$93
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
 	.byte	$92
 	.byte	$93
 	.byte	$82
 	.byte	$83
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
 	.byte	$82
 	.byte	$83
 	.byte	$92
 	.byte	$93
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
 	.byte	$92
 	.byte	$93
 	.byte	$82
 	.byte	$83
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
+	.byte	$01
+	.byte	$01
 	.byte	$82
 	.byte	$81
 	.byte	$80
@@ -693,30 +549,30 @@ _TestLevel:
 	.byte	$81
 	.byte	$80
 	.byte	$83
-	.byte	$02
-	.byte	$02
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
 	.byte	$82
 	.byte	$83
 	.byte	$92
 	.byte	$93
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
+	.byte	$01
+	.byte	$01
 	.byte	$92
 	.byte	$91
 	.byte	$90
@@ -725,84 +581,110 @@ _TestLevel:
 	.byte	$91
 	.byte	$90
 	.byte	$93
-	.byte	$02
-	.byte	$02
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
 	.byte	$92
 	.byte	$93
 	.byte	$82
 	.byte	$83
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
 	.byte	$82
 	.byte	$83
 	.byte	$92
 	.byte	$93
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
 	.byte	$92
 	.byte	$93
 	.byte	$82
 	.byte	$83
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
 	.byte	$82
 	.byte	$81
 	.byte	$80
@@ -811,30 +693,30 @@ _TestLevel:
 	.byte	$81
 	.byte	$80
 	.byte	$83
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
+	.byte	$01
+	.byte	$01
 	.byte	$82
 	.byte	$83
 	.byte	$92
 	.byte	$93
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
 	.byte	$92
 	.byte	$91
 	.byte	$90
@@ -843,146 +725,264 @@ _TestLevel:
 	.byte	$91
 	.byte	$90
 	.byte	$93
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
+	.byte	$01
+	.byte	$01
 	.byte	$92
 	.byte	$93
 	.byte	$82
 	.byte	$83
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
 	.byte	$82
 	.byte	$83
 	.byte	$92
 	.byte	$93
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
 	.byte	$92
 	.byte	$93
 	.byte	$82
 	.byte	$83
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$82
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$83
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
 	.byte	$82
 	.byte	$83
 	.byte	$92
 	.byte	$93
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
-	.byte	$02
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$92
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$93
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$92
+	.byte	$93
+	.byte	$82
+	.byte	$83
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$82
+	.byte	$83
+	.byte	$92
+	.byte	$93
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$92
+	.byte	$93
+	.byte	$82
+	.byte	$83
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$82
+	.byte	$83
+	.byte	$92
+	.byte	$93
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
+	.byte	$01
 	.byte	$92
 	.byte	$93
 	.byte	$82
@@ -2001,7 +2001,7 @@ L0012:	lda     #$02
 	cmp     #$82
 	beq     L0004
 ;
-; || tile == 0x90 || tile == 0x91 || tile == 0x92 || tile == 0x93
+; || tile == 0x90 || tile == 0x91 || tile == 0x92 || tile == 0x93;
 ;
 	cmp     #$83
 	beq     L0004
@@ -2011,15 +2011,9 @@ L0012:	lda     #$02
 	beq     L0004
 	cmp     #$92
 	beq     L0004
-;
-; || tile == 0x01;
-;
 	cmp     #$93
 	beq     L0004
 	ldx     #$00
-	lda     (sp),y
-	cmp     #$01
-	beq     L0005
 	txa
 	jmp     incsp1
 L0004:	lda     #$01
@@ -2027,7 +2021,7 @@ L0004:	lda     #$01
 ;
 ; }
 ;
-L0005:	jmp     incsp1
+	jmp     incsp1
 
 .endproc
 
