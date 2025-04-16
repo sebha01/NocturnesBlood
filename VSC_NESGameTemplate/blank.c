@@ -51,6 +51,8 @@
 #include "LIB/nesdoug.h" 
 #include "NES_ST/TestLevel.h"
 #include <stdlib.h>
+#include "NES_ST/Level1A.h"
+#include "NES_ST/Level1B.h"
 
 //Define colours
 #define BLACK 			0x0f
@@ -121,9 +123,18 @@ unsigned char movementPad;
 //Player variables
 signed char playerX = 30;
 signed char playerY = 215;
+char playerLeft = 0;
+char playerRight = 0;
+char playerTop = 0;
+char playerBottom = 0;
+char facingRight = 1;
 //Goal variables
 signed char goalX = 220;
 signed char goalY = 39;
+char doorLeft = 0;
+char doorRight = 0;
+char doorTop = 0;
+char doorBottom = 0;
 //jumping variables 
 int velocityY = 0;
 char isJumping = 0;
@@ -148,8 +159,13 @@ void CheckIfEnd(void);
 void DrawEndScreen(void);
 char OnGround(void); 
 char checkIfCollidableTile(unsigned char tile);
+void UpdateColliderPositions(void);
 
-//MAIN
+/*
+----------------
+-- -- MAIN -- --
+----------------
+*/
 void main (void) 
 {
 	DrawTitleScreen();
@@ -175,6 +191,7 @@ void main (void)
 				break;
 			case GAME_LOOP:
 				//Player code
+				UpdateColliderPositions();
 				MovePlayer();
 				DrawPlayer();
 
@@ -193,6 +210,11 @@ void main (void)
 	}
 }
 	
+/*
+---------------------------
+-- -- OTHER FUNCTIONS -- --
+---------------------------
+*/
 
 void DrawTitleScreen(void)
 {
@@ -215,7 +237,10 @@ void GameLoop(void)
 	//Turn screen off
 	ppu_off(); 
 	vram_adr(NAMETABLE_A);   // Set VRAM address to the top-left of the screen
-	vram_write(TestLevel, 1024);
+	vram_write(Level1A, 1024);
+
+	vram_adr(NAMETABLE_B);   // Set VRAM address to the top-left of the screen
+	vram_write(Level1B, 1024);
 	//Load palette
 	pal_bg(palette);
 	pal_spr((const char*)spritePalette);
@@ -232,6 +257,7 @@ void MovePlayer(void)
         if (!checkIfCollidableTile(TestLevel[GetTileIndex(playerX - 1, playerY + 1)]))
         {
             playerX -= 2;
+			facingRight = 0;
         }
     }
 
@@ -241,6 +267,7 @@ void MovePlayer(void)
         if (!checkIfCollidableTile(TestLevel[GetTileIndex(playerX + 8, playerY + 1)]))
         {
             playerX += 2;
+			facingRight = 1;
         }
     }
 
@@ -393,14 +420,21 @@ void MovePlayer(void)
 
 void DrawPlayer(void)
 {
+	unsigned char playerAttributes = 0x01;
+
+	if (!facingRight)
+	{
+		playerAttributes |= 0x40;
+	}
+
 	//Clears all sprite entries in Object Attribute Memory
 	//OAM special memopry area that holds info about sprites
 	//Such as pos, tile index, palette etc.
 	oam_clear();
 	
 	// Draw the player using two tiles: 0x08 (top), 0x24 (bottom)
-    oam_spr(playerX, playerY - 8, 0x08, 0x01);
-    oam_spr(playerX, playerY, 0x18, 0x01);
+    oam_spr(playerX, playerY - 8, 0x08, playerAttributes);
+    oam_spr(playerX, playerY, 0x18, playerAttributes);
 
 	//Draw the goal which is now a door
 	oam_spr(goalX, goalY, 0x16, 0x02);
@@ -420,7 +454,7 @@ unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY)
     // As we play in a 32x32 map to first find the correct y position
 	//We multiply by 32 to get the correct row
 	//Then we add tileX to find the column and the index of the tile
-    unsigned int tileIndex = tileY * 32 + tileX;
+    unsigned int tileIndex = tileY * 64 + tileX;
 
     return tileIndex;
 }
@@ -428,8 +462,8 @@ unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY)
 void CheckIfEnd()
 {
 	// Calculate the distance between the middle of both sprites
-	if (abs((playerX + 4) - (goalX + 4)) < 6 && 
-	abs((playerY + 4) - (goalY + 4)) < 6)
+	if ((playerRight >= doorLeft && playerLeft <= doorRight) &&
+	(playerBottom > doorTop && playerTop < doorBottom))
 	{
 		currentGameState = END_SCREEN;
 		DrawEndScreen();
@@ -474,4 +508,19 @@ char checkIfCollidableTile(unsigned char tile)
 	//Stores all of the tiles that are collidable and is used to calculate collisions
     return tile == 0x80 || tile == 0x81 || tile == 0x82 || tile == 0x83 
 		|| tile == 0x90 || tile == 0x91 || tile == 0x92 || tile == 0x93;
+}
+
+void UpdateColliderPositions(void)
+{
+	//Update player Collider position
+	char playerLeft = playerX;
+	char playerRight = playerX + 7;
+	char playerTop = playerY - 15;
+	char playerBottom = playerY;
+
+	//Update the door collider position
+	doorLeft = goalX;
+    doorRight = goalX + 15;
+	doorTop = goalY - 15;
+	doorBottom = goalY;
 }
