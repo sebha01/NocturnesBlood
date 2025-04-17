@@ -80,6 +80,8 @@
 #define GAME_LOOP 1
 #define END_SCREEN 2
 //define constants used for player movement
+//Movement
+#define PLAYER_SPEED 2
 //Jumping
 #define GRAVITY 1
 #define JUMP_VELOCITY -10
@@ -263,14 +265,14 @@ void MovePlayer(void)
 			 // Case 1: Move player left, if they're still left of center (128)
 			if (playerX > 0 && playerX < 128 || (playerX + scrollX > 384) || (scrollX == 0 && playerX == 128))
 			{
-				playerX -= 2;
+				playerX -= PLAYER_SPEED;
 			}
 			// Case 2: Scroll screen left, if player + scroll is in scroll window
 			else if ((playerX + scrollX) > 128 && (playerX + scrollX) <= 384)
 			{
 				if (scrollX >= 4) 
 				{
-					scrollX -= 2;
+					scrollX -= PLAYER_SPEED;
 				} else 
 				{
 					scrollX = 0; // Prevent underflow
@@ -289,14 +291,14 @@ void MovePlayer(void)
 			 // Case 1: Move player left, if they're still left of center (128)
 			if (playerX > 0 && playerX < 128 || (playerX + scrollX >= 384))
 			{
-				playerX += 2;
+				playerX += PLAYER_SPEED;
 			}
 			// Case 2: Scroll screen left, if player + scroll is in scroll window
 			else if ((playerX + scrollX) >= 128 && (playerX + scrollX) < 384)
 			{
 				if (scrollX <= 252) 
 				{
-					scrollX += 2;
+					scrollX += PLAYER_SPEED;
 				} else 
 				{
 					scrollX = 256; // Prevent overflow

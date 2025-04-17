@@ -4466,7 +4466,7 @@ L0008:	lda     _playerX
 	cmp     #$80
 	bne     L0006
 ;
-; playerX -= 2;
+; playerX -= PLAYER_SPEED;
 ;
 L0066:	lda     _playerX
 	sec
@@ -4513,7 +4513,7 @@ L0015:	bcs     L001A
 	lda     #$00
 	bcc     L006A
 ;
-; scrollX -= 2;
+; scrollX -= PLAYER_SPEED;
 ;
 	lda     _scrollX
 	sec
@@ -4592,7 +4592,7 @@ L0021:	lda     _playerX
 	sbc     #$01
 	bcc     L001F
 ;
-; playerX += 2;
+; playerX += PLAYER_SPEED;
 ;
 L006E:	lda     #$02
 	clc
@@ -4638,7 +4638,7 @@ L0029:	bcs     L0071
 	cmp     #$FD
 L002D:	bcs     L002C
 ;
-; scrollX += 2;
+; scrollX += PLAYER_SPEED;
 ;
 	lda     #$02
 	clc
