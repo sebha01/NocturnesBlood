@@ -26,10 +26,8 @@
 	pad_trigger(0) -> returns button once first pressed not held
 	pad_state(0) -> gives you last read value from pad_poll, useful if polled earlier in frame and want to refer to it later
 
-
-	Pro Tip: Add a Simple Pause Menu
-	Here’s a little trick you could build on:
-
+--------------------------------------------------------------------------
+	Add a Simple Pause Menu IDEA
 	c
 	if (game_state == STATE_GAME && (pad_trigger(0) & PAD_START)) 
 	{
