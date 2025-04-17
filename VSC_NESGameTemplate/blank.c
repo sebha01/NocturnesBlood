@@ -270,7 +270,7 @@ void MovePlayer(void)
 			{
 				if (scrollX >= 4) 
 				{
-					scrollX -= 4;
+					scrollX -= 2;
 				} else 
 				{
 					scrollX = 0; // Prevent underflow
@@ -296,7 +296,7 @@ void MovePlayer(void)
 			{
 				if (scrollX <= 252) 
 				{
-					scrollX += 4;
+					scrollX += 2;
 				} else 
 				{
 					scrollX = 256; // Prevent overflow

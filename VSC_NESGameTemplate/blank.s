@@ -4513,11 +4513,11 @@ L0015:	bcs     L001A
 	lda     #$00
 	bcc     L006A
 ;
-; scrollX -= 4;
+; scrollX -= 2;
 ;
 	lda     _scrollX
 	sec
-	sbc     #$04
+	sbc     #$02
 	sta     _scrollX
 	bcs     L001A
 	dec     _scrollX+1
@@ -4638,9 +4638,9 @@ L0029:	bcs     L0071
 	cmp     #$FD
 L002D:	bcs     L002C
 ;
-; scrollX += 4;
+; scrollX += 2;
 ;
-	lda     #$04
+	lda     #$02
 	clc
 	adc     _scrollX
 	sta     _scrollX
