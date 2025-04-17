@@ -261,7 +261,7 @@ void MovePlayer(void)
         if (!checkIfCollidableTile(TestLevel[GetTileIndex(playerX - 1, playerY + 1)]))
         {
 			 // Case 1: Move player left, if they're still left of center (128)
-			if (playerX > 0 && playerX < 128 || (playerX + scrollX >= 384))
+			if (playerX > 0 && playerX < 128 || (playerX + scrollX > 384) || (scrollX == 0 && playerX == 128))
 			{
 				playerX -= 2;
 			}
