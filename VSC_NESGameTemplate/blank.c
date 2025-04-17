@@ -90,6 +90,9 @@
 #define DASH_SPEED 4
 #define DASH_DURATION 10
 #define DASH_COOLDOWN 20
+//Scrolling
+#define MAX_SCROLL 256
+#define MIN_SCROLL 0
 
 #pragma bss-name(push, "ZEROPAGE")
 
@@ -263,7 +266,7 @@ void MovePlayer(void)
         if (!checkIfCollidableTile(TestLevel[GetTileIndex(playerX - 1, playerY + 1)]))
         {
 			 // Case 1: Move player left, if they're still left of center (128)
-			if (playerX > 0 && playerX < 128 || (playerX + scrollX > 384) || (scrollX == 0 && playerX == 128))
+			if (playerX > 0 && playerX < 128 || (playerX + scrollX > 384) || (scrollX == MIN_SCROLL && playerX == 128))
 			{
 				playerX -= PLAYER_SPEED;
 			}
@@ -275,7 +278,7 @@ void MovePlayer(void)
 					scrollX -= PLAYER_SPEED;
 				} else 
 				{
-					scrollX = 0; // Prevent underflow
+					scrollX = MIN_SCROLL; // Prevent underflow
 				}
 			}
 
@@ -301,7 +304,7 @@ void MovePlayer(void)
 					scrollX += PLAYER_SPEED;
 				} else 
 				{
-					scrollX = 256; // Prevent overflow
+					scrollX = MAX_SCROLL; // Prevent overflow
 				}
 			}
 

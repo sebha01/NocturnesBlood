@@ -4429,7 +4429,7 @@ _movementPad:
 	tax
 	jne     L006D
 ;
-; if (playerX > 0 && playerX < 128 || (playerX + scrollX > 384) || (scrollX == 0 && playerX == 128))
+; if (playerX > 0 && playerX < 128 || (playerX + scrollX > 384) || (scrollX == MIN_SCROLL && playerX == 128))
 ;
 	lda     _playerX
 	cmp     #$01
@@ -4526,7 +4526,7 @@ L0015:	bcs     L001A
 ;
 	jmp     L001A
 ;
-; scrollX = 0; // Prevent underflow
+; scrollX = MIN_SCROLL; // Prevent underflow
 ;
 L006A:	sta     _scrollX
 	sta     _scrollX+1
@@ -4651,7 +4651,7 @@ L002D:	bcs     L002C
 ;
 	jmp     L0071
 ;
-; scrollX = 256; // Prevent overflow
+; scrollX = MAX_SCROLL; // Prevent overflow
 ;
 L002C:	ldx     #$01
 	lda     #$00
