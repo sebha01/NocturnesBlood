@@ -502,6 +502,10 @@ void DrawPlayer(void)
 	}
 	
 
+	//Update goal x and y positions
+	// goalX = 220 + scrollX;
+	// goalY = 39;
+
 	//Draw the goal which is now a door
 	oam_spr(goalX, goalY, 0x16, 0x02);
 	oam_spr(goalX + 8, goalY, 0x17, 0x02);
