@@ -121,8 +121,11 @@ const unsigned char endScreenPrompt[] = "To play again";
 unsigned char inputPad;
 unsigned char movementPad;
 //Player variables
-signed char playerX = 30;
-signed char playerY = 215;
+signed int playerX = 30;
+signed int playerY = 215;
+//Player x can move first 128 and alst 128 pixels without screen moving
+//Scroll x comes in to make sure the screen moves when the player does
+unsigned int scrollX = 0;
 char playerLeft = 0;
 char playerRight = 0;
 char playerTop = 0;
@@ -166,6 +169,7 @@ void UpdateColliderPositions(void);
 -- -- MAIN -- --
 ----------------
 */
+
 void main (void) 
 {
 	DrawTitleScreen();
@@ -194,7 +198,7 @@ void main (void)
 				UpdateColliderPositions();
 				MovePlayer();
 				DrawPlayer();
-
+				scroll(scrollX, 0);
 				//Check if player has reached end goal
 				CheckIfEnd();
 				break;
@@ -256,7 +260,23 @@ void MovePlayer(void)
     {
         if (!checkIfCollidableTile(TestLevel[GetTileIndex(playerX - 1, playerY + 1)]))
         {
-            playerX -= 2;
+			 // Case 1: Move player left, if they're still left of center (128)
+			if (playerX > 0 && playerX < 128 || (playerX + scrollX >= 384))
+			{
+				playerX -= 2;
+			}
+			// Case 2: Scroll screen left, if player + scroll is in scroll window
+			else if ((playerX + scrollX) > 128 && (playerX + scrollX) <= 384)
+			{
+				if (scrollX >= 4) 
+				{
+					scrollX -= 4;
+				} else 
+				{
+					scrollX = 0; // Prevent underflow
+				}
+			}
+
 			facingRight = 0;
         }
     }
@@ -266,7 +286,23 @@ void MovePlayer(void)
     {
         if (!checkIfCollidableTile(TestLevel[GetTileIndex(playerX + 8, playerY + 1)]))
         {
-            playerX += 2;
+			 // Case 1: Move player left, if they're still left of center (128)
+			if (playerX > 0 && playerX < 128 || (playerX + scrollX >= 384))
+			{
+				playerX += 2;
+			}
+			// Case 2: Scroll screen left, if player + scroll is in scroll window
+			else if ((playerX + scrollX) >= 128 && (playerX + scrollX) < 384)
+			{
+				if (scrollX <= 252) 
+				{
+					scrollX += 4;
+				} else 
+				{
+					scrollX = 256; // Prevent overflow
+				}
+			}
+
 			facingRight = 1;
         }
     }
@@ -448,7 +484,7 @@ unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY)
     // Get the x and y tile that the player is currently on
 	//Divide by 8 as the players current position is in pixels
 	//Each tile has 8 pixels so we need to divide by 8 to find the tile
-    unsigned char tileX = playerX / 8; 
+    unsigned char tileX = (playerX + scrollX) / 8; 
     unsigned char tileY = playerY / 8;
     
     // As we play in a 32x32 map to first find the correct y position
