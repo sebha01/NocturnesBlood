@@ -4429,7 +4429,7 @@ _movementPad:
 	tax
 	jne     L006D
 ;
-; if (playerX > 0 && playerX < 128 || (playerX + scrollX > 384) || (scrollX == MIN_SCROLL && playerX == 128))
+; if (playerX > 0 && playerX < 128 || (playerX + scrollX > 384) || 
 ;
 	lda     _playerX
 	cmp     #$01
@@ -4457,6 +4457,9 @@ L0008:	lda     _playerX
 	txa
 	sbc     #$01
 	bcs     L0066
+;
+; (scrollX == MIN_SCROLL && playerX == 128))
+;
 	lda     _scrollX
 	ora     _scrollX+1
 	bne     L0006
@@ -4526,7 +4529,7 @@ L0015:	bcs     L001A
 ;
 	jmp     L001A
 ;
-; scrollX = MIN_SCROLL; // Prevent underflow
+; scrollX = MIN_SCROLL;
 ;
 L006A:	sta     _scrollX
 	sta     _scrollX+1
@@ -4651,7 +4654,7 @@ L002D:	bcs     L002C
 ;
 	jmp     L0071
 ;
-; scrollX = MAX_SCROLL; // Prevent overflow
+; scrollX = MAX_SCROLL;
 ;
 L002C:	ldx     #$01
 	lda     #$00
@@ -5520,29 +5523,28 @@ L0004:	lda     #$01
 .segment	"CODE"
 
 ;
-; char playerLeft = playerX;
+; playerLeft = playerX;
 ;
 	lda     _playerX
-	jsr     pusha
+	sta     _playerLeft
 ;
-; char playerRight = playerX + 7;
+; playerRight = playerX + 7;
 ;
-	lda     _playerX
 	clc
 	adc     #$07
-	jsr     pusha
+	sta     _playerRight
 ;
-; char playerTop = playerY - 15;
+; playerTop = playerY - 15;
 ;
 	lda     _playerY
 	sec
 	sbc     #$0F
-	jsr     pusha
+	sta     _playerTop
 ;
-; char playerBottom = playerY;
+; playerBottom = playerY;
 ;
 	lda     _playerY
-	jsr     pusha
+	sta     _playerBottom
 ;
 ; doorLeft = goalX;
 ;
@@ -5569,7 +5571,7 @@ L0004:	lda     #$01
 ;
 ; }
 ;
-	jmp     incsp4
+	rts
 
 .endproc
 

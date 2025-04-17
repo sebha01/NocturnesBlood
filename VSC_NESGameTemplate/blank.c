@@ -128,7 +128,7 @@ unsigned char movementPad;
 //Player variables
 signed int playerX = 30;
 signed int playerY = 215;
-//Player x can move first 128 and alst 128 pixels without screen moving
+//Player x can move first 128 and last 128 pixels without screen moving
 //Scroll x comes in to make sure the screen moves when the player does
 unsigned int scrollX = 0;
 char playerLeft = 0;
@@ -265,23 +265,29 @@ void MovePlayer(void)
     {
         if (!checkIfCollidableTile(TestLevel[GetTileIndex(playerX - 1, playerY + 1)]))
         {
-			 // Case 1: Move player left, if they're still left of center (128)
-			if (playerX > 0 && playerX < 128 || (playerX + scrollX > 384) || (scrollX == MIN_SCROLL && playerX == 128))
+			 //Make sure player x is 0 - 128 and player X and scrollX is 384 or greater
+			 //before we decrement playerX
+			if (playerX > 0 && playerX < 128 || (playerX + scrollX > 384) || 
+			(scrollX == MIN_SCROLL && playerX == 128))
 			{
 				playerX -= PLAYER_SPEED;
 			}
-			// Case 2: Scroll screen left, if player + scroll is in scroll window
+			// Make sure playerX and scrollX is greater than 128 and less than 384
+			//before decrementing scrollX
 			else if ((playerX + scrollX) > 128 && (playerX + scrollX) <= 384)
 			{
+				//Makes sure ScrollX goes down to 0 only
 				if (scrollX >= 4) 
 				{
 					scrollX -= PLAYER_SPEED;
 				} else 
 				{
-					scrollX = MIN_SCROLL; // Prevent underflow
+					//prevents scrollX from going negative in the odd case it does
+					scrollX = MIN_SCROLL;
 				}
-			}
+			} 
 
+			//Set facing right to false
 			facingRight = 0;
         }
     }
@@ -291,23 +297,28 @@ void MovePlayer(void)
     {
         if (!checkIfCollidableTile(TestLevel[GetTileIndex(playerX + 8, playerY + 1)]))
         {
-			 // Case 1: Move player left, if they're still left of center (128)
+			//Make sure player x is 0 - 128 and player X and scrollX is 384 or greater
+			 //before we increment playerX
 			if (playerX > 0 && playerX < 128 || (playerX + scrollX >= 384))
 			{
 				playerX += PLAYER_SPEED;
 			}
-			// Case 2: Scroll screen left, if player + scroll is in scroll window
+			// Make sure playerX and scrollX is greater than 128 and less than 384
+			//before incrementing scrollX
 			else if ((playerX + scrollX) >= 128 && (playerX + scrollX) < 384)
 			{
+				//Makes sure ScrollX goes up to 256 only
 				if (scrollX <= 252) 
 				{
 					scrollX += PLAYER_SPEED;
 				} else 
 				{
-					scrollX = MAX_SCROLL; // Prevent overflow
+					//prevents scrollX from going above 256 in the odd case it does
+					scrollX = MAX_SCROLL;
 				}
 			}
 
+			//Set facing right to true
 			facingRight = 1;
         }
     }
@@ -505,11 +516,13 @@ unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY)
     // Get the x and y tile that the player is currently on
 	//Divide by 8 as the players current position is in pixels
 	//Each tile has 8 pixels so we need to divide by 8 to find the tile
+	//We need to add scrollX to it so that we can find the correct position
+	//across both halves of the map
     unsigned char tileX = (playerX + scrollX) / 8; 
     unsigned char tileY = playerY / 8;
     
-    // As we play in a 32x32 map to first find the correct y position
-	//We multiply by 32 to get the correct row
+    // As we play in a 64x30 map to first find the correct y position
+	//We multiply by 64 to get the correct row
 	//Then we add tileX to find the column and the index of the tile
     unsigned int tileIndex = tileY * 64 + tileX;
 
@@ -570,10 +583,10 @@ char checkIfCollidableTile(unsigned char tile)
 void UpdateColliderPositions(void)
 {
 	//Update player Collider position
-	char playerLeft = playerX;
-	char playerRight = playerX + 7;
-	char playerTop = playerY - 15;
-	char playerBottom = playerY;
+	playerLeft = playerX;
+	playerRight = playerX + 7;
+	playerTop = playerY - 15;
+	playerBottom = playerY;
 
 	//Update the door collider position
 	doorLeft = goalX;
