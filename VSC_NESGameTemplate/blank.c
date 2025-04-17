@@ -353,6 +353,8 @@ void MovePlayer(void)
 			//If left then nothing will be added on as already checking in to the left
 			int checkX = nextX + (dashDirection == 1 ? 7 : 0);
 
+			int combinedX = nextX + scrollX;
+
 			//Check that there is not a collidable and if there is not then the player can move
 			if (!checkIfCollidableTile(TestLevel[GetTileIndex(checkX, playerY + 1)])) 
 			{
@@ -468,9 +470,23 @@ void DrawPlayer(void)
 	//Such as pos, tile index, palette etc.
 	oam_clear();
 	
-	// Draw the player using two tiles: 0x08 (top), 0x24 (bottom)
-    oam_spr(playerX, playerY - 8, 0x08, playerAttributes);
-    oam_spr(playerX, playerY, 0x18, playerAttributes);
+	if (isDashing)
+	{
+		oam_spr(playerX, playerY - 8, 0x09, playerAttributes);
+    	oam_spr(playerX, playerY, 0x19, playerAttributes);
+	}
+	else if (isJumping)
+	{
+		oam_spr(playerX, playerY - 8, 0x0A, playerAttributes);
+    	oam_spr(playerX, playerY, 0x1A, playerAttributes);
+	}
+	else
+	{
+		// Draw the player using two tiles: 0x08 (top), 0x24 (bottom)
+		oam_spr(playerX, playerY - 8, 0x08, playerAttributes);
+		oam_spr(playerX, playerY, 0x18, playerAttributes);
+	}
+	
 
 	//Draw the goal which is now a door
 	oam_spr(goalX, goalY, 0x16, 0x02);

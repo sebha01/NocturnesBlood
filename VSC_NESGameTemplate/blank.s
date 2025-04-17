@@ -4744,7 +4744,7 @@ L003D:	lda     _i
 	sbc     #$00
 	bvc     L0041
 	eor     #$80
-L0041:	bpl     L0079
+L0041:	jpl     L0079
 ;
 ; int nextX = playerX + dashDirection;
 ;
@@ -4776,9 +4776,25 @@ L0044:	clc
 	pla
 	jsr     pushax
 ;
+; int combinedX = nextX + scrollX;
+;
+	ldy     #$03
+	lda     (sp),y
+	tax
+	dey
+	lda     (sp),y
+	clc
+	adc     _scrollX
+	pha
+	txa
+	adc     _scrollX+1
+	tax
+	pla
+	jsr     pushax
+;
 ; if (!checkIfCollidableTile(TestLevel[GetTileIndex(checkX, playerY + 1)])) 
 ;
-	ldy     #$00
+	ldy     #$02
 	lda     (sp),y
 	jsr     pusha
 	lda     _playerY
@@ -4798,7 +4814,7 @@ L0044:	clc
 ;
 ; playerX = nextX;
 ;
-	ldy     #$03
+	ldy     #$05
 	lda     (sp),y
 	sta     _playerX+1
 	dey
@@ -4821,7 +4837,7 @@ L0045:	lda     #$00
 ;
 ; }
 ;
-L0047:	jsr     incsp4
+L0047:	jsr     incsp6
 ;
 ; for (i = 0; i < DASH_SPEED; i++) 
 ;
@@ -5017,9 +5033,82 @@ L005D:	rts
 ;
 L0002:	jsr     _oam_clear
 ;
-; oam_spr(playerX, playerY - 8, 0x08, playerAttributes);
+; if (isDashing)
+;
+	lda     _isDashing
+	beq     L0003
+;
+; oam_spr(playerX, playerY - 8, 0x09, playerAttributes);
 ;
 	jsr     decsp3
+	lda     _playerX
+	ldy     #$02
+	sta     (sp),y
+	lda     _playerY
+	sec
+	sbc     #$08
+	dey
+	sta     (sp),y
+	lda     #$09
+	dey
+	sta     (sp),y
+	ldy     #$03
+	lda     (sp),y
+	jsr     _oam_spr
+;
+; oam_spr(playerX, playerY, 0x19, playerAttributes);
+;
+	jsr     decsp3
+	lda     _playerX
+	ldy     #$02
+	sta     (sp),y
+	lda     _playerY
+	dey
+	sta     (sp),y
+	lda     #$19
+;
+; else if (isJumping)
+;
+	jmp     L0016
+L0003:	lda     _isJumping
+	beq     L0006
+;
+; oam_spr(playerX, playerY - 8, 0x0A, playerAttributes);
+;
+	jsr     decsp3
+	lda     _playerX
+	ldy     #$02
+	sta     (sp),y
+	lda     _playerY
+	sec
+	sbc     #$08
+	dey
+	sta     (sp),y
+	lda     #$0A
+	dey
+	sta     (sp),y
+	ldy     #$03
+	lda     (sp),y
+	jsr     _oam_spr
+;
+; oam_spr(playerX, playerY, 0x1A, playerAttributes);
+;
+	jsr     decsp3
+	lda     _playerX
+	ldy     #$02
+	sta     (sp),y
+	lda     _playerY
+	dey
+	sta     (sp),y
+	lda     #$1A
+;
+; else
+;
+	jmp     L0016
+;
+; oam_spr(playerX, playerY - 8, 0x08, playerAttributes);
+;
+L0006:	jsr     decsp3
 	lda     _playerX
 	ldy     #$02
 	sta     (sp),y
@@ -5045,7 +5134,7 @@ L0002:	jsr     _oam_clear
 	dey
 	sta     (sp),y
 	lda     #$18
-	dey
+L0016:	dey
 	sta     (sp),y
 	ldy     #$03
 	lda     (sp),y
