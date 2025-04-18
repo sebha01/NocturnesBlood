@@ -48,9 +48,15 @@
 #include "LIB/neslib.h"
 #include "LIB/nesdoug.h" 
 #include "NES_ST/Level1Data.h"
+#include "NES_ST/Level2Data.h"
+#include "NES_ST/Level3Data.h"
 #include <stdlib.h>
 #include "NES_ST/Level1A.h"
 #include "NES_ST/Level1B.h"
+#include "NES_ST/Level2A.h"
+#include "NES_ST/Level2B.h"
+#include "NES_ST/Level3A.h"
+#include "NES_ST/Level3B.h"
 
 //Define colours
 #define BLACK 			0x0f
@@ -142,6 +148,11 @@ char hasDashedInAir = 0;
 signed int dashDirection = 0; 
 //other variables
 int i = 0;
+//lowest 1 highest 3
+int currentLevel = 1;
+const unsigned char* currentLevelData;
+int gameOver = 0;
+
 
 //function prototypes
 void DrawTitleScreen(void);
@@ -156,6 +167,7 @@ char OnGround(void);
 char checkIfCollidableTile(unsigned char tile);
 void HandleRightMovement(unsigned int bound, unsigned int amountToIncrement);
 void HandleLeftMovement(unsigned int bound, unsigned int amountToDecrement);
+char checkIfGoalTile(unsigned char tile); 
 
 /*
 ----------------
@@ -191,7 +203,7 @@ void main (void)
 				DrawPlayer();
 				scroll(scrollX, 0);
 				//Check if player has reached end goal
-				//CheckIfEnd();
+				CheckIfEnd();
 				break;
 			case END_SCREEN:
 				//Check if player has pressed start
@@ -231,11 +243,35 @@ void GameLoop(void)
 {
 	//Turn screen off
 	ppu_off(); 
-	vram_adr(NAMETABLE_A);   // Set VRAM address to the top-left of the screen
-	vram_write(Level1A, 1024);
 
-	vram_adr(NAMETABLE_B);   // Set VRAM address to the top-left of the screen
-	vram_write(Level1B, 1024);
+	switch(currentLevel)
+	{
+		case 1:
+			currentLevelData = Level1Data;
+			vram_adr(NAMETABLE_A);   // Set VRAM address to the top-left of the screen
+			vram_write(Level1A, 1024);
+
+			vram_adr(NAMETABLE_B);   // Set VRAM address to the top-left of the screen
+			vram_write(Level1B, 1024);
+			break;
+		case 2:
+			currentLevelData = Level2Data;
+			vram_adr(NAMETABLE_A);   // Set VRAM address to the top-left of the screen
+			vram_write(Level2A, 1024);
+
+			vram_adr(NAMETABLE_B);   // Set VRAM address to the top-left of the screen
+			vram_write(Level2B, 1024);
+			break;
+		case 3:
+			currentLevelData = Level3Data;
+			vram_adr(NAMETABLE_A);   // Set VRAM address to the top-left of the screen
+			vram_write(Level3A, 1024);
+
+			vram_adr(NAMETABLE_B);   // Set VRAM address to the top-left of the screen
+			vram_write(Level3B, 1024);
+			break;
+	}
+	
 	//Load palette
 	pal_bg(palette);
 	pal_spr((const char*)spritePalette);
@@ -251,7 +287,7 @@ void MovePlayer(void)
 	//left
     if (movementPad & PAD_LEFT)
     {
-        if (!checkIfCollidableTile(Level1Data[GetTileIndex(playerX - 1, playerY + 1)]))
+        if (!checkIfCollidableTile(currentLevelData[GetTileIndex(playerX - 1, playerY + 1)]))
         {
 			//Handle movement
 			HandleLeftMovement(4, PLAYER_SPEED);
@@ -263,7 +299,7 @@ void MovePlayer(void)
 	//Right
     if (movementPad & PAD_RIGHT)
     {
-        if (!checkIfCollidableTile(Level1Data[GetTileIndex(playerX + 8, playerY + 1)]))
+        if (!checkIfCollidableTile(currentLevelData[GetTileIndex(playerX + 8, playerY + 1)]))
         {
 			//Handle Movement
 			HandleRightMovement(252, PLAYER_SPEED);
@@ -307,7 +343,7 @@ void MovePlayer(void)
 			int checkX = nextX + scrollX + (dashDirection == 1 ? 7 : 0);
 
 			//Check that there is not a collidable and if there is not then the player can move
-			if (!checkIfCollidableTile(Level1Data[GetTileIndex(checkX, playerY + 1)])) 
+			if (!checkIfCollidableTile(currentLevelData[GetTileIndex(checkX, playerY + 1)])) 
 			{
 				
 				if (dashDirection == 1) 
@@ -454,16 +490,29 @@ unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY)
 
 void CheckIfEnd()
 {
-	//------------------
-	//REFINE THIS
-	//-----------------
+	if (checkIfGoalTile(currentLevelData[GetTileIndex(playerX, playerY + 9)]) || 
+	checkIfGoalTile(currentLevelData[GetTileIndex(playerX + 1, playerY + 1)]) ||
+	checkIfGoalTile(currentLevelData[GetTileIndex(playerX + 6, playerY + 1)]))
+	{
+		if (currentLevel == 3)
+		{
+			gameOver = 1;
+		}
+		else
+		{
+			currentLevel++;
+			playerX = 30;
+			playerY = 215;
 
-	// Calculate the distance between the middle of both sprites
-	// if ()
-	// {
-	// 	currentGameState = END_SCREEN;
-	// 	DrawEndScreen();
-	// }
+			GameLoop();
+		}
+	}
+	
+	if (gameOver == 1)
+	{
+		currentGameState = END_SCREEN;
+		DrawEndScreen();
+	}
 }
 
 void DrawEndScreen()
@@ -477,6 +526,8 @@ void DrawEndScreen()
 	//Set varirables back to their default value
 	playerX = 30;
 	playerY = 215;
+	currentLevel = 1;
+	gameOver = 0;
 
 	//Clear the screen
 	vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
@@ -496,7 +547,7 @@ void DrawEndScreen()
 
 char OnGround(void) 
 {
-    return checkIfCollidableTile(Level1Data[GetTileIndex(playerX, playerY + 9)]);
+    return checkIfCollidableTile(currentLevelData[GetTileIndex(playerX, playerY + 9)]);
 }
 
 char checkIfCollidableTile(unsigned char tile) 
@@ -556,4 +607,10 @@ void HandleLeftMovement(unsigned int bound, unsigned int amountToDecrement)
 			scrollX = MIN_SCROLL;
 		}
 	} 
+}
+
+char checkIfGoalTile(unsigned char tile) 
+{
+	//Stores all of the tiles that are collidable and is used to calculate collisions
+    return tile == 0x06 || tile == 0x07 || tile == 0x16 || tile == 0x17;
 }
