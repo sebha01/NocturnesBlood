@@ -505,11 +505,11 @@ void CheckIfEnd()
 		{
 			currentLevel++;
 			
-			GameLoop();
-
+			scrollX = 0;
 			playerX = 30;
 			playerY = 215;
 
+			GameLoop();
 		}
 	}
 	
