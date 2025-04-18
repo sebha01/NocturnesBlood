@@ -129,18 +129,7 @@ signed int playerY = 215;
 //Player x can move first 128 and last 128 pixels without screen moving
 //Scroll x comes in to make sure the screen moves when the player does
 unsigned int scrollX = 0;
-char playerLeft = 0;
-char playerRight = 0;
-char playerTop = 0;
-char playerBottom = 0;
 char facingRight = 1;
-//Goal variables
-signed char goalX = 220;
-signed char goalY = 39;
-char doorLeft = 0;
-char doorRight = 0;
-char doorTop = 0;
-char doorBottom = 0;
 //jumping variables 
 int velocityY = 0;
 char isJumping = 0;
@@ -165,7 +154,6 @@ void CheckIfEnd(void);
 void DrawEndScreen(void);
 char OnGround(void); 
 char checkIfCollidableTile(unsigned char tile);
-void UpdateColliderPositions(void);
 void HandleRightMovement(unsigned int bound, unsigned int amountToIncrement);
 void HandleLeftMovement(unsigned int bound, unsigned int amountToDecrement);
 
@@ -199,12 +187,11 @@ void main (void)
 				break;
 			case GAME_LOOP:
 				//Player code
-				UpdateColliderPositions();
 				MovePlayer();
 				DrawPlayer();
 				scroll(scrollX, 0);
 				//Check if player has reached end goal
-				CheckIfEnd();
+				//CheckIfEnd();
 				break;
 			case END_SCREEN:
 				//Check if player has pressed start
@@ -258,7 +245,9 @@ void GameLoop(void)
 
 void MovePlayer(void)
 {
+	//-------------------------
     // Horizontal movement
+	//-------------------------
 	//left
     if (movementPad & PAD_LEFT)
     {
@@ -302,8 +291,9 @@ void MovePlayer(void)
 		}
 	}
 
-	//Handles collisions and updates the player movement so that they don't "phase" through
-	//collidable tiles
+	//-------------------------
+	//Dash mechanic
+	//-------------------------
 	if (isDashing) 
 	{
 		//Checks each pixel individually to make sure it doesn't let the player phase through collidables
@@ -469,12 +459,11 @@ void CheckIfEnd()
 	//-----------------
 
 	// Calculate the distance between the middle of both sprites
-	if ((playerRight >= doorLeft && playerLeft <= doorRight) &&
-	(playerBottom > doorTop && playerTop < doorBottom))
-	{
-		currentGameState = END_SCREEN;
-		DrawEndScreen();
-	}
+	// if ()
+	// {
+	// 	currentGameState = END_SCREEN;
+	// 	DrawEndScreen();
+	// }
 }
 
 void DrawEndScreen()
@@ -515,21 +504,6 @@ char checkIfCollidableTile(unsigned char tile)
 	//Stores all of the tiles that are collidable and is used to calculate collisions
     return tile == 0x80 || tile == 0x81 || tile == 0x82 || tile == 0x83 
 		|| tile == 0x90 || tile == 0x91 || tile == 0x92 || tile == 0x93;
-}
-
-void UpdateColliderPositions(void)
-{
-	//Update player Collider position
-	playerLeft = playerX;
-	playerRight = playerX + 7;
-	playerTop = playerY - 15;
-	playerBottom = playerY;
-
-	//Update the door collider position
-	doorLeft = goalX;
-    doorRight = goalX + 15;
-	doorTop = goalY - 15;
-	doorBottom = goalY;
 }
 
 void HandleRightMovement(unsigned int bound, unsigned int amountToIncrement)

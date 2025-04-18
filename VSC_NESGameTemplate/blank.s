@@ -39,17 +39,7 @@
 	.export		_playerX
 	.export		_playerY
 	.export		_scrollX
-	.export		_playerLeft
-	.export		_playerRight
-	.export		_playerTop
-	.export		_playerBottom
 	.export		_facingRight
-	.export		_goalX
-	.export		_goalY
-	.export		_doorLeft
-	.export		_doorRight
-	.export		_doorTop
-	.export		_doorBottom
 	.export		_velocityY
 	.export		_isJumping
 	.export		_isDashing
@@ -67,7 +57,6 @@
 	.export		_DrawEndScreen
 	.export		_OnGround
 	.export		_checkIfCollidableTile
-	.export		_UpdateColliderPositions
 	.export		_HandleRightMovement
 	.export		_HandleLeftMovement
 	.export		_main
@@ -82,28 +71,8 @@ _playerY:
 	.word	$00d7
 _scrollX:
 	.word	$0000
-_playerLeft:
-	.byte	$00
-_playerRight:
-	.byte	$00
-_playerTop:
-	.byte	$00
-_playerBottom:
-	.byte	$00
 _facingRight:
 	.byte	$01
-_goalX:
-	.byte	$dc
-_goalY:
-	.byte	$27
-_doorLeft:
-	.byte	$00
-_doorRight:
-	.byte	$00
-_doorTop:
-	.byte	$00
-_doorBottom:
-	.byte	$00
 _velocityY:
 	.word	$0000
 _isJumping:
@@ -5053,36 +5022,9 @@ L0002:	jsr     pushax
 .segment	"CODE"
 
 ;
-; if ((playerRight >= doorLeft && playerLeft <= doorRight) &&
+; }
 ;
-	lda     _playerRight
-	cmp     _doorLeft
-	bcc     L0011
-	lda     _playerLeft
-	cmp     _doorRight
-	bcc     L000D
-	bne     L0011
-;
-; (playerBottom > doorTop && playerTop < doorBottom))
-;
-L000D:	lda     _playerBottom
-	cmp     _doorTop
-	bcc     L0011
-	beq     L0011
-	lda     _playerTop
-	cmp     _doorBottom
-	bcc     L0014
 	rts
-L0011:	rts
-;
-; currentGameState = END_SCREEN;
-;
-L0014:	lda     #$02
-	sta     _currentGameState
-;
-; DrawEndScreen();
-;
-	jmp     _DrawEndScreen
 
 .endproc
 
@@ -5265,69 +5207,6 @@ L0004:	lda     #$01
 ; }
 ;
 	jmp     incsp1
-
-.endproc
-
-; ---------------------------------------------------------------
-; void __near__ UpdateColliderPositions (void)
-; ---------------------------------------------------------------
-
-.segment	"CODE"
-
-.proc	_UpdateColliderPositions: near
-
-.segment	"CODE"
-
-;
-; playerLeft = playerX;
-;
-	lda     _playerX
-	sta     _playerLeft
-;
-; playerRight = playerX + 7;
-;
-	clc
-	adc     #$07
-	sta     _playerRight
-;
-; playerTop = playerY - 15;
-;
-	lda     _playerY
-	sec
-	sbc     #$0F
-	sta     _playerTop
-;
-; playerBottom = playerY;
-;
-	lda     _playerY
-	sta     _playerBottom
-;
-; doorLeft = goalX;
-;
-	lda     _goalX
-	sta     _doorLeft
-;
-; doorRight = goalX + 15;
-;
-	clc
-	adc     #$0F
-	sta     _doorRight
-;
-; doorTop = goalY - 15;
-;
-	lda     _goalY
-	sec
-	sbc     #$0F
-	sta     _doorTop
-;
-; doorBottom = goalY;
-;
-	lda     _goalY
-	sta     _doorBottom
-;
-; }
-;
-	rts
 
 .endproc
 
@@ -5665,13 +5544,9 @@ L000D:	lda     _inputPad
 ;
 	jmp     L0002
 ;
-; UpdateColliderPositions();
-;
-L0009:	jsr     _UpdateColliderPositions
-;
 ; MovePlayer();
 ;
-	jsr     _MovePlayer
+L0009:	jsr     _MovePlayer
 ;
 ; DrawPlayer();
 ;
@@ -5685,10 +5560,6 @@ L0009:	jsr     _UpdateColliderPositions
 	ldx     #$00
 	txa
 	jsr     _scroll
-;
-; CheckIfEnd();
-;
-	jsr     _CheckIfEnd
 ;
 ; break;
 ;
