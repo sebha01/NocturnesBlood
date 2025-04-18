@@ -247,7 +247,7 @@ void GameLoop(void)
 	switch(currentLevel)
 	{
 		case 1:
-			currentLevelData = Level1Data;
+			currentLevelData = 	Level2Data;
 			vram_adr(NAMETABLE_A);   // Set VRAM address to the top-left of the screen
 			vram_write(Level1A, 1024);
 

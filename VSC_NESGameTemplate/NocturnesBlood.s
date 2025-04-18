@@ -7864,11 +7864,11 @@ _currentLevelData:
 	beq     L0006
 	jmp     L0003
 ;
-; currentLevelData = Level1Data;
+; currentLevelData =  Level2Data;
 ;
-L0004:	lda     #>(_Level1Data)
+L0004:	lda     #>(_Level2Data)
 	sta     _currentLevelData+1
-	lda     #<(_Level1Data)
+	lda     #<(_Level2Data)
 	sta     _currentLevelData
 ;
 ; vram_adr(NAMETABLE_A);   // Set VRAM address to the top-left of the screen

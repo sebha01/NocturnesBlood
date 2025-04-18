@@ -1,6 +1,6 @@
 @echo off
 
-set name="Nocturne'sBlood"
+set name="NocturnesBlood"
 
 set CC65_HOME=..\cc65\
 
