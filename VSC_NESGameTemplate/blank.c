@@ -358,20 +358,15 @@ void MovePlayer(void)
     else 
     {
         // ----------------------------
-		// Jumping mechanic
-		// Only runs if player is not dashing on the ground
+		// Jumping mechanic only runs if player is not dashing on the ground
 		// ----------------------------
 
-		// Check if jump button (A) is pressed,
-		// player is not already jumping, 
-		// and player is currently standing on solid ground
+		// Check if jump button (A) is pressed, player is not already jumping, and player is currently standing on solid ground
         if ((inputPad & PAD_A) && !isJumping && OnGround()) 
         {
 			//Set the "bool" variable to true
             isJumping = 1;
-			//Set the velocity to be the constant we defined
-			//Applies an upward force to the player by being a 
-			//negative value
+			//Set the velocity to be the constant we defined applies an upward force to the player by being a negative value
             velocityY = JUMP_VELOCITY;
         }
 
@@ -380,20 +375,14 @@ void MovePlayer(void)
         {
 			//Apply gravity to bring the player back down
             velocityY += GRAVITY;
-
-			//makeSure hte fall speed doesn't exceed the 
-			//max value so player doesn't fall too fast
+			//makeSure hte fall speed doesn't exceed the max value so player doesn't fall too fast
             if (velocityY > MAX_FALL_SPEED)
 			{
                 velocityY = MAX_FALL_SPEED;
 			}
-
-			//Move the player depending on the value of the velocity
-			// Velocity starts off negative so it acts as an upwards force
-			//As it becomes positive it becomes a downward force to pull
-			//the player back
+			//Move the player depending on the value of the velocity velocity starts off negative so it acts as an upwards force
+			//As it becomes positive it becomes a downward force to pull the player back
             playerY += velocityY;
-
 			//Checks to see if player is stil falling but on the ground
             if (velocityY >= 0 && OnGround()) 
             {
@@ -402,11 +391,8 @@ void MovePlayer(void)
 				{
 					playerY -= 1;
 				}
-
-				//Reset all variables to do with jumping and dashing
-				// now that the player is on the ground
-				//Also make sure that the player is at ground level so
-				//the player is not floating slightly
+				//Reset all variables to do with jumping and dashing now that the player is on the ground
+				//Also make sure that the player is at ground level so the player is not floating slightly
                 playerY += 1;
                 velocityY = 0;
                 isJumping = 0;
@@ -415,8 +401,7 @@ void MovePlayer(void)
         } 
         else 
         {
-			//More of a just in case the player is not on the ground
-			//But the value for isJumping is not set to true
+			//More of a just in case the player is not on the ground but the value for isJumping is not set to true
 			//So it gets set to 1 so gravity can bring the player back down
             if (!OnGround()) 
             {
@@ -441,8 +426,7 @@ void DrawPlayer(void)
 		playerAttributes |= 0x40;
 	}
 
-	//Clears all sprite entries in Object Attribute Memory
-	//OAM special memopry area that holds info about sprites
+	//Clears all sprite entries in Object Attribute Memory OAM special memopry area that holds info about sprites
 	//Such as pos, tile index, palette etc.
 	oam_clear();
 	
@@ -466,16 +450,12 @@ void DrawPlayer(void)
 
 unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY)
 {
-    // Get the x and y tile that the player is currently on
-	//Divide by 8 as the players current position is in pixels
-	//Each tile has 8 pixels so we need to divide by 8 to find the tile
-	//We need to add scrollX to it so that we can find the correct position
-	//across both halves of the map
+    // Get the x and y tile that the player is currently on Divide by 8 as the players current position is in
+	// pixels. Each tile has 8 pixels so we need to divide by 8 to find the tile We need to add scrollX to it 
+	//so that we can find the correct position across both halves of the map
     unsigned char tileX = (playerX + scrollX) / 8; 
     unsigned char tileY = playerY / 8;
-    
-    // As we play in a 64x30 map to first find the correct y position
-	//We multiply by 64 to get the correct row
+    // As we play in a 64x30 map to first find the correct y position We multiply by 64 to get the correct row
 	//Then we add tileX to find the column and the index of the tile
     unsigned int tileIndex = tileY * 64 + tileX;
 
@@ -484,6 +464,10 @@ unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY)
 
 void CheckIfEnd()
 {
+	//------------------
+	//REFINE THIS
+	//-----------------
+
 	// Calculate the distance between the middle of both sprites
 	if ((playerRight >= doorLeft && playerLeft <= doorRight) &&
 	(playerBottom > doorTop && playerTop < doorBottom))
