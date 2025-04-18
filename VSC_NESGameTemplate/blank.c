@@ -145,12 +145,12 @@ char doorBottom = 0;
 int velocityY = 0;
 char isJumping = 0;
 //Dash variables 
-char isDashing = 0;
+unsigned int isDashing = 0;
 char dashTimer = 0;
 char dashCooldown = 0;
 char hasDashedInAir = 0;
 // -1 = left, 1 = right
-char dashDirection = 0; 
+signed int dashDirection = 0; 
 //other variables
 int i = 0;
 
@@ -166,6 +166,8 @@ void DrawEndScreen(void);
 char OnGround(void); 
 char checkIfCollidableTile(unsigned char tile);
 void UpdateColliderPositions(void);
+void HandleRightMovement(unsigned int bound, unsigned int amountToIncrement);
+void HandleLeftMovement(unsigned int bound, unsigned int amountToDecrement);
 
 /*
 ----------------
@@ -184,7 +186,6 @@ void main (void)
 		ppu_wait_nmi();
 		movementPad = pad_poll(0);
 		inputPad = get_pad_new(0);
-		
 
 		switch(currentGameState)
 		{
@@ -263,28 +264,8 @@ void MovePlayer(void)
     {
         if (!checkIfCollidableTile(Level1Data[GetTileIndex(playerX - 1, playerY + 1)]))
         {
-			 //Make sure player x is 0 - 128 and player X and scrollX is 384 or greater
-			 //before we decrement playerX
-			if (playerX > 0 && playerX < 128 || (playerX + scrollX > 384) || 
-			(scrollX == MIN_SCROLL && playerX == 128))
-			{
-				playerX -= PLAYER_SPEED;
-			}
-			// Make sure playerX and scrollX is greater than 128 and less than 384
-			//before decrementing scrollX
-			else if ((playerX + scrollX) > 128 && (playerX + scrollX) <= 384)
-			{
-				//Makes sure ScrollX goes down to 0 only
-				if (scrollX >= 4) 
-				{
-					scrollX -= PLAYER_SPEED;
-				} else 
-				{
-					//prevents scrollX from going negative in the odd case it does
-					scrollX = MIN_SCROLL;
-				}
-			} 
-
+			//Handle movement
+			HandleLeftMovement(4, PLAYER_SPEED);
 			//Set facing right to false
 			facingRight = 0;
         }
@@ -295,27 +276,8 @@ void MovePlayer(void)
     {
         if (!checkIfCollidableTile(Level1Data[GetTileIndex(playerX + 8, playerY + 1)]))
         {
-			//Make sure player x is 0 - 128 and player X and scrollX is 384 or greater
-			 //before we increment playerX
-			if (playerX > 0 && playerX < 128 || (playerX + scrollX >= 384))
-			{
-				playerX += PLAYER_SPEED;
-			}
-			// Make sure playerX and scrollX is greater than 128 and less than 384
-			//before incrementing scrollX
-			else if ((playerX + scrollX) >= 128 && (playerX + scrollX) < 384)
-			{
-				//Makes sure ScrollX goes up to 256 only
-				if (scrollX <= 252) 
-				{
-					scrollX += PLAYER_SPEED;
-				} else 
-				{
-					//prevents scrollX from going above 256 in the odd case it does
-					scrollX = MAX_SCROLL;
-				}
-			}
-
+			//Handle Movement
+			HandleRightMovement(252, PLAYER_SPEED);
 			//Set facing right to true
 			facingRight = 1;
         }
@@ -328,27 +290,14 @@ void MovePlayer(void)
 		// Only allow midair dash if the player has not dashed in the air yet
 		if (OnGround() || !hasDashedInAir)
 		{
-			//Set's the dash direction to the left and other variables needed to execute the dash 
-			if (movementPad & PAD_LEFT) 
-			{
-				isDashing = 1;
-				dashDirection = -1;
-				dashTimer = DASH_DURATION;
+			dashDirection = (movementPad & PAD_LEFT ? -1 : movementPad & PAD_RIGHT ? 1 : 0);
+			isDashing = 1;
+			dashTimer = DASH_DURATION;
 
-				//makes sure player cannot double dash in the air
-				if (!OnGround())
-					hasDashedInAir = 1;
-			} 
-			//Sets the dash direction to the right and other variables needed to execute the dash
-			else if (movementPad & PAD_RIGHT) 
+			//Makes sure no double air dashing
+			if (!OnGround())
 			{
-				isDashing = 1;
-				dashDirection = 1;
-				dashTimer = DASH_DURATION;
-
-				//Makes sure no double air dashing
-				if (!OnGround())
-					hasDashedInAir = 1;
+				hasDashedInAir = 1;
 			}
 		}
 	}
@@ -367,49 +316,25 @@ void MovePlayer(void)
 			//If left then nothing will be added on as already checking in to the left
 			int checkX = nextX + (dashDirection == 1 ? 7 : 0);
 
-			int combinedX = nextX + scrollX;
-
 			//Check that there is not a collidable and if there is not then the player can move
 			if (!checkIfCollidableTile(Level1Data[GetTileIndex(checkX, playerY + 1)])) 
 			{
+				
 				if (dashDirection == 1) 
 				{
-					// --- RIGHT DASH ---
-					if (playerX < 128 && (playerX + scrollX) < 511) 
-					{
-						playerX++;
-					}
-					else if ((playerX + scrollX) >= 128 && (playerX + scrollX) < 384) 
-					{
-						if (scrollX <= 255) 
-						{
-							scrollX++;
-						} 
-						else 
-						{
-							scrollX = MAX_SCROLL;
-						}
-					}
+					//Dash direction is right
+					HandleRightMovement(255, 1);
 				} 
-				else 
+				else if (dashDirection == -1)
 				{
-					// --- LEFT DASH ---
-					if (playerX > 0 && playerX < 128 || (playerX + scrollX > 384) ||
-					(scrollX == MIN_SCROLL && playerX == 128)) 
-					{
-						playerX--;
-					} 
-					else if ((playerX + scrollX) > 128 && (playerX + scrollX) <= 384) 
-					{
-						if (scrollX >= 1) 
-						{
-							scrollX--;
-						} 
-						else 
-						{
-							scrollX = MIN_SCROLL;
-						}
-					}
+					//Dash direction is left
+					HandleLeftMovement(1, 1);
+				}
+				else
+				{
+					//Disable dash if player is not holding left or right to dash
+					isDashing = 0;
+					dashCooldown = DASH_COOLDOWN;
 				}
 			} 
 			else 
@@ -444,7 +369,6 @@ void MovePlayer(void)
         {
 			//Set the "bool" variable to true
             isJumping = 1;
-
 			//Set the velocity to be the constant we defined
 			//Applies an upward force to the player by being a 
 			//negative value
@@ -538,17 +462,6 @@ void DrawPlayer(void)
 		oam_spr(playerX, playerY - 8, 0x08, playerAttributes);
 		oam_spr(playerX, playerY, 0x18, playerAttributes);
 	}
-	
-
-	//Update goal x and y positions
-	// goalX = 220 + scrollX;
-	// goalY = 39;
-
-	//Draw the goal which is now a door
-	oam_spr(goalX, goalY, 0x16, 0x02);
-	oam_spr(goalX + 8, goalY, 0x17, 0x02);
-	oam_spr(goalX, goalY - 8, 0x06, 0x02);
-	oam_spr(goalX + 8, goalY - 8, 0x07, 0x02);
 }
 
 unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY)
@@ -633,4 +546,54 @@ void UpdateColliderPositions(void)
     doorRight = goalX + 15;
 	doorTop = goalY - 15;
 	doorBottom = goalY;
+}
+
+void HandleRightMovement(unsigned int bound, unsigned int amountToIncrement)
+{
+	//Make sure player x is 0 - 128 and player X and scrollX is 384 or greater
+	//before we increment playerX
+	if (playerX > 0 && playerX < 128 || (playerX + scrollX >= 384))
+	{
+		playerX += amountToIncrement;
+	}
+	// Make sure playerX and scrollX is greater than 128 and less than 384
+	//before incrementing scrollX
+	else if ((playerX + scrollX) >= 128 && (playerX + scrollX) < 384)
+	{
+		//Makes sure ScrollX goes up to 256 only
+		if (scrollX <= bound) 
+		{
+			scrollX += amountToIncrement;
+		} else 
+		{
+			//prevents scrollX from going above 256 in the odd case it does
+			scrollX = MAX_SCROLL;
+		}
+	}
+}
+
+
+void HandleLeftMovement(unsigned int bound, unsigned int amountToDecrement)
+{
+	 //Make sure player x is 0 - 128 and player X and scrollX is 384 or greater
+	//before we decrement playerX
+	if (playerX > 0 && playerX < 128 || (playerX + scrollX > 384) || 
+	(scrollX == MIN_SCROLL && playerX == 128))
+	{
+		playerX -= amountToDecrement;
+	}
+	// Make sure playerX and scrollX is greater than 128 and less than 384
+	//before decrementing scrollX
+	else if ((playerX + scrollX) > 128 && (playerX + scrollX) <= 384)
+	{
+		//Makes sure ScrollX goes down to 0 only
+		if (scrollX >= bound) 
+		{
+			scrollX -= amountToDecrement;
+		} else 
+		{
+			//prevents scrollX from going negative in the odd case it does
+			scrollX = MIN_SCROLL;
+		}
+	} 
 }
