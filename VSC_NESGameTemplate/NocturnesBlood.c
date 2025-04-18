@@ -90,6 +90,7 @@
 #define GRAVITY 1
 #define JUMP_VELOCITY -10
 #define MAX_FALL_SPEED 4
+#define COYOTE_FRAMES 6
 //dashing
 #define DASH_SPEED 5
 #define DASH_DURATION 6
@@ -132,6 +133,7 @@ unsigned char movementPad;
 //Player variables
 signed int playerX = 30;
 signed int playerY = 215;
+char coyoteTime = 0;
 //Player x can move first 128 and last 128 pixels without screen moving
 //Scroll x comes in to make sure the screen moves when the player does
 unsigned int scrollX = 0;
@@ -389,8 +391,18 @@ void MovePlayer(void)
 		// Jumping mechanic only runs if player is not dashing on the ground
 		// ----------------------------
 
+		if (OnGround()) 
+		{
+			coyoteTime = COYOTE_FRAMES;
+			hasDashedInAir = 0;
+		} 
+		else if (coyoteTime > 0) 
+		{
+			coyoteTime--;
+		}
+
 		// Check if jump button (A) is pressed, player is not already jumping, and player is currently standing on solid ground
-        if ((inputPad & PAD_A) && !isJumping && OnGround()) 
+        if ((inputPad & PAD_A) && !isJumping && coyoteTime > 0) 
         {
 			//Set the "bool" variable to true
             isJumping = 1;
