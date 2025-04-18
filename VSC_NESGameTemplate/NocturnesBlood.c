@@ -150,7 +150,6 @@ signed int dashDirection = 0;
 int i = 0;
 //lowest 1 highest 3
 int currentLevel = 1;
-int changeLevel = 1;
 const unsigned char* currentLevelData;
 int gameOver = 0;
 
@@ -505,15 +504,12 @@ void CheckIfEnd()
 		else
 		{
 			currentLevel++;
+			
+			GameLoop();
+
 			playerX = 30;
 			playerY = 215;
-			changeLevel = 1;
 
-			if (changeLevel)
-			{
-				GameLoop();
-			}
-			changeLevel = 0;
 		}
 	}
 	
