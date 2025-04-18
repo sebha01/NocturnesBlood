@@ -12991,7 +12991,7 @@ L0016:	jsr     _OnGround
 ;
 ; coyoteTime = COYOTE_FRAMES;
 ;
-	lda     #$06
+	lda     #$0A
 	sta     _coyoteTime
 ;
 ; hasDashedInAir = 0;

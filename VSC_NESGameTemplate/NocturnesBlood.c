@@ -90,7 +90,7 @@
 #define GRAVITY 1
 #define JUMP_VELOCITY -10
 #define MAX_FALL_SPEED 4
-#define COYOTE_FRAMES 6
+#define COYOTE_FRAMES 10
 //dashing
 #define DASH_SPEED 5
 #define DASH_DURATION 6
