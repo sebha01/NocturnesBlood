@@ -24,7 +24,7 @@
 	.import		_vram_fill
 	.import		_vram_write
 	.import		_get_pad_new
-	.export		_TestLevel
+	.export		_Level1Data
 	.export		_Level1A
 	.export		_Level1B
 	.export		_palette
@@ -121,7 +121,7 @@ _i:
 
 .segment	"RODATA"
 
-_TestLevel:
+_Level1Data:
 	.byte	$82
 	.byte	$81
 	.byte	$80
@@ -4406,9 +4406,9 @@ _movementPad:
 ;
 	lda     _movementPad
 	and     #$02
-	jeq     L006D
+	jeq     L0096
 ;
-; if (!checkIfCollidableTile(TestLevel[GetTileIndex(playerX - 1, playerY + 1)]))
+; if (!checkIfCollidableTile(Level1Data[GetTileIndex(playerX - 1, playerY + 1)]))
 ;
 	lda     _playerX
 	sec
@@ -4421,13 +4421,13 @@ _movementPad:
 	sta     ptr1
 	txa
 	clc
-	adc     #>(_TestLevel)
+	adc     #>(_Level1Data)
 	sta     ptr1+1
-	ldy     #<(_TestLevel)
+	ldy     #<(_Level1Data)
 	lda     (ptr1),y
 	jsr     _checkIfCollidableTile
 	tax
-	jne     L006D
+	jne     L0096
 ;
 ; if (playerX > 0 && playerX < 128 || (playerX + scrollX > 384) || 
 ;
@@ -4444,7 +4444,7 @@ L0007:	bpl     L0008
 	sbc     #$00
 	bvc     L0009
 	eor     #$80
-L0009:	bmi     L0066
+L0009:	bmi     L008F
 L0008:	lda     _playerX
 	clc
 	adc     _scrollX
@@ -4456,7 +4456,7 @@ L0008:	lda     _playerX
 	cmp     #$81
 	txa
 	sbc     #$01
-	bcs     L0066
+	bcs     L008F
 ;
 ; (scrollX == MIN_SCROLL && playerX == 128))
 ;
@@ -4471,7 +4471,7 @@ L0008:	lda     _playerX
 ;
 ; playerX -= PLAYER_SPEED;
 ;
-L0066:	lda     _playerX
+L008F:	lda     _playerX
 	sec
 	sbc     #$02
 	sta     _playerX
@@ -4493,7 +4493,7 @@ L0006:	lda     _playerX
 	txa
 	sbc     #$00
 	lda     #$00
-	bcc     L006C
+	bcc     L0095
 	lda     _playerX
 	clc
 	adc     _scrollX
@@ -4514,7 +4514,7 @@ L0015:	bcs     L001A
 	lda     _scrollX+1
 	sbc     #$00
 	lda     #$00
-	bcc     L006A
+	bcc     L0093
 ;
 ; scrollX -= PLAYER_SPEED;
 ;
@@ -4531,21 +4531,21 @@ L0015:	bcs     L001A
 ;
 ; scrollX = MIN_SCROLL;
 ;
-L006A:	sta     _scrollX
+L0093:	sta     _scrollX
 	sta     _scrollX+1
 ;
 ; facingRight = 0;
 ;
 L001A:	lda     #$00
-L006C:	sta     _facingRight
+L0095:	sta     _facingRight
 ;
 ; if (movementPad & PAD_RIGHT)
 ;
-L006D:	lda     _movementPad
+L0096:	lda     _movementPad
 	and     #$01
-	jeq     L0072
+	jeq     L009B
 ;
-; if (!checkIfCollidableTile(TestLevel[GetTileIndex(playerX + 8, playerY + 1)]))
+; if (!checkIfCollidableTile(Level1Data[GetTileIndex(playerX + 8, playerY + 1)]))
 ;
 	lda     _playerX
 	clc
@@ -4558,13 +4558,13 @@ L006D:	lda     _movementPad
 	sta     ptr1
 	txa
 	clc
-	adc     #>(_TestLevel)
+	adc     #>(_Level1Data)
 	sta     ptr1+1
-	ldy     #<(_TestLevel)
+	ldy     #<(_Level1Data)
 	lda     (ptr1),y
 	jsr     _checkIfCollidableTile
 	tax
-	jne     L0072
+	jne     L009B
 ;
 ; if (playerX > 0 && playerX < 128 || (playerX + scrollX >= 384))
 ;
@@ -4581,7 +4581,7 @@ L0020:	bpl     L0021
 	sbc     #$00
 	bvc     L0022
 	eor     #$80
-L0022:	bmi     L006E
+L0022:	bmi     L0097
 L0021:	lda     _playerX
 	clc
 	adc     _scrollX
@@ -4597,16 +4597,16 @@ L0021:	lda     _playerX
 ;
 ; playerX += PLAYER_SPEED;
 ;
-L006E:	lda     #$02
+L0097:	lda     #$02
 	clc
 	adc     _playerX
 	sta     _playerX
-	bcc     L0071
+	bcc     L009A
 	inc     _playerX+1
 ;
 ; else if ((playerX + scrollX) >= 128 && (playerX + scrollX) < 384)
 ;
-	jmp     L0071
+	jmp     L009A
 L001F:	lda     _playerX
 	clc
 	adc     _scrollX
@@ -4618,7 +4618,7 @@ L001F:	lda     _playerX
 	cmp     #$80
 	txa
 	sbc     #$00
-	bcc     L0071
+	bcc     L009A
 	lda     _playerX
 	clc
 	adc     _scrollX
@@ -4630,7 +4630,7 @@ L001F:	lda     _playerX
 	cpx     #$01
 	bne     L0029
 	cmp     #$80
-L0029:	bcs     L0071
+L0029:	bcs     L009A
 ;
 ; if (scrollX <= 252) 
 ;
@@ -4647,12 +4647,12 @@ L002D:	bcs     L002C
 	clc
 	adc     _scrollX
 	sta     _scrollX
-	bcc     L0071
+	bcc     L009A
 	inc     _scrollX+1
 ;
 ; } else 
 ;
-	jmp     L0071
+	jmp     L009A
 ;
 ; scrollX = MAX_SCROLL;
 ;
@@ -4663,12 +4663,12 @@ L002C:	ldx     #$01
 ;
 ; facingRight = 1;
 ;
-L0071:	lda     #$01
+L009A:	lda     #$01
 	sta     _facingRight
 ;
 ; if ((inputPad & PAD_B) && !isDashing && dashCooldown == 0) 
 ;
-L0072:	lda     _inputPad
+L009B:	lda     _inputPad
 	and     #$40
 	beq     L003B
 	lda     _isDashing
@@ -4680,15 +4680,15 @@ L0072:	lda     _inputPad
 ;
 	jsr     _OnGround
 	tax
-	bne     L0076
+	bne     L009F
 	lda     _hasDashedInAir
 	bne     L003B
 ;
 ; if (movementPad & PAD_LEFT) 
 ;
-L0076:	lda     _movementPad
+L009F:	lda     _movementPad
 	and     #$02
-	beq     L0077
+	beq     L00A0
 ;
 ; isDashing = 1;
 ;
@@ -4701,8 +4701,8 @@ L0076:	lda     _movementPad
 ;
 ; else if (movementPad & PAD_RIGHT) 
 ;
-	jmp     L0084
-L0077:	lda     _movementPad
+	jmp     L00BC
+L00A0:	lda     _movementPad
 	and     #$01
 	beq     L003B
 ;
@@ -4713,11 +4713,11 @@ L0077:	lda     _movementPad
 ;
 ; dashDirection = 1;
 ;
-L0084:	sta     _dashDirection
+L00BC:	sta     _dashDirection
 ;
 ; dashTimer = DASH_DURATION;
 ;
-	lda     #$0A
+	lda     #$06
 	sta     _dashTimer
 ;
 ; if (!OnGround())
@@ -4742,12 +4742,12 @@ L003B:	lda     _isDashing
 	sta     _i
 	sta     _i+1
 L003D:	lda     _i
-	cmp     #$04
+	cmp     #$05
 	lda     _i+1
 	sbc     #$00
 	bvc     L0041
 	eor     #$80
-L0041:	jpl     L0079
+L0041:	jpl     L00B0
 ;
 ; int nextX = playerX + dashDirection;
 ;
@@ -4755,19 +4755,19 @@ L0041:	jpl     L0079
 	ldx     _playerX+1
 	clc
 	adc     _dashDirection
-	bcc     L005E
+	bcc     L0086
 	inx
-L005E:	jsr     pushax
+L0086:	jsr     pushax
 ;
 ; int checkX = nextX + (dashDirection == 1 ? 7 : 0);
 ;
 	ldx     #$00
 	lda     _dashDirection
 	cmp     #$01
-	bne     L0078
+	bne     L00A1
 	lda     #$07
 	jmp     L0044
-L0078:	txa
+L00A1:	txa
 L0044:	clc
 	ldy     #$00
 	adc     (sp),y
@@ -4795,7 +4795,7 @@ L0044:	clc
 	pla
 	jsr     pushax
 ;
-; if (!checkIfCollidableTile(TestLevel[GetTileIndex(checkX, playerY + 1)])) 
+; if (!checkIfCollidableTile(Level1Data[GetTileIndex(checkX, playerY + 1)])) 
 ;
 	ldy     #$02
 	lda     (sp),y
@@ -4807,26 +4807,203 @@ L0044:	clc
 	sta     ptr1
 	txa
 	clc
-	adc     #>(_TestLevel)
+	adc     #>(_Level1Data)
 	sta     ptr1+1
-	ldy     #<(_TestLevel)
+	ldy     #<(_Level1Data)
 	lda     (ptr1),y
 	jsr     _checkIfCollidableTile
 	tax
-	bne     L0045
+	jne     L0045
 ;
-; playerX = nextX;
+; if (dashDirection == 1) 
 ;
-	ldy     #$05
-	lda     (sp),y
-	sta     _playerX+1
-	dey
-	lda     (sp),y
-	sta     _playerX
+	lda     _dashDirection
+	cmp     #$01
+	jne     L0047
+;
+; if (playerX < 128 && (playerX + scrollX) < 511) 
+;
+	lda     _playerX
+	cmp     #$80
+	lda     _playerX+1
+	sbc     #$00
+	bvc     L0049
+	eor     #$80
+L0049:	bpl     L0048
+	lda     _playerX
+	clc
+	adc     _scrollX
+	pha
+	lda     _playerX+1
+	adc     _scrollX+1
+	tax
+	pla
+	cpx     #$01
+	bne     L004B
+	cmp     #$FF
+L004B:	bcs     L0048
+;
+; playerX++;
+;
+	inc     _playerX
+	jne     L006F
+	inc     _playerX+1
+;
+; else if ((playerX + scrollX) >= 128 && (playerX + scrollX) < 384) 
+;
+	jmp     L006F
+L0048:	lda     _playerX
+	clc
+	adc     _scrollX
+	pha
+	lda     _playerX+1
+	adc     _scrollX+1
+	tax
+	pla
+	cmp     #$80
+	txa
+	sbc     #$00
+	jcc     L006F
+	lda     _playerX
+	clc
+	adc     _scrollX
+	pha
+	lda     _playerX+1
+	adc     _scrollX+1
+	tax
+	pla
+	cpx     #$01
+	bne     L0052
+	cmp     #$80
+L0052:	jcs     L006F
+;
+; if (scrollX <= 255) 
+;
+	ldx     _scrollX+1
+	cpx     #$01
+	bcs     L0055
+;
+; scrollX++;
+;
+	inc     _scrollX
+	jne     L006F
+	inc     _scrollX+1
 ;
 ; else 
 ;
-	jmp     L0047
+	jmp     L006F
+;
+; scrollX = MAX_SCROLL;
+;
+L0055:	ldx     #$01
+	lda     #$00
+	sta     _scrollX
+	stx     _scrollX+1
+;
+; else 
+;
+	jmp     L006F
+;
+; if (playerX > 0 && playerX < 128 || (playerX + scrollX > 384) ||
+;
+L0047:	lda     _playerX
+	cmp     #$01
+	lda     _playerX+1
+	sbc     #$00
+	bvs     L005A
+	eor     #$80
+L005A:	bpl     L005B
+	lda     _playerX
+	cmp     #$80
+	lda     _playerX+1
+	sbc     #$00
+	bvc     L005C
+	eor     #$80
+L005C:	bmi     L00AB
+L005B:	lda     _playerX
+	clc
+	adc     _scrollX
+	pha
+	lda     _playerX+1
+	adc     _scrollX+1
+	tax
+	pla
+	cmp     #$81
+	txa
+	sbc     #$01
+	bcs     L00AB
+;
+; (scrollX == MIN_SCROLL && playerX == 128)) 
+;
+	lda     _scrollX
+	ora     _scrollX+1
+	bne     L0059
+	lda     _playerX+1
+	bne     L0059
+	lda     _playerX
+	cmp     #$80
+	bne     L0059
+;
+; playerX--;
+;
+L00AB:	lda     _playerX
+	bne     L0064
+	dec     _playerX+1
+L0064:	dec     _playerX
+;
+; else if ((playerX + scrollX) > 128 && (playerX + scrollX) <= 384) 
+;
+	jmp     L006F
+L0059:	lda     _playerX
+	clc
+	adc     _scrollX
+	pha
+	lda     _playerX+1
+	adc     _scrollX+1
+	tax
+	pla
+	cmp     #$81
+	txa
+	sbc     #$00
+	bcc     L006F
+	lda     _playerX
+	clc
+	adc     _scrollX
+	pha
+	lda     _playerX+1
+	adc     _scrollX+1
+	tax
+	pla
+	cpx     #$01
+	bne     L0068
+	cmp     #$81
+L0068:	bcs     L006F
+;
+; if (scrollX >= 1) 
+;
+	lda     _scrollX
+	ora     _scrollX+1
+	beq     L00AF
+;
+; scrollX--;
+;
+	lda     _scrollX
+	bne     L006D
+	dec     _scrollX+1
+L006D:	dec     _scrollX
+;
+; else 
+;
+	jmp     L006F
+;
+; scrollX = MIN_SCROLL;
+;
+L00AF:	sta     _scrollX
+	sta     _scrollX+1
+;
+; else 
+;
+	jmp     L006F
 ;
 ; isDashing = 0;
 ;
@@ -4840,7 +5017,7 @@ L0045:	lda     #$00
 ;
 ; }
 ;
-L0047:	jsr     incsp6
+L006F:	jsr     incsp6
 ;
 ; for (i = 0; i < DASH_SPEED; i++) 
 ;
@@ -4851,12 +5028,12 @@ L0047:	jsr     incsp6
 ;
 ; dashTimer--;
 ;
-L0079:	dec     _dashTimer
+L00B0:	dec     _dashTimer
 ;
 ; if (dashTimer <= 0) 
 ;
 	lda     _dashTimer
-	jne     L007C
+	jne     L00B3
 ;
 ; isDashing = 0;
 ;
@@ -4869,18 +5046,18 @@ L0079:	dec     _dashTimer
 ;
 ; else 
 ;
-	jmp     L007C
+	jmp     L00B3
 ;
 ; if ((inputPad & PAD_A) && !isJumping && OnGround()) 
 ;
 L003C:	lda     _inputPad
 	and     #$80
-	beq     L004A
+	beq     L0072
 	lda     _isJumping
-	bne     L004A
+	bne     L0072
 	jsr     _OnGround
 	tax
-	beq     L004A
+	beq     L0072
 ;
 ; isJumping = 1;
 ;
@@ -4896,24 +5073,24 @@ L003C:	lda     _inputPad
 ;
 ; if (isJumping) 
 ;
-L004A:	lda     _isJumping
-	beq     L004E
+L0072:	lda     _isJumping
+	beq     L0076
 ;
 ; velocityY += GRAVITY;
 ;
 	inc     _velocityY
-	bne     L004F
+	bne     L0077
 	inc     _velocityY+1
 ;
 ; if (velocityY > MAX_FALL_SPEED)
 ;
-L004F:	lda     _velocityY
+L0077:	lda     _velocityY
 	cmp     #$05
 	lda     _velocityY+1
 	sbc     #$00
-	bvs     L0051
+	bvs     L0079
 	eor     #$80
-L0051:	bpl     L0050
+L0079:	bpl     L0078
 ;
 ; velocityY = MAX_FALL_SPEED;
 ;
@@ -4924,7 +5101,7 @@ L0051:	bpl     L0050
 ;
 ; playerY += velocityY;
 ;
-L0050:	lda     _velocityY
+L0078:	lda     _velocityY
 	clc
 	adc     _playerY
 	sta     _playerY
@@ -4935,35 +5112,35 @@ L0050:	lda     _velocityY
 ; if (velocityY >= 0 && OnGround()) 
 ;
 	ldx     _velocityY+1
-	bmi     L007C
+	bmi     L00B3
 	jsr     _OnGround
 	tax
-	bne     L0058
-	jmp     L007C
+	bne     L0080
+	jmp     L00B3
 ;
 ; playerY -= 1;
 ;
-L0056:	ldx     _playerY
-	bne     L0059
+L007E:	ldx     _playerY
+	bne     L0081
 	dec     _playerY+1
-L0059:	dex
+L0081:	dex
 	stx     _playerY
 ;
 ; while (OnGround()) 
 ;
-L0058:	jsr     _OnGround
+L0080:	jsr     _OnGround
 	tax
-	bne     L0056
+	bne     L007E
 ;
 ; playerY += 1;
 ;
 	inc     _playerY
-	bne     L005A
+	bne     L0082
 	inc     _playerY+1
 ;
 ; velocityY = 0;
 ;
-L005A:	sta     _velocityY
+L0082:	sta     _velocityY
 	sta     _velocityY+1
 ;
 ; isJumping = 0;
@@ -4976,13 +5153,13 @@ L005A:	sta     _velocityY
 ;
 ; else 
 ;
-	jmp     L007C
+	jmp     L00B3
 ;
 ; if (!OnGround()) 
 ;
-L004E:	jsr     _OnGround
+L0076:	jsr     _OnGround
 	tax
-	bne     L007C
+	bne     L00B3
 ;
 ; isJumping = 1;
 ;
@@ -4991,8 +5168,8 @@ L004E:	jsr     _OnGround
 ;
 ; if (dashCooldown > 0) 
 ;
-L007C:	lda     _dashCooldown
-	beq     L005D
+L00B3:	lda     _dashCooldown
+	beq     L0085
 ;
 ; dashCooldown--;
 ;
@@ -5000,7 +5177,7 @@ L007C:	lda     _dashCooldown
 ;
 ; }
 ;
-L005D:	rts
+L0085:	rts
 
 .endproc
 
@@ -5072,7 +5249,7 @@ L0002:	jsr     _oam_clear
 ;
 ; else if (isJumping)
 ;
-	jmp     L0018
+	jmp     L0016
 L0003:	lda     _isJumping
 	beq     L0006
 ;
@@ -5107,7 +5284,7 @@ L0003:	lda     _isJumping
 ;
 ; else
 ;
-	jmp     L0018
+	jmp     L0016
 ;
 ; oam_spr(playerX, playerY - 8, 0x08, playerAttributes);
 ;
@@ -5137,24 +5314,11 @@ L0006:	jsr     decsp3
 	dey
 	sta     (sp),y
 	lda     #$18
-L0018:	dey
+L0016:	dey
 	sta     (sp),y
 	ldy     #$03
 	lda     (sp),y
 	jsr     _oam_spr
-;
-; goalX = 220 + scrollX;
-;
-	lda     _scrollX
-	clc
-	adc     #$DC
-	cmp     #$80
-	sta     _goalX
-;
-; goalY = 39;
-;
-	lda     #$27
-	sta     _goalY
 ;
 ; oam_spr(goalX, goalY, 0x16, 0x02);
 ;
@@ -5456,7 +5620,7 @@ L0014:	lda     #$02
 .segment	"CODE"
 
 ;
-; return checkIfCollidableTile(TestLevel[GetTileIndex(playerX, playerY + 9)]);
+; return checkIfCollidableTile(Level1Data[GetTileIndex(playerX, playerY + 9)]);
 ;
 	lda     _playerX
 	jsr     pusha
@@ -5467,9 +5631,9 @@ L0014:	lda     #$02
 	sta     ptr1
 	txa
 	clc
-	adc     #>(_TestLevel)
+	adc     #>(_Level1Data)
 	sta     ptr1+1
-	ldy     #<(_TestLevel)
+	ldy     #<(_Level1Data)
 	lda     (ptr1),y
 	jmp     _checkIfCollidableTile
 

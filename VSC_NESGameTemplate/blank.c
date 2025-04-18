@@ -47,7 +47,7 @@
  
 #include "LIB/neslib.h"
 #include "LIB/nesdoug.h" 
-#include "NES_ST/TestLevel.h"
+#include "NES_ST/Level1Data.h"
 #include <stdlib.h>
 #include "NES_ST/Level1A.h"
 #include "NES_ST/Level1B.h"
@@ -85,8 +85,8 @@
 #define JUMP_VELOCITY -10
 #define MAX_FALL_SPEED 4
 //dashing
-#define DASH_SPEED 4
-#define DASH_DURATION 10
+#define DASH_SPEED 5
+#define DASH_DURATION 6
 #define DASH_COOLDOWN 20
 //Scrolling
 #define MAX_SCROLL 256
@@ -261,7 +261,7 @@ void MovePlayer(void)
 	//left
     if (movementPad & PAD_LEFT)
     {
-        if (!checkIfCollidableTile(TestLevel[GetTileIndex(playerX - 1, playerY + 1)]))
+        if (!checkIfCollidableTile(Level1Data[GetTileIndex(playerX - 1, playerY + 1)]))
         {
 			 //Make sure player x is 0 - 128 and player X and scrollX is 384 or greater
 			 //before we decrement playerX
@@ -293,7 +293,7 @@ void MovePlayer(void)
 	//Right
     if (movementPad & PAD_RIGHT)
     {
-        if (!checkIfCollidableTile(TestLevel[GetTileIndex(playerX + 8, playerY + 1)]))
+        if (!checkIfCollidableTile(Level1Data[GetTileIndex(playerX + 8, playerY + 1)]))
         {
 			//Make sure player x is 0 - 128 and player X and scrollX is 384 or greater
 			 //before we increment playerX
@@ -370,9 +370,47 @@ void MovePlayer(void)
 			int combinedX = nextX + scrollX;
 
 			//Check that there is not a collidable and if there is not then the player can move
-			if (!checkIfCollidableTile(TestLevel[GetTileIndex(checkX, playerY + 1)])) 
+			if (!checkIfCollidableTile(Level1Data[GetTileIndex(checkX, playerY + 1)])) 
 			{
-				playerX = nextX;
+				if (dashDirection == 1) 
+				{
+					// --- RIGHT DASH ---
+					if (playerX < 128 && (playerX + scrollX) < 511) 
+					{
+						playerX++;
+					}
+					else if ((playerX + scrollX) >= 128 && (playerX + scrollX) < 384) 
+					{
+						if (scrollX <= 255) 
+						{
+							scrollX++;
+						} 
+						else 
+						{
+							scrollX = MAX_SCROLL;
+						}
+					}
+				} 
+				else 
+				{
+					// --- LEFT DASH ---
+					if (playerX > 0 && playerX < 128 || (playerX + scrollX > 384) ||
+					(scrollX == MIN_SCROLL && playerX == 128)) 
+					{
+						playerX--;
+					} 
+					else if ((playerX + scrollX) > 128 && (playerX + scrollX) <= 384) 
+					{
+						if (scrollX >= 1) 
+						{
+							scrollX--;
+						} 
+						else 
+						{
+							scrollX = MIN_SCROLL;
+						}
+					}
+				}
 			} 
 			else 
 			{
@@ -572,7 +610,7 @@ void DrawEndScreen()
 
 char OnGround(void) 
 {
-    return checkIfCollidableTile(TestLevel[GetTileIndex(playerX, playerY + 9)]);
+    return checkIfCollidableTile(Level1Data[GetTileIndex(playerX, playerY + 9)]);
 }
 
 char checkIfCollidableTile(unsigned char tile) 
