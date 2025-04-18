@@ -304,7 +304,7 @@ void MovePlayer(void)
 			//Make sure checkX is correct for collision checking
 			//If direction is right then 7 pixels will be added on to account for the width of the player
 			//If left then nothing will be added on as already checking in to the left
-			int checkX = nextX + (dashDirection == 1 ? 7 : 0);
+			int checkX = nextX + scrollX + (dashDirection == 1 ? 7 : 0);
 
 			//Check that there is not a collidable and if there is not then the player can move
 			if (!checkIfCollidableTile(Level1Data[GetTileIndex(checkX, playerY + 1)])) 
