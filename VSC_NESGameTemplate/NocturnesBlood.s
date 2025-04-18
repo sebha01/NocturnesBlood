@@ -55,6 +55,7 @@
 	.export		_dashDirection
 	.export		_i
 	.export		_currentLevel
+	.export		_changeLevel
 	.export		_currentLevelData
 	.export		_gameOver
 	.export		_DrawTitleScreen
@@ -100,6 +101,8 @@ _dashDirection:
 _i:
 	.word	$0000
 _currentLevel:
+	.word	$0001
+_changeLevel:
 	.word	$0001
 _gameOver:
 	.word	$0000
@@ -7864,11 +7867,11 @@ _currentLevelData:
 	beq     L0006
 	jmp     L0003
 ;
-; currentLevelData =  Level2Data;
+; currentLevelData = Level1Data;
 ;
-L0004:	lda     #>(_Level2Data)
+L0004:	lda     #>(_Level1Data)
 	sta     _currentLevelData+1
-	lda     #<(_Level2Data)
+	lda     #<(_Level1Data)
 	sta     _currentLevelData
 ;
 ; vram_adr(NAMETABLE_A);   // Set VRAM address to the top-left of the screen
@@ -7908,7 +7911,7 @@ L0005:	lda     #>(_Level2Data)
 	lda     #<(_Level2Data)
 	sta     _currentLevelData
 ;
-; vram_adr(NAMETABLE_A);   // Set VRAM address to the top-left of the screen
+; vram_adr(NAMETABLE_A);
 ;
 	ldx     #$20
 	lda     #$00
@@ -7923,7 +7926,7 @@ L0005:	lda     #>(_Level2Data)
 	lda     #$00
 	jsr     _vram_write
 ;
-; vram_adr(NAMETABLE_B);   // Set VRAM address to the top-left of the screen
+; vram_adr(NAMETABLE_B);
 ;
 	ldx     #$24
 	lda     #$00
@@ -7945,7 +7948,7 @@ L0006:	lda     #>(_Level3Data)
 	lda     #<(_Level3Data)
 	sta     _currentLevelData
 ;
-; vram_adr(NAMETABLE_A);   // Set VRAM address to the top-left of the screen
+; vram_adr(NAMETABLE_A);
 ;
 	ldx     #$20
 	lda     #$00
@@ -7960,7 +7963,7 @@ L0006:	lda     #>(_Level3Data)
 	lda     #$00
 	jsr     _vram_write
 ;
-; vram_adr(NAMETABLE_B);   // Set VRAM address to the top-left of the screen
+; vram_adr(NAMETABLE_B);
 ;
 	ldx     #$24
 	lda     #$00
@@ -8747,12 +8750,12 @@ L0004:	ldx     #$00
 ; currentLevel++;
 ;
 L000A:	inc     _currentLevel
-	bne     L0010
+	bne     L0011
 	inc     _currentLevel+1
 ;
 ; playerX = 30;
 ;
-L0010:	lda     #$1E
+L0011:	lda     #$1E
 	sta     _playerX
 	stx     _playerX+1
 ;
@@ -8762,17 +8765,35 @@ L0010:	lda     #$1E
 	sta     _playerY
 	stx     _playerY+1
 ;
+; changeLevel = 1;
+;
+	lda     #$01
+	sta     _changeLevel
+	stx     _changeLevel+1
+;
+; if (changeLevel)
+;
+	lda     _changeLevel
+	ora     _changeLevel+1
+	beq     L0013
+;
 ; GameLoop();
 ;
 	jsr     _GameLoop
 ;
+; changeLevel = 0;
+;
+	lda     #$00
+L0013:	sta     _changeLevel
+	sta     _changeLevel+1
+;
 ; if (gameOver == 1)
 ;
 L000C:	lda     _gameOver+1
-	bne     L000E
+	bne     L000F
 	lda     _gameOver
 	cmp     #$01
-	bne     L000E
+	bne     L000F
 ;
 ; currentGameState = END_SCREEN;
 ;
@@ -8785,7 +8806,7 @@ L000C:	lda     _gameOver+1
 ;
 ; }
 ;
-L000E:	rts
+L000F:	rts
 
 .endproc
 

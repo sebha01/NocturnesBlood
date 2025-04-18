@@ -150,6 +150,7 @@ signed int dashDirection = 0;
 int i = 0;
 //lowest 1 highest 3
 int currentLevel = 1;
+int changeLevel = 1;
 const unsigned char* currentLevelData;
 int gameOver = 0;
 
@@ -247,7 +248,8 @@ void GameLoop(void)
 	switch(currentLevel)
 	{
 		case 1:
-			currentLevelData = 	Level2Data;
+			currentLevelData = Level1Data;
+			// Write the new level data
 			vram_adr(NAMETABLE_A);   // Set VRAM address to the top-left of the screen
 			vram_write(Level1A, 1024);
 
@@ -256,22 +258,24 @@ void GameLoop(void)
 			break;
 		case 2:
 			currentLevelData = Level2Data;
-			vram_adr(NAMETABLE_A);   // Set VRAM address to the top-left of the screen
+			// Write the new level data
+			vram_adr(NAMETABLE_A);
 			vram_write(Level2A, 1024);
 
-			vram_adr(NAMETABLE_B);   // Set VRAM address to the top-left of the screen
+			vram_adr(NAMETABLE_B);
 			vram_write(Level2B, 1024);
 			break;
 		case 3:
 			currentLevelData = Level3Data;
-			vram_adr(NAMETABLE_A);   // Set VRAM address to the top-left of the screen
+			// Write the new level data
+			vram_adr(NAMETABLE_A);
 			vram_write(Level3A, 1024);
 
-			vram_adr(NAMETABLE_B);   // Set VRAM address to the top-left of the screen
+			vram_adr(NAMETABLE_B);
 			vram_write(Level3B, 1024);
 			break;
 	}
-	
+
 	//Load palette
 	pal_bg(palette);
 	pal_spr((const char*)spritePalette);
@@ -503,8 +507,13 @@ void CheckIfEnd()
 			currentLevel++;
 			playerX = 30;
 			playerY = 215;
+			changeLevel = 1;
 
-			GameLoop();
+			if (changeLevel)
+			{
+				GameLoop();
+			}
+			changeLevel = 0;
 		}
 	}
 	
