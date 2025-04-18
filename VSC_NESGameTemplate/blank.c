@@ -537,7 +537,7 @@ void HandleLeftMovement(unsigned int bound, unsigned int amountToDecrement)
 	 //Make sure player x is 0 - 128 and player X and scrollX is 384 or greater
 	//before we decrement playerX
 	if (playerX > 0 && playerX < 128 || (playerX + scrollX > 384) || 
-	(scrollX == MIN_SCROLL && playerX == 128))
+	(scrollX == MIN_SCROLL))
 	{
 		playerX -= amountToDecrement;
 	}

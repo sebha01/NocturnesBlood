@@ -5376,7 +5376,7 @@ L0003:	bpl     L0004
 	sbc     #$00
 	bvc     L0005
 	eor     #$80
-L0005:	bmi     L001B
+L0005:	bmi     L0011
 L0004:	lda     _playerX
 	clc
 	adc     _scrollX
@@ -5388,22 +5388,17 @@ L0004:	lda     _playerX
 	cmp     #$81
 	txa
 	sbc     #$01
-	bcs     L001B
+	bcs     L0011
 ;
-; (scrollX == MIN_SCROLL && playerX == 128))
+; (scrollX == MIN_SCROLL))
 ;
 	lda     _scrollX
 	ora     _scrollX+1
 	bne     L0002
-	lda     _playerX+1
-	bne     L0002
-	lda     _playerX
-	cmp     #$80
-	bne     L0002
 ;
 ; playerX -= amountToDecrement;
 ;
-L001B:	ldy     #$01
+L0011:	ldy     #$01
 	lda     (sp),y
 	tax
 	dey
@@ -5431,7 +5426,7 @@ L0002:	lda     _playerX
 	cmp     #$81
 	txa
 	sbc     #$00
-	bcc     L0014
+	bcc     L0010
 	lda     _playerX
 	clc
 	adc     _scrollX
@@ -5441,9 +5436,9 @@ L0002:	lda     _playerX
 	tax
 	pla
 	cpx     #$01
-	bne     L0010
+	bne     L000C
 	cmp     #$81
-L0010:	bcs     L0014
+L000C:	bcs     L0010
 ;
 ; if (scrollX >= bound) 
 ;
@@ -5454,7 +5449,7 @@ L0010:	bcs     L0014
 	iny
 	sbc     (sp),y
 	lda     #$00
-	bcc     L001F
+	bcc     L0015
 ;
 ; scrollX -= amountToDecrement;
 ;
@@ -5473,16 +5468,16 @@ L0010:	bcs     L0014
 ;
 ; else 
 ;
-	jmp     L0021
+	jmp     L0016
 ;
 ; scrollX = MIN_SCROLL;
 ;
-L001F:	sta     _scrollX
-L0021:	sta     _scrollX+1
+L0015:	sta     _scrollX
+L0016:	sta     _scrollX+1
 ;
 ; }
 ;
-L0014:	jmp     incsp4
+L0010:	jmp     incsp4
 
 .endproc
 
