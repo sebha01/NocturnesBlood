@@ -56,7 +56,6 @@
 	.export		_i
 	.export		_currentLevel
 	.export		_currentLevelData
-	.export		_gameOver
 	.export		_DrawTitleScreen
 	.export		_GameLoop
 	.export		_MovePlayer
@@ -101,8 +100,6 @@ _i:
 	.word	$0000
 _currentLevel:
 	.word	$0001
-_gameOver:
-	.word	$0000
 
 .segment	"RODATA"
 
@@ -5149,12 +5146,12 @@ _Level3Data:
 	.byte	$03
 	.byte	$03
 	.byte	$03
-	.byte	$03
-	.byte	$03
-	.byte	$03
-	.byte	$03
-	.byte	$03
-	.byte	$03
+	.byte	$82
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$83
 	.byte	$03
 	.byte	$03
 	.byte	$03
@@ -5213,12 +5210,12 @@ _Level3Data:
 	.byte	$03
 	.byte	$03
 	.byte	$03
-	.byte	$03
-	.byte	$03
-	.byte	$03
-	.byte	$03
-	.byte	$03
-	.byte	$03
+	.byte	$92
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$93
 	.byte	$03
 	.byte	$03
 	.byte	$03
@@ -5413,12 +5410,12 @@ _Level3Data:
 	.byte	$03
 	.byte	$03
 	.byte	$03
-	.byte	$03
-	.byte	$03
-	.byte	$03
-	.byte	$03
-	.byte	$03
-	.byte	$03
+	.byte	$82
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$83
 	.byte	$82
 	.byte	$83
 	.byte	$92
@@ -5477,12 +5474,12 @@ _Level3Data:
 	.byte	$03
 	.byte	$03
 	.byte	$03
-	.byte	$03
-	.byte	$03
-	.byte	$03
-	.byte	$03
-	.byte	$03
-	.byte	$03
+	.byte	$92
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$93
 	.byte	$92
 	.byte	$93
 	.byte	$82
@@ -11843,12 +11840,12 @@ _Level3B:
 	.byte	$03
 	.byte	$03
 	.byte	$03
-	.byte	$03
-	.byte	$03
-	.byte	$03
-	.byte	$03
-	.byte	$03
-	.byte	$03
+	.byte	$82
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$83
 	.byte	$03
 	.byte	$03
 	.byte	$03
@@ -11875,12 +11872,12 @@ _Level3B:
 	.byte	$03
 	.byte	$03
 	.byte	$03
-	.byte	$03
-	.byte	$03
-	.byte	$03
-	.byte	$03
-	.byte	$03
-	.byte	$03
+	.byte	$92
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$93
 	.byte	$03
 	.byte	$03
 	.byte	$03
@@ -11979,12 +11976,12 @@ _Level3B:
 	.byte	$03
 	.byte	$03
 	.byte	$03
-	.byte	$03
-	.byte	$03
-	.byte	$03
-	.byte	$03
-	.byte	$03
-	.byte	$03
+	.byte	$82
+	.byte	$80
+	.byte	$81
+	.byte	$80
+	.byte	$81
+	.byte	$83
 	.byte	$82
 	.byte	$83
 	.byte	$90
@@ -12011,12 +12008,12 @@ _Level3B:
 	.byte	$03
 	.byte	$03
 	.byte	$03
-	.byte	$03
-	.byte	$03
-	.byte	$03
-	.byte	$03
-	.byte	$03
-	.byte	$03
+	.byte	$92
+	.byte	$90
+	.byte	$91
+	.byte	$90
+	.byte	$91
+	.byte	$93
 	.byte	$92
 	.byte	$93
 	.byte	$03
@@ -13404,36 +13401,60 @@ L0002:	jsr     pushax
 	lda     (ptr1),y
 	jsr     _checkIfGoalTile
 	tax
-	beq     L000C
-L0004:	ldx     #$00
+	bne     L0004
+	rts
 ;
 ; if (currentLevel == 3)
 ;
-	lda     _currentLevel+1
+L0004:	lda     _currentLevel+1
 	bne     L000A
 	lda     _currentLevel
 	cmp     #$03
 	bne     L000A
 ;
-; gameOver = 1;
+; scrollX = 0;
 ;
-	lda     #$01
-	sta     _gameOver
-	stx     _gameOver+1
+	lda     #$00
+	sta     _scrollX
+	sta     _scrollX+1
 ;
-; else
+; scroll(scrollX, 0);
 ;
-	jmp     L000C
+	jsr     push0
+	jsr     _scroll
+;
+; playerX = 30;
+;
+	ldx     #$00
+	lda     #$1E
+	sta     _playerX
+	stx     _playerX+1
+;
+; playerY = 215;
+;
+	lda     #$D7
+	sta     _playerY
+	stx     _playerY+1
+;
+; currentGameState = END_SCREEN;
+;
+	lda     #$02
+	sta     _currentGameState
+;
+; DrawEndScreen();
+;
+	jmp     _DrawEndScreen
 ;
 ; currentLevel++;
 ;
 L000A:	inc     _currentLevel
-	bne     L0010
+	bne     L000D
 	inc     _currentLevel+1
 ;
 ; scrollX = 0;
 ;
-L0010:	txa
+L000D:	ldx     #$00
+	txa
 	sta     _scrollX
 	sta     _scrollX+1
 ;
@@ -13451,28 +13472,7 @@ L0010:	txa
 ;
 ; GameLoop();
 ;
-	jsr     _GameLoop
-;
-; if (gameOver == 1)
-;
-L000C:	lda     _gameOver+1
-	bne     L000E
-	lda     _gameOver
-	cmp     #$01
-	bne     L000E
-;
-; currentGameState = END_SCREEN;
-;
-	lda     #$02
-	sta     _currentGameState
-;
-; DrawEndScreen();
-;
-	jmp     _DrawEndScreen
-;
-; }
-;
-L000E:	rts
+	jmp     _GameLoop
 
 .endproc
 
@@ -13501,34 +13501,30 @@ L000E:	rts
 ;
 	jsr     _oam_clear
 ;
-; playerX = 30;
-;
-	ldx     #$00
-	lda     #$1E
-	sta     _playerX
-	stx     _playerX+1
-;
-; playerY = 215;
-;
-	lda     #$D7
-	sta     _playerY
-	stx     _playerY+1
-;
 ; currentLevel = 1;
 ;
+	ldx     #$00
 	lda     #$01
 	sta     _currentLevel
 	stx     _currentLevel+1
 ;
-; gameOver = 0;
-;
-	txa
-	sta     _gameOver
-	sta     _gameOver+1
-;
 ; vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
 ;
 	ldx     #$20
+	lda     #$00
+	jsr     _vram_adr
+;
+; vram_fill(0x00, 1024);
+;
+	lda     #$00
+	jsr     pusha
+	ldx     #$04
+	jsr     _vram_fill
+;
+; vram_adr(NAMETABLE_B);            // Set VRAM address to start of screen
+;
+	ldx     #$24
+	lda     #$00
 	jsr     _vram_adr
 ;
 ; vram_fill(0x00, 1024);

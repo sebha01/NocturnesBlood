@@ -151,7 +151,6 @@ int i = 0;
 //lowest 1 highest 3
 int currentLevel = 1;
 const unsigned char* currentLevelData;
-int gameOver = 0;
 
 
 //function prototypes
@@ -499,7 +498,12 @@ void CheckIfEnd()
 	{
 		if (currentLevel == 3)
 		{
-			gameOver = 1;
+			scrollX = 0;
+			scroll(scrollX, 0);
+			playerX = 30;
+			playerY = 215;
+			currentGameState = END_SCREEN;
+			DrawEndScreen();
 		}
 		else
 		{
@@ -512,12 +516,6 @@ void CheckIfEnd()
 			GameLoop();
 		}
 	}
-	
-	if (gameOver == 1)
-	{
-		currentGameState = END_SCREEN;
-		DrawEndScreen();
-	}
 }
 
 void DrawEndScreen()
@@ -529,13 +527,14 @@ void DrawEndScreen()
 	oam_clear();
 
 	//Set varirables back to their default value
-	playerX = 30;
-	playerY = 215;
 	currentLevel = 1;
-	gameOver = 0;
 
 	//Clear the screen
 	vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
+	vram_fill(0x00, 1024);
+
+	//Clear the screen
+	vram_adr(NAMETABLE_B);            // Set VRAM address to start of screen
 	vram_fill(0x00, 1024);
 
 	vram_adr(NTADR_A(8, 8)); // places text at screen position
