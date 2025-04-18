@@ -522,7 +522,8 @@ void HandleRightMovement(unsigned int bound, unsigned int amountToIncrement)
 		if (scrollX <= bound) 
 		{
 			scrollX += amountToIncrement;
-		} else 
+		} 
+		else 
 		{
 			//prevents scrollX from going above 256 in the odd case it does
 			scrollX = MAX_SCROLL;
@@ -548,7 +549,8 @@ void HandleLeftMovement(unsigned int bound, unsigned int amountToDecrement)
 		if (scrollX >= bound) 
 		{
 			scrollX -= amountToDecrement;
-		} else 
+		} 
+		else 
 		{
 			//prevents scrollX from going negative in the odd case it does
 			scrollX = MIN_SCROLL;
