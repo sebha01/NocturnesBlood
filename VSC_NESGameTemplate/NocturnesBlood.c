@@ -331,6 +331,15 @@ void MovePlayer(void)
 		}
 	}
 
+	// Check if jump button (A) is pressed, player is not already jumping, and player is currently standing on solid ground
+	if ((inputPad & PAD_A) && !isJumping && coyoteTime > 0) 
+	{
+		//Set the "bool" variable to true
+		isJumping = 1;
+		//Set the velocity to be the constant we defined applies an upward force to the player by being a negative value
+		velocityY = JUMP_VELOCITY;
+	}
+
 	//-------------------------
 	//Dash mechanic
 	//-------------------------
@@ -400,15 +409,6 @@ void MovePlayer(void)
 		{
 			coyoteTime--;
 		}
-
-		// Check if jump button (A) is pressed, player is not already jumping, and player is currently standing on solid ground
-        if ((inputPad & PAD_A) && !isJumping && coyoteTime > 0) 
-        {
-			//Set the "bool" variable to true
-            isJumping = 1;
-			//Set the velocity to be the constant we defined applies an upward force to the player by being a negative value
-            velocityY = JUMP_VELOCITY;
-        }
 
 		//Checks for if the player is jumping
         if (isJumping) 
