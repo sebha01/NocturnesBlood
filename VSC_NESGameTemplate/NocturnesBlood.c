@@ -91,6 +91,7 @@
 #define JUMP_VELOCITY -10
 #define MAX_FALL_SPEED 4
 #define COYOTE_FRAMES 10
+#define JUMP_BUFFER_FRAMES 6
 //dashing
 #define DASH_SPEED 5
 #define DASH_DURATION 6
@@ -141,6 +142,7 @@ char facingRight = 1;
 //jumping variables 
 int velocityY = 0;
 char isJumping = 0;
+char jumpBufferTimer = 0;
 //Dash variables 
 unsigned int isDashing = 0;
 char dashTimer = 0;
@@ -331,13 +333,24 @@ void MovePlayer(void)
 		}
 	}
 
+	if (inputPad & PAD_A) 
+	{
+		jumpBufferTimer = JUMP_BUFFER_FRAMES;
+	}
+
 	// Check if jump button (A) is pressed, player is not already jumping, and player is currently standing on solid ground
-	if ((inputPad & PAD_A) && !isJumping && coyoteTime > 0) 
+	if (jumpBufferTimer > 0 && !isJumping && coyoteTime > 0) 
 	{
 		//Set the "bool" variable to true
 		isJumping = 1;
 		//Set the velocity to be the constant we defined applies an upward force to the player by being a negative value
 		velocityY = JUMP_VELOCITY;
+
+		jumpBufferTimer = 0;
+	}
+	else if (jumpBufferTimer > 0) 
+	{
+		jumpBufferTimer--;
 	}
 
 	//-------------------------
@@ -391,7 +404,7 @@ void MovePlayer(void)
 		if (dashTimer <= 0) 
 		{
 			isDashing = 0;
-			dashCooldown = dashCooldown;
+			dashCooldown = DASH_COOLDOWN;
 		}
 	}
     else 
