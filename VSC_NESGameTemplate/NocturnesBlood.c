@@ -298,7 +298,7 @@ void MovePlayer(void)
 		coyoteTime = COYOTE_FRAMES;
 		hasDashedInAir = 0;
 	} 
-	else if (coyoteTime > 0) 
+	else if (!OnGround() && coyoteTime > 0) 
 	{
 		coyoteTime--;
 	}
