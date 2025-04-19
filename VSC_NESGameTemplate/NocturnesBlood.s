@@ -24,6 +24,7 @@
 	.import		_vram_fill
 	.import		_vram_write
 	.import		_get_pad_new
+	.import		_set_scroll_x
 	.export		_Level1Data
 	.export		_Level2Data
 	.export		_Level3Data
@@ -45,6 +46,10 @@
 	.export		_playerX
 	.export		_playerY
 	.export		_coyoteTime
+	.export		_playerLeft
+	.export		_playerRight
+	.export		_playerTop
+	.export		_playerBottom
 	.export		_scrollX
 	.export		_facingRight
 	.export		_velocityY
@@ -70,6 +75,7 @@
 	.export		_HandleRightMovement
 	.export		_HandleLeftMovement
 	.export		_checkIfGoalTile
+	.export		_updateColliderPositions
 	.export		_main
 
 .segment	"DATA"
@@ -82,6 +88,14 @@ _playerY:
 	.word	$00d7
 _coyoteTime:
 	.byte	$00
+_playerLeft:
+	.word	$0000
+_playerRight:
+	.word	$0000
+_playerTop:
+	.word	$0000
+_playerBottom:
+	.word	$0000
 _scrollX:
 	.word	$0000
 _facingRight:
@@ -12688,20 +12702,44 @@ L0003:	lda     #<(_palette)
 .segment	"CODE"
 
 ;
+; if (OnGround()) 
+;
+	jsr     _OnGround
+	tax
+	beq     L0045
+;
+; coyoteTime = COYOTE_FRAMES;
+;
+	lda     #$0A
+	sta     _coyoteTime
+;
+; hasDashedInAir = 0;
+;
+	lda     #$00
+	sta     _hasDashedInAir
+;
+; else if (coyoteTime > 0) 
+;
+	jmp     L0046
+L0045:	lda     _coyoteTime
+	beq     L0046
+;
+; coyoteTime--;
+;
+	dec     _coyoteTime
+;
 ; if (movementPad & PAD_LEFT)
 ;
-	lda     _movementPad
+L0046:	lda     _movementPad
 	and     #$02
 	beq     L0047
 ;
-; if (!checkIfCollidableTile(currentLevelData[GetTileIndex(playerX - 1, playerY + 1)]))
+; if (!checkIfCollidableTile(currentLevelData[GetTileIndex(playerLeft, playerY + 1)]))
 ;
 	lda     _currentLevelData
 	ldx     _currentLevelData+1
 	jsr     pushax
-	lda     _playerX
-	sec
-	sbc     #$01
+	lda     _playerLeft
 	jsr     pusha
 	lda     _playerY
 	clc
@@ -12734,14 +12772,12 @@ L0047:	lda     _movementPad
 	and     #$01
 	beq     L0048
 ;
-; if (!checkIfCollidableTile(currentLevelData[GetTileIndex(playerX + 8, playerY + 1)]))
+; if (!checkIfCollidableTile(currentLevelData[GetTileIndex(playerRight, playerY + 1)]))
 ;
 	lda     _currentLevelData
 	ldx     _currentLevelData+1
 	jsr     pushax
-	lda     _playerX
-	clc
-	adc     #$08
+	lda     _playerRight
 	jsr     pusha
 	lda     _playerY
 	clc
@@ -12794,13 +12830,13 @@ L004C:	lda     _movementPad
 	beq     L004D
 	ldx     #$FF
 	txa
-	jmp     L0014
+	jmp     L0015
 L004D:	lda     _movementPad
 	ldx     #$00
 	and     #$01
-	beq     L0014
+	beq     L0015
 	lda     #$01
-L0014:	sta     _dashDirection
+L0015:	sta     _dashDirection
 	stx     _dashDirection+1
 ;
 ; isDashing = 1;
@@ -12865,9 +12901,9 @@ L0050:	lda     _jumpBufferTimer
 ;
 ; else if (jumpBufferTimer > 0) 
 ;
-	jmp     L001C
+	jmp     L001D
 L0054:	lda     _jumpBufferTimer
-	beq     L001C
+	beq     L001D
 ;
 ; jumpBufferTimer--;
 ;
@@ -12875,22 +12911,22 @@ L0054:	lda     _jumpBufferTimer
 ;
 ; if (isDashing) 
 ;
-L001C:	lda     _isDashing
+L001D:	lda     _isDashing
 	ora     _isDashing+1
-	jeq     L001D
+	jeq     L001E
 ;
 ; for (i = 0; i < DASH_SPEED; i++) 
 ;
 	lda     #$00
 	sta     _i
 	sta     _i+1
-L001E:	lda     _i
+L001F:	lda     _i
 	cmp     #$05
 	lda     _i+1
 	sbc     #$00
-	bvc     L0022
+	bvc     L0023
 	eor     #$80
-L0022:	jpl     L0056
+L0023:	jpl     L0056
 ;
 ; int nextX = playerX + dashDirection;
 ;
@@ -12918,19 +12954,19 @@ L0022:	jpl     L0056
 	adc     _scrollX+1
 	sta     ptr1+1
 	lda     _dashDirection+1
-	bne     L0025
+	bne     L0026
 	lda     _dashDirection
 	cmp     #$01
-	bne     L0025
+	bne     L0026
 	lda     #$07
-	jmp     L0026
-L0025:	tya
-L0026:	clc
+	jmp     L0027
+L0026:	tya
+L0027:	clc
 	adc     ptr1
 	ldx     ptr1+1
-	bcc     L0045
+	bcc     L0043
 	inx
-L0045:	jsr     pushax
+L0043:	jsr     pushax
 ;
 ; if (!checkIfCollidableTile(currentLevelData[GetTileIndex(checkX, playerY + 1)])) 
 ;
@@ -12951,15 +12987,15 @@ L0045:	jsr     pushax
 	lda     (ptr1),y
 	jsr     _checkIfCollidableTile
 	tax
-	bne     L0027
+	bne     L0028
 ;
 ; if (dashDirection == 1) 
 ;
 	lda     _dashDirection+1
-	bne     L0029
+	bne     L002A
 	lda     _dashDirection
 	cmp     #$01
-	bne     L0029
+	bne     L002A
 ;
 ; HandleRightMovement(255, 1);
 ;
@@ -12970,13 +13006,13 @@ L0045:	jsr     pushax
 ;
 ; else if (dashDirection == -1)
 ;
-	jmp     L002F
-L0029:	lda     _dashDirection+1
+	jmp     L0030
+L002A:	lda     _dashDirection+1
 	cmp     #$FF
-	bne     L0027
+	bne     L0028
 	lda     _dashDirection
 	cmp     #$FF
-	bne     L0027
+	bne     L0028
 ;
 ; HandleLeftMovement(1, 1);
 ;
@@ -12986,11 +13022,11 @@ L0029:	lda     _dashDirection+1
 ;
 ; else
 ;
-	jmp     L002F
+	jmp     L0030
 ;
 ; isDashing = 0;
 ;
-L0027:	lda     #$00
+L0028:	lda     #$00
 	sta     _isDashing
 	sta     _isDashing+1
 ;
@@ -13001,14 +13037,14 @@ L0027:	lda     #$00
 ;
 ; }
 ;
-L002F:	jsr     incsp4
+L0030:	jsr     incsp4
 ;
 ; for (i = 0; i < DASH_SPEED; i++) 
 ;
 	inc     _i
-	jne     L001E
+	jne     L001F
 	inc     _i+1
-	jmp     L001E
+	jmp     L001F
 ;
 ; dashTimer--;
 ;
@@ -13017,7 +13053,7 @@ L0056:	dec     _dashTimer
 ; if (dashTimer <= 0) 
 ;
 	lda     _dashTimer
-	jne     L0058
+	jne     L0057
 ;
 ; isDashing = 0;
 ;
@@ -13031,54 +13067,28 @@ L0056:	dec     _dashTimer
 ;
 ; else 
 ;
-	jmp     L0058
-;
-; if (OnGround()) 
-;
-L001D:	jsr     _OnGround
-	tax
-	beq     L0057
-;
-; coyoteTime = COYOTE_FRAMES;
-;
-	lda     #$0A
-	sta     _coyoteTime
-;
-; hasDashedInAir = 0;
-;
-	lda     #$00
-	sta     _hasDashedInAir
-;
-; else if (coyoteTime > 0) 
-;
-	jmp     L0034
-L0057:	lda     _coyoteTime
-	beq     L0034
-;
-; coyoteTime--;
-;
-	dec     _coyoteTime
+	jmp     L0057
 ;
 ; if (isJumping) 
 ;
-L0034:	lda     _isJumping
-	beq     L0035
+L001E:	lda     _isJumping
+	beq     L0033
 ;
 ; velocityY += GRAVITY;
 ;
 	inc     _velocityY
-	bne     L0036
+	bne     L0034
 	inc     _velocityY+1
 ;
 ; if (velocityY > MAX_FALL_SPEED)
 ;
-L0036:	lda     _velocityY
+L0034:	lda     _velocityY
 	cmp     #$05
 	lda     _velocityY+1
 	sbc     #$00
-	bvs     L0038
+	bvs     L0036
 	eor     #$80
-L0038:	bpl     L0037
+L0036:	bpl     L0035
 ;
 ; velocityY = MAX_FALL_SPEED;
 ;
@@ -13089,7 +13099,7 @@ L0038:	bpl     L0037
 ;
 ; playerY += velocityY;
 ;
-L0037:	lda     _velocityY
+L0035:	lda     _velocityY
 	clc
 	adc     _playerY
 	sta     _playerY
@@ -13100,35 +13110,44 @@ L0037:	lda     _velocityY
 ; if (velocityY >= 0 && OnGround()) 
 ;
 	ldx     _velocityY+1
-	bmi     L0058
+	bmi     L0057
 	jsr     _OnGround
 	tax
-	bne     L003F
-	jmp     L0058
+	bne     L003D
+	jmp     L0057
 ;
 ; playerY -= 1;
 ;
-L003D:	ldx     _playerY
-	bne     L0040
+L003B:	ldx     _playerY
+	bne     L003E
 	dec     _playerY+1
-L0040:	dex
+L003E:	dex
 	stx     _playerY
+;
+; updateColliderPositions();
+;
+	jsr     _updateColliderPositions
 ;
 ; while (OnGround()) 
 ;
-L003F:	jsr     _OnGround
+L003D:	jsr     _OnGround
 	tax
-	bne     L003D
+	bne     L003B
 ;
 ; playerY += 1;
 ;
 	inc     _playerY
-	bne     L0041
+	bne     L003F
 	inc     _playerY+1
+;
+; updateColliderPositions();
+;
+L003F:	jsr     _updateColliderPositions
 ;
 ; velocityY = 0;
 ;
-L0041:	sta     _velocityY
+	lda     #$00
+	sta     _velocityY
 	sta     _velocityY+1
 ;
 ; isJumping = 0;
@@ -13141,13 +13160,13 @@ L0041:	sta     _velocityY
 ;
 ; else 
 ;
-	jmp     L0058
+	jmp     L0057
 ;
 ; if (!OnGround()) 
 ;
-L0035:	jsr     _OnGround
+L0033:	jsr     _OnGround
 	tax
-	bne     L0058
+	bne     L0057
 ;
 ; isJumping = 1;
 ;
@@ -13156,8 +13175,8 @@ L0035:	jsr     _OnGround
 ;
 ; if (dashCooldown > 0) 
 ;
-L0058:	lda     _dashCooldown
-	beq     L0044
+L0057:	lda     _dashCooldown
+	beq     L0042
 ;
 ; dashCooldown--;
 ;
@@ -13165,7 +13184,7 @@ L0058:	lda     _dashCooldown
 ;
 ; }
 ;
-L0044:	rts
+L0042:	rts
 
 .endproc
 
@@ -13207,15 +13226,13 @@ L0002:	jsr     _oam_clear
 	ora     _isDashing+1
 	beq     L0003
 ;
-; oam_spr(playerX, playerY - 8, 0x09, playerAttributes);
+; oam_spr(playerLeft, playerTop, 0x09, playerAttributes);
 ;
 	jsr     decsp3
-	lda     _playerX
+	lda     _playerLeft
 	ldy     #$02
 	sta     (sp),y
-	lda     _playerY
-	sec
-	sbc     #$08
+	lda     _playerTop
 	dey
 	sta     (sp),y
 	lda     #$09
@@ -13225,10 +13242,10 @@ L0002:	jsr     _oam_clear
 	lda     (sp),y
 	jsr     _oam_spr
 ;
-; oam_spr(playerX, playerY, 0x19, playerAttributes);
+; oam_spr(playerLeft, playerY, 0x19, playerAttributes);
 ;
 	jsr     decsp3
-	lda     _playerX
+	lda     _playerLeft
 	ldy     #$02
 	sta     (sp),y
 	lda     _playerY
@@ -13238,19 +13255,17 @@ L0002:	jsr     _oam_clear
 ;
 ; else if (isJumping)
 ;
-	jmp     L000E
+	jmp     L000B
 L0003:	lda     _isJumping
-	beq     L0006
+	beq     L0005
 ;
-; oam_spr(playerX, playerY - 8, 0x0A, playerAttributes);
+; oam_spr(playerLeft, playerTop, 0x0A, playerAttributes);
 ;
 	jsr     decsp3
-	lda     _playerX
+	lda     _playerLeft
 	ldy     #$02
 	sta     (sp),y
-	lda     _playerY
-	sec
-	sbc     #$08
+	lda     _playerTop
 	dey
 	sta     (sp),y
 	lda     #$0A
@@ -13260,10 +13275,10 @@ L0003:	lda     _isJumping
 	lda     (sp),y
 	jsr     _oam_spr
 ;
-; oam_spr(playerX, playerY, 0x1A, playerAttributes);
+; oam_spr(playerLeft, playerY, 0x1A, playerAttributes);
 ;
 	jsr     decsp3
-	lda     _playerX
+	lda     _playerLeft
 	ldy     #$02
 	sta     (sp),y
 	lda     _playerY
@@ -13273,17 +13288,15 @@ L0003:	lda     _isJumping
 ;
 ; else
 ;
-	jmp     L000E
+	jmp     L000B
 ;
-; oam_spr(playerX, playerY - 8, 0x08, playerAttributes);
+; oam_spr(playerLeft, playerTop, 0x08, playerAttributes);
 ;
-L0006:	jsr     decsp3
-	lda     _playerX
+L0005:	jsr     decsp3
+	lda     _playerLeft
 	ldy     #$02
 	sta     (sp),y
-	lda     _playerY
-	sec
-	sbc     #$08
+	lda     _playerTop
 	dey
 	sta     (sp),y
 	lda     #$08
@@ -13293,17 +13306,17 @@ L0006:	jsr     decsp3
 	lda     (sp),y
 	jsr     _oam_spr
 ;
-; oam_spr(playerX, playerY, 0x18, playerAttributes);
+; oam_spr(playerLeft, playerY, 0x18, playerAttributes);
 ;
 	jsr     decsp3
-	lda     _playerX
+	lda     _playerLeft
 	ldy     #$02
 	sta     (sp),y
 	lda     _playerY
 	dey
 	sta     (sp),y
 	lda     #$18
-L000E:	dey
+L000B:	dey
 	sta     (sp),y
 	ldy     #$03
 	lda     (sp),y
@@ -13395,36 +13408,14 @@ L0002:	jsr     pushax
 .segment	"CODE"
 
 ;
-; if (checkIfGoalTile(currentLevelData[GetTileIndex(playerX, playerY + 9)]) || 
+; if (checkIfGoalTile(currentLevelData[GetTileIndex(playerX, playerBottom + 1)]) || 
 ;
 	lda     _currentLevelData
 	ldx     _currentLevelData+1
 	jsr     pushax
 	lda     _playerX
 	jsr     pusha
-	lda     _playerY
-	clc
-	adc     #$09
-	jsr     _GetTileIndex
-	jsr     tosaddax
-	sta     ptr1
-	stx     ptr1+1
-	ldy     #$00
-	lda     (ptr1),y
-	jsr     _checkIfGoalTile
-	tax
-	bne     L0004
-;
-; checkIfGoalTile(currentLevelData[GetTileIndex(playerX + 1, playerY + 1)]) ||
-;
-	lda     _currentLevelData
-	ldx     _currentLevelData+1
-	jsr     pushax
-	lda     _playerX
-	clc
-	adc     #$01
-	jsr     pusha
-	lda     _playerY
+	lda     _playerBottom
 	clc
 	adc     #$01
 	jsr     _GetTileIndex
@@ -13437,14 +13428,36 @@ L0002:	jsr     pushax
 	tax
 	bne     L0004
 ;
-; checkIfGoalTile(currentLevelData[GetTileIndex(playerX + 6, playerY + 1)]))
+; checkIfGoalTile(currentLevelData[GetTileIndex(playerLeft + 2, playerY + 1)]) ||
 ;
 	lda     _currentLevelData
 	ldx     _currentLevelData+1
 	jsr     pushax
-	lda     _playerX
+	lda     _playerLeft
 	clc
-	adc     #$06
+	adc     #$02
+	jsr     pusha
+	lda     _playerY
+	clc
+	adc     #$01
+	jsr     _GetTileIndex
+	jsr     tosaddax
+	sta     ptr1
+	stx     ptr1+1
+	ldy     #$00
+	lda     (ptr1),y
+	jsr     _checkIfGoalTile
+	tax
+	bne     L0004
+;
+; checkIfGoalTile(currentLevelData[GetTileIndex(playerRight - 2, playerY + 1)]))
+;
+	lda     _currentLevelData
+	ldx     _currentLevelData+1
+	jsr     pushax
+	lda     _playerRight
+	sec
+	sbc     #$02
 	jsr     pusha
 	lda     _playerY
 	clc
@@ -13470,14 +13483,14 @@ L0004:	lda     _currentLevel+1
 ;
 ; scrollX = 0;
 ;
-	lda     #$00
+	ldx     #$00
+	txa
 	sta     _scrollX
 	sta     _scrollX+1
 ;
-; scroll(scrollX, 0);
+; set_scroll_x(scrollX);
 ;
-	jsr     push0
-	jsr     _scroll
+	jsr     _set_scroll_x
 ;
 ; playerX = 30;
 ;
@@ -13514,8 +13527,13 @@ L000D:	ldx     #$00
 	sta     _scrollX
 	sta     _scrollX+1
 ;
+; set_scroll_x(scrollX);
+;
+	jsr     _set_scroll_x
+;
 ; playerX = 30;
 ;
+	ldx     #$00
 	lda     #$1E
 	sta     _playerX
 	stx     _playerX+1
@@ -13652,16 +13670,16 @@ L000D:	ldx     #$00
 .segment	"CODE"
 
 ;
-; return checkIfCollidableTile(currentLevelData[GetTileIndex(playerX, playerY + 9)]);
+; return checkIfCollidableTile(currentLevelData[GetTileIndex(playerX, playerBottom + 1)]);
 ;
 	lda     _currentLevelData
 	ldx     _currentLevelData+1
 	jsr     pushax
 	lda     _playerX
 	jsr     pusha
-	lda     _playerY
+	lda     _playerBottom
 	clc
-	adc     #$09
+	adc     #$01
 	jsr     _GetTileIndex
 	jsr     tosaddax
 	sta     ptr1
@@ -14028,6 +14046,67 @@ L0004:	lda     #$01
 .endproc
 
 ; ---------------------------------------------------------------
+; void __near__ updateColliderPositions (void)
+; ---------------------------------------------------------------
+
+.segment	"CODE"
+
+.proc	_updateColliderPositions: near
+
+.segment	"CODE"
+
+;
+; playerLeft = playerX - 4;
+;
+	lda     _playerX
+	ldx     _playerX+1
+	sec
+	sbc     #$04
+	bcs     L0002
+	dex
+L0002:	sta     _playerLeft
+	stx     _playerLeft+1
+;
+; playerRight = playerX + 4;
+;
+	lda     _playerX
+	ldx     _playerX+1
+	clc
+	adc     #$04
+	bcc     L0003
+	inx
+L0003:	sta     _playerRight
+	stx     _playerRight+1
+;
+; playerTop = playerY - 8;
+;
+	lda     _playerY
+	ldx     _playerY+1
+	sec
+	sbc     #$08
+	bcs     L0004
+	dex
+L0004:	sta     _playerTop
+	stx     _playerTop+1
+;
+; playerBottom = playerY + 8;
+;
+	lda     _playerY
+	ldx     _playerY+1
+	clc
+	adc     #$08
+	bcc     L0005
+	inx
+L0005:	sta     _playerBottom
+	stx     _playerBottom+1
+;
+; }
+;
+	rts
+
+.endproc
+
+; ---------------------------------------------------------------
 ; void __near__ main (void)
 ; ---------------------------------------------------------------
 
@@ -14090,9 +14169,13 @@ L000D:	lda     _inputPad
 ;
 	jmp     L0002
 ;
+; updateColliderPositions();
+;
+L0009:	jsr     _updateColliderPositions
+;
 ; MovePlayer();
 ;
-L0009:	jsr     _MovePlayer
+	jsr     _MovePlayer
 ;
 ; DrawPlayer();
 ;

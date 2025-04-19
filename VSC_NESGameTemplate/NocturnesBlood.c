@@ -135,6 +135,10 @@ unsigned char movementPad;
 signed int playerX = 30;
 signed int playerY = 215;
 char coyoteTime = 0;
+signed int playerLeft = 0;
+signed int playerRight = 0;
+signed int playerTop = 0;
+signed int playerBottom = 0;
 //Player x can move first 128 and last 128 pixels without screen moving
 //Scroll x comes in to make sure the screen moves when the player does
 unsigned int scrollX = 0;
@@ -171,6 +175,7 @@ char checkIfCollidableTile(unsigned char tile);
 void HandleRightMovement(unsigned int bound, unsigned int amountToIncrement);
 void HandleLeftMovement(unsigned int bound, unsigned int amountToDecrement);
 char checkIfGoalTile(unsigned char tile); 
+void updateColliderPositions(void);
 
 /*
 ----------------
@@ -202,6 +207,7 @@ void main (void)
 				break;
 			case GAME_LOOP:
 				//Player code
+				updateColliderPositions();
 				MovePlayer();
 				DrawPlayer();
 				scroll(scrollX, 0);
@@ -287,13 +293,23 @@ void GameLoop(void)
 
 void MovePlayer(void)
 {
+	if (OnGround()) 
+	{
+		coyoteTime = COYOTE_FRAMES;
+		hasDashedInAir = 0;
+	} 
+	else if (coyoteTime > 0) 
+	{
+		coyoteTime--;
+	}
+
 	//-------------------------
     // Horizontal movement
 	//-------------------------
 	//left
     if (movementPad & PAD_LEFT)
     {
-        if (!checkIfCollidableTile(currentLevelData[GetTileIndex(playerX - 1, playerY + 1)]))
+        if (!checkIfCollidableTile(currentLevelData[GetTileIndex(playerLeft, playerY + 1)]))
         {
 			//Handle movement
 			HandleLeftMovement(4, PLAYER_SPEED);
@@ -305,7 +321,7 @@ void MovePlayer(void)
 	//Right
     if (movementPad & PAD_RIGHT)
     {
-        if (!checkIfCollidableTile(currentLevelData[GetTileIndex(playerX + 8, playerY + 1)]))
+        if (!checkIfCollidableTile(currentLevelData[GetTileIndex(playerRight, playerY + 1)]))
         {
 			//Handle Movement
 			HandleRightMovement(252, PLAYER_SPEED);
@@ -355,7 +371,7 @@ void MovePlayer(void)
 
 	//-------------------------
 	//Dash mechanic
-	//-------------------------
+	//-------------------------playerTop
 	if (isDashing) 
 	{
 		//Checks each pixel individually to make sure it doesn't let the player phase through collidables
@@ -412,17 +428,6 @@ void MovePlayer(void)
         // ----------------------------
 		// Jumping mechanic only runs if player is not dashing on the ground
 		// ----------------------------
-
-		if (OnGround()) 
-		{
-			coyoteTime = COYOTE_FRAMES;
-			hasDashedInAir = 0;
-		} 
-		else if (coyoteTime > 0) 
-		{
-			coyoteTime--;
-		}
-
 		//Checks for if the player is jumping
         if (isJumping) 
         {
@@ -443,10 +448,12 @@ void MovePlayer(void)
                 while (OnGround()) 
 				{
 					playerY -= 1;
+					updateColliderPositions();
 				}
 				//Reset all variables to do with jumping and dashing now that the player is on the ground
 				//Also make sure that the player is at ground level so the player is not floating slightly
                 playerY += 1;
+				updateColliderPositions();
                 velocityY = 0;
                 isJumping = 0;
 				hasDashedInAir = 0;
@@ -485,19 +492,19 @@ void DrawPlayer(void)
 	
 	if (isDashing)
 	{
-		oam_spr(playerX, playerY - 8, 0x09, playerAttributes);
-    	oam_spr(playerX, playerY, 0x19, playerAttributes);
+		oam_spr(playerLeft, playerTop, 0x09, playerAttributes);
+    	oam_spr(playerLeft, playerY, 0x19, playerAttributes);
 	}
 	else if (isJumping)
 	{
-		oam_spr(playerX, playerY - 8, 0x0A, playerAttributes);
-    	oam_spr(playerX, playerY, 0x1A, playerAttributes);
+		oam_spr(playerLeft, playerTop, 0x0A, playerAttributes);
+    	oam_spr(playerLeft, playerY, 0x1A, playerAttributes);
 	}
 	else
 	{
 		// Draw the player using two tiles: 0x08 (top), 0x24 (bottom)
-		oam_spr(playerX, playerY - 8, 0x08, playerAttributes);
-		oam_spr(playerX, playerY, 0x18, playerAttributes);
+		oam_spr(playerLeft, playerTop, 0x08, playerAttributes);
+		oam_spr(playerLeft, playerY, 0x18, playerAttributes);
 	}
 }
 
@@ -517,14 +524,14 @@ unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY)
 
 void CheckIfEnd()
 {
-	if (checkIfGoalTile(currentLevelData[GetTileIndex(playerX, playerY + 9)]) || 
-	checkIfGoalTile(currentLevelData[GetTileIndex(playerX + 1, playerY + 1)]) ||
-	checkIfGoalTile(currentLevelData[GetTileIndex(playerX + 6, playerY + 1)]))
+	if (checkIfGoalTile(currentLevelData[GetTileIndex(playerX, playerBottom + 1)]) || 
+	checkIfGoalTile(currentLevelData[GetTileIndex(playerLeft + 2, playerY + 1)]) ||
+	checkIfGoalTile(currentLevelData[GetTileIndex(playerRight - 2, playerY + 1)]))
 	{
 		if (currentLevel == 3)
 		{
 			scrollX = 0;
-			scroll(scrollX, 0);
+			set_scroll_x(scrollX);
 			playerX = 30;
 			playerY = 215;
 			currentGameState = END_SCREEN;
@@ -535,6 +542,7 @@ void CheckIfEnd()
 			currentLevel++;
 			
 			scrollX = 0;
+			set_scroll_x(scrollX);
 			playerX = 30;
 			playerY = 215;
 
@@ -576,7 +584,7 @@ void DrawEndScreen()
 
 char OnGround(void) 
 {
-    return checkIfCollidableTile(currentLevelData[GetTileIndex(playerX, playerY + 9)]);
+    return checkIfCollidableTile(currentLevelData[GetTileIndex(playerX, playerBottom + 1)]);
 }
 
 char checkIfCollidableTile(unsigned char tile) 
@@ -642,4 +650,12 @@ char checkIfGoalTile(unsigned char tile)
 {
 	//Stores all of the tiles that are collidable and is used to calculate collisions
     return tile == 0x06 || tile == 0x07 || tile == 0x16 || tile == 0x17;
+}
+
+void updateColliderPositions(void)
+{
+	playerLeft = playerX - 4;
+	playerRight = playerX + 4;
+	playerTop = playerY - 8;
+	playerBottom = playerY + 8;
 }
