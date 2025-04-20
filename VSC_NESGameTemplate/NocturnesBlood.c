@@ -440,15 +440,14 @@ void MovePlayer(void)
 			//Apply gravity to bring the player back down
             velocityY += GRAVITY;
 
-			// Only check for head collision if moving upward
+			// Check for head collision and make sure player doesn't jump out the map
 			if (velocityY < 0) 
 			{
-				// Check the top of the player to make sure they do not jump through the cieling
 				if (CheckIfCollidableTile(currentLevelData[GetTileIndex(playerX, playerTop)])) 
 				{
-					// Hit ceiling — stop upward motion
+					//Make sure player cannot jump higher and the player doesn't get stuck
 					velocityY = 0;
-					playerY += 1; // Push player down slightly so they don’t get stuck
+					playerY += 1;
 				}
 			}
 

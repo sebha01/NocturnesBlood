@@ -13124,7 +13124,7 @@ L0038:	ldx     _velocityY+1
 	sta     _velocityY
 	sta     _velocityY+1
 ;
-; playerY += 1; // Push player down slightly so they don’t get stuck
+; playerY += 1;
 ;
 	inc     _playerY
 	bne     L003A
