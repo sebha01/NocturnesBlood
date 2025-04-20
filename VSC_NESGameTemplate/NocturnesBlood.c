@@ -304,6 +304,12 @@ void MovePlayer(void)
 		coyoteTime--;
 	}
 
+	// Dash cooldown. begin counting down if dash has finished the time until player can dash again
+    if (dashCooldown > 0) 
+	{
+        dashCooldown--;
+    }
+
 	//-------------------------
     // Horizontal movement
 	//-------------------------
@@ -376,6 +382,9 @@ void MovePlayer(void)
 	//-------------------------playerTop
 	if (isDashing) 
 	{
+		//Decrement the dash timer so that when it runs out player stops dashing
+		dashTimer--;
+
 		//Checks each pixel individually to make sure it doesn't let the player phase through collidables
 		for (i = 0; i < DASH_SPEED; i++) 
 		{
@@ -409,11 +418,9 @@ void MovePlayer(void)
 			{
 				//If a collidable is hit then the dash will end early and the dash cool down starts
 				dashEnd();
+				break;
 			}
 		}
-
-		//Decrement the dash timer so that when it runs out player stops dashing
-		dashTimer--;
 
 		//When the timer runs out isDashing bool is set to false and cooldown begins
 		if (dashTimer <= 0) 
@@ -431,6 +438,19 @@ void MovePlayer(void)
         {
 			//Apply gravity to bring the player back down
             velocityY += GRAVITY;
+
+			// Only check for head collision if moving upward
+			if (velocityY < 0) 
+			{
+				// Check the top of the player to make sure they do not jump through the cieling
+				if (checkIfCollidableTile(currentLevelData[GetTileIndex(playerX, playerTop)])) 
+				{
+					// Hit ceiling — stop upward motion
+					velocityY = 0;
+					playerY += 1; // Push player down slightly so they don’t get stuck
+				}
+			}
+
 			//makeSure hte fall speed doesn't exceed the max value so player doesn't fall too fast
             if (velocityY > MAX_FALL_SPEED)
 			{
@@ -466,12 +486,6 @@ void MovePlayer(void)
                 isJumping = 1;
             }
         }
-    }
-
-    // Dash cooldown. begin counting down if dash has finished the time until player can dash again
-    if (dashCooldown > 0) 
-	{
-        dashCooldown--;
     }
 }
 
@@ -664,6 +678,9 @@ void updateColliderPositions(void)
 
 void dashEnd(void)
 {
-	isDashing = 0;
-	dashCooldown = DASH_COOLDOWN;
+	if (isDashing)
+	{
+		isDashing = 0;
+		dashCooldown = DASH_COOLDOWN;
+	}
 }
