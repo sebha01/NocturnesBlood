@@ -176,6 +176,7 @@ void HandleRightMovement(unsigned int bound, unsigned int amountToIncrement);
 void HandleLeftMovement(unsigned int bound, unsigned int amountToDecrement);
 char checkIfGoalTile(unsigned char tile); 
 void updateColliderPositions(void);
+void dashEnd(void);
 
 /*
 ----------------
@@ -332,7 +333,7 @@ void MovePlayer(void)
 
     // Dash mechanic
 	//Checks if B pressed, the player is not dashing and the dashCoolDown has not been activated
-	if ((inputPad & PAD_B) && !isDashing && dashCooldown == 0) 
+	if ((inputPad & PAD_B) && !isDashing && !(dashCooldown > 0)) 
 	{
 		// Only allow midair dash if the player has not dashed in the air yet
 		if (OnGround() || !hasDashedInAir)
@@ -363,6 +364,7 @@ void MovePlayer(void)
 		velocityY = JUMP_VELOCITY;
 
 		jumpBufferTimer = 0;
+
 	}
 	else if (jumpBufferTimer > 0) 
 	{
@@ -387,7 +389,6 @@ void MovePlayer(void)
 			//Check that there is not a collidable and if there is not then the player can move
 			if (!checkIfCollidableTile(currentLevelData[GetTileIndex(checkX, playerY + 1)])) 
 			{
-				
 				if (dashDirection == 1) 
 				{
 					//Dash direction is right
@@ -400,16 +401,14 @@ void MovePlayer(void)
 				}
 				else
 				{
-					//Disable dash if player is not holding left or right to dash
-					isDashing = 0;
-					dashCooldown = DASH_COOLDOWN;
+					//Disable dash if player is not holding left or right
+					dashEnd();
 				}
 			} 
 			else 
 			{
 				//If a collidable is hit then the dash will end early and the dash cool down starts
-				isDashing = 0;
-				dashCooldown = DASH_COOLDOWN;
+				dashEnd();
 			}
 		}
 
@@ -419,8 +418,7 @@ void MovePlayer(void)
 		//When the timer runs out isDashing bool is set to false and cooldown begins
 		if (dashTimer <= 0) 
 		{
-			isDashing = 0;
-			dashCooldown = DASH_COOLDOWN;
+			dashEnd();
 		}
 	}
     else 
@@ -490,6 +488,10 @@ void DrawPlayer(void)
 	//Such as pos, tile index, palette etc.
 	oam_clear();
 	
+	//make sure colliders are in correct position before rendering sprites
+	//especially for jumping and dashing
+	updateColliderPositions();
+
 	if (isDashing)
 	{
 		oam_spr(playerLeft, playerTop, 0x09, playerAttributes);
@@ -658,4 +660,10 @@ void updateColliderPositions(void)
 	playerRight = playerX + 4;
 	playerTop = playerY - 8;
 	playerBottom = playerY + 8;
+}
+
+void dashEnd(void)
+{
+	isDashing = 0;
+	dashCooldown = DASH_COOLDOWN;
 }
