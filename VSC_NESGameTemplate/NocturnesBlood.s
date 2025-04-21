@@ -13977,7 +13977,7 @@ L000C:	rts
 	cmp     #$92
 	beq     L0004
 ;
-; || tile == 0xA0 || tile == 0xA1 || tile == 0xB0 || tile == 0xB1;
+; || tile == 0xA0 || tile == 0xA1 || tile == 0xA4 || tile == 0xA5 
 ;
 	cmp     #$93
 	beq     L0004
@@ -13985,9 +13985,42 @@ L000C:	rts
 	beq     L0004
 	cmp     #$A1
 	beq     L0004
+	cmp     #$A4
+	beq     L0004
+;
+; || tile == 0xA6 || tile == 0xA7 || tile == 0xA8 || tile == 0xA9 
+;
+	cmp     #$A5
+	beq     L0004
+	cmp     #$A6
+	beq     L0004
+	cmp     #$A7
+	beq     L0004
+	cmp     #$A8
+	beq     L0004
+;
+; || tile == 0xB0 || tile == 0xB1 || tile == 0xB4 || tile == 0xB5 
+;
+	cmp     #$A9
+	beq     L0004
 	cmp     #$B0
 	beq     L0004
 	cmp     #$B1
+	beq     L0004
+	cmp     #$B4
+	beq     L0004
+;
+; || tile == 0xB6 || tile == 0xB7 || tile == 0xB8 || tile == 0xB9;
+;
+	cmp     #$B5
+	beq     L0004
+	cmp     #$B6
+	beq     L0004
+	cmp     #$B7
+	beq     L0004
+	cmp     #$B8
+	beq     L0004
+	cmp     #$B9
 	beq     L0004
 	ldx     #$00
 	txa

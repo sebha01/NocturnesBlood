@@ -616,7 +616,10 @@ char CheckIfCollidableTile(unsigned char tile)
 	//Stores all of the tiles that are collidable and is used to calculate collisions
     return tile == 0x80 || tile == 0x81 || tile == 0x82 || tile == 0x83 
 		|| tile == 0x90 || tile == 0x91 || tile == 0x92 || tile == 0x93
-		|| tile == 0xA0 || tile == 0xA1 || tile == 0xB0 || tile == 0xB1;
+		|| tile == 0xA0 || tile == 0xA1 || tile == 0xA4 || tile == 0xA5 
+		|| tile == 0xA6 || tile == 0xA7 || tile == 0xA8 || tile == 0xA9 
+		|| tile == 0xB0 || tile == 0xB1 || tile == 0xB4 || tile == 0xB5 
+		|| tile == 0xB6 || tile == 0xB7 || tile == 0xB8 || tile == 0xB9;
 }
 
 void HandleRightMovement(unsigned int bound, unsigned int amountToIncrement)
