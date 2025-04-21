@@ -365,7 +365,7 @@ void MovePlayer(void)
 		}
 	}
 
-	if (inputPad & PAD_A) 
+	if (inputPad & PAD_A && !isDashing) 
 	{
 		jumpBufferTimer = JUMP_BUFFER_FRAMES;
 	}
@@ -499,8 +499,7 @@ void MovePlayer(void)
 
 void DrawPlayer(void)
 {
-	unsigned char playerAttributes =  isDashing ? 0x03 : 
-							currentLevel == 2 ? 0x04 : 
+	unsigned char playerAttributes =  isDashing ? 0x03 :
 							currentLevel == 3 ? 0X02 : 0x01;
 
 	if (!facingRight)
