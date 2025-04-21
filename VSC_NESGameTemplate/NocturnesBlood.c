@@ -241,6 +241,14 @@ void DrawTitleScreen(void)
 	// vram_adr and vram_put only work with screen off NOTE, you could replace everything between i = 0; and here with...
 	// vram_write(text,sizeof(text)); does the same thing
 	//Set VRAM address to row 10 and column 12
+
+	// //Clear the screen
+	vram_adr(NAMETABLE_A);
+	vram_fill(0x00, 1024);
+	vram_adr(NAMETABLE_B);
+	vram_fill(0x00, 1024);
+
+
 	vram_adr(NTADR_A(8, 8)); // places text at screen position
 	vram_write(text, sizeof(text) - 1); //write Title to screen
 	//Write prompt to start game

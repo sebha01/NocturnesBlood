@@ -12496,6 +12496,32 @@ _currentLevelData:
 	ldx     #>(_palette)
 	jsr     _pal_bg
 ;
+; vram_adr(NAMETABLE_A);
+;
+	ldx     #$20
+	lda     #$00
+	jsr     _vram_adr
+;
+; vram_fill(0x00, 1024);
+;
+	lda     #$00
+	jsr     pusha
+	ldx     #$04
+	jsr     _vram_fill
+;
+; vram_adr(NAMETABLE_B);
+;
+	ldx     #$24
+	lda     #$00
+	jsr     _vram_adr
+;
+; vram_fill(0x00, 1024);
+;
+	lda     #$00
+	jsr     pusha
+	ldx     #$04
+	jsr     _vram_fill
+;
 ; vram_adr(NTADR_A(8, 8)); // places text at screen position
 ;
 	ldx     #$21
