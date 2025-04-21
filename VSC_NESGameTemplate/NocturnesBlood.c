@@ -241,6 +241,14 @@ void DrawTitleScreen(void)
 	// vram_adr and vram_put only work with screen off NOTE, you could replace everything between i = 0; and here with...
 	// vram_write(text,sizeof(text)); does the same thing
 	//Set VRAM address to row 10 and column 12
+
+	// //Clear the screen
+	vram_adr(NAMETABLE_A);
+	vram_fill(0x00, 1024);
+	vram_adr(NAMETABLE_B);
+	vram_fill(0x00, 1024);
+
+
 	vram_adr(NTADR_A(8, 8)); // places text at screen position
 	vram_write(text, sizeof(text) - 1); //write Title to screen
 	//Write prompt to start game
@@ -357,7 +365,7 @@ void MovePlayer(void)
 		}
 	}
 
-	if (inputPad & PAD_A) 
+	if (inputPad & PAD_A && !isDashing) 
 	{
 		jumpBufferTimer = JUMP_BUFFER_FRAMES;
 	}
@@ -491,7 +499,8 @@ void MovePlayer(void)
 
 void DrawPlayer(void)
 {
-	unsigned char playerAttributes =  isDashing ? 0x03 : 0x01;
+	unsigned char playerAttributes =  isDashing ? 0x03 :
+							currentLevel == 3 ? 0X02 : 0x01;
 
 	if (!facingRight)
 	{
@@ -614,9 +623,13 @@ char OnGround(void)
 char CheckIfCollidableTile(unsigned char tile) 
 {
 	//Stores all of the tiles that are collidable and is used to calculate collisions
-    return tile == 0x80 || tile == 0x81 || tile == 0x82 || tile == 0x83 
+    return tile == 0x10 || tile == 0x11
+		|| tile == 0x80 || tile == 0x81 || tile == 0x82 || tile == 0x83 
 		|| tile == 0x90 || tile == 0x91 || tile == 0x92 || tile == 0x93
-		|| tile == 0xA0 || tile == 0xA1 || tile == 0xB0 || tile == 0xB1;
+		|| tile == 0xA0 || tile == 0xA1 || tile == 0xA4 || tile == 0xA5 
+		|| tile == 0xA6 || tile == 0xA7 || tile == 0xA8 || tile == 0xA9 
+		|| tile == 0xB0 || tile == 0xB1 || tile == 0xB4 || tile == 0xB5 
+		|| tile == 0xB6 || tile == 0xB7 || tile == 0xB8 || tile == 0xB9;
 }
 
 void HandleRightMovement(unsigned int bound, unsigned int amountToIncrement)
