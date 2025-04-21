@@ -491,7 +491,9 @@ void MovePlayer(void)
 
 void DrawPlayer(void)
 {
-	unsigned char playerAttributes =  isDashing ? 0x03 : currentLevel == 2 ? 0x04 : 0x01;
+	unsigned char playerAttributes =  isDashing ? 0x03 : 
+							currentLevel == 2 ? 0x04 : 
+							currentLevel == 3 ? 0X02 : 0x01;
 
 	if (!facingRight)
 	{
