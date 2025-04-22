@@ -184,8 +184,8 @@ typedef struct
 
 Enemy enemies[MAX_ENEMIES] = 
 {
-	{100, 215, 16, 16, 120, 80, 1, 1},
-	{200, 215, 16, 16, 220, 180, -1, 1}
+	{100, 215, 8, 4, 120, 80, 1, 1},
+	{200, 215, 8, 4, 220, 180, -1, 1}
 };
  
 
@@ -596,7 +596,7 @@ void DrawSprites(void)
 			oam_spr((enemies[i].x + (enemies[i].facingRight ? -8 : 0)) - player.scrollX, enemies[i].y - 8, 0xC2, enemyAttributes);
 			oam_spr((enemies[i].x + (enemies[i].facingRight ? 0 : -8)) - player.scrollX, enemies[i].y - 8, 0xC3, enemyAttributes);
 			oam_spr((enemies[i].x + (enemies[i].facingRight ? -8 : 0)) - player.scrollX, enemies[i].y, 0xD2, enemyAttributes);
-    		oam_spr((enemies[i].x + (enemies[i].facingRight ? 0 : -8)) - player.scrollX, enemies[i].y, 0xD3, enemyAttributes);
+			oam_spr((enemies[i].x + (enemies[i].facingRight ? 0 : -8)) - player.scrollX, enemies[i].y, 0xD3, enemyAttributes);
 		}
 	}
 
@@ -787,8 +787,8 @@ void SetPlayerValues(void)
 {
 	player.x = 30;
 	player.y = 215;
-	player.height = 16;
-	player.width = 16;
+	player.height = 8;
+	player.width = 8;
 	player.coyoteTime = 0;
 	player.left = 0;
 	player.right = 0;
@@ -847,7 +847,14 @@ void CheckForEnemColl(void)
 {
 	for (i = 0; i < MAX_ENEMIES; i++)
 	{
-		enemyTouchingPlayer = check_collision(&player, &enemies[i]);
+		if (abs(enemies[i].x - (player.x + player.scrollX)) < 4 && abs(enemies[i].y - player.y) < 2)
+		{
+			enemyTouchingPlayer = 1;
+		}
+		else
+		{
+			enemyTouchingPlayer = 0;
+		}
 
 		if (enemyTouchingPlayer)
 		{

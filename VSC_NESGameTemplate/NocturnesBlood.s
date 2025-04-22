@@ -24,11 +24,11 @@
 	.import		_vram_fill
 	.import		_vram_write
 	.import		_get_pad_new
-	.import		_check_collision
 	.import		_set_scroll_x
 	.export		_Level1Data
 	.export		_Level2Data
 	.export		_Level3Data
+	.import		_abs
 	.export		_Level1A
 	.export		_Level1B
 	.export		_Level2A
@@ -81,16 +81,16 @@ _currentLevel:
 _enemies:
 	.byte	$64
 	.byte	$d7
-	.byte	$10
-	.byte	$10
+	.byte	$08
+	.byte	$04
 	.byte	$78
 	.byte	$50
 	.byte	$01
 	.byte	$01
 	.byte	$c8
 	.byte	$d7
-	.byte	$10
-	.byte	$10
+	.byte	$08
+	.byte	$04
 	.byte	$dc
 	.byte	$b4
 	.byte	$ff
@@ -14809,12 +14809,12 @@ L0004:	lda     #$01
 	lda     #$D7
 	sta     _player+1
 ;
-; player.height = 16;
+; player.height = 8;
 ;
-	lda     #$10
+	lda     #$08
 	sta     _player+2
 ;
-; player.width = 16;
+; player.width = 8;
 ;
 	sta     _player+3
 ;
@@ -15105,25 +15105,76 @@ L0002:	lda     _i
 	sbc     #$00
 	bvc     L0006
 	eor     #$80
-L0006:	bpl     L0003
+L0006:	bmi     L0016
 ;
-; enemyTouchingPlayer = check_collision(&player, &enemies[i]);
+; }
 ;
-	lda     #<(_player)
-	ldx     #>(_player)
-	jsr     pushax
+	rts
+;
+; if (abs(enemies[i].x - (player.x + player.scrollX)) < 4 && abs(enemies[i].y - player.y) < 2)
+;
+L0016:	lda     _i
+	ldx     _i+1
+	jsr     aslax3
+	sta     ptr1
+	txa
+	clc
+	adc     #>(_enemies)
+	sta     ptr1+1
+	ldy     #<(_enemies)
+	lda     (ptr1),y
+	jsr     pusha0
+	lda     _player
+	clc
+	adc     _player+13
+	pha
+	lda     #$00
+	adc     _player+13+1
+	tax
+	pla
+	jsr     tossubax
+	jsr     _abs
+	cmp     #$04
+	txa
+	sbc     #$00
+	bvc     L0009
+	eor     #$80
+L0009:	asl     a
+	lda     #$00
+	bcc     L0011
 	lda     _i
 	ldx     _i+1
 	jsr     aslax3
 	clc
 	adc     #<(_enemies)
-	tay
+	sta     ptr1
 	txa
 	adc     #>(_enemies)
-	tax
-	tya
-	jsr     _check_collision
-	sta     _enemyTouchingPlayer
+	sta     ptr1+1
+	ldy     #$01
+	lda     (ptr1),y
+	sec
+	sbc     _player+1
+	ldx     #$00
+	bcs     L0010
+	dex
+L0010:	jsr     _abs
+	cmp     #$02
+	txa
+	sbc     #$00
+	bvc     L000B
+	eor     #$80
+L000B:	bmi     L0014
+	lda     #$00
+	jmp     L0011
+;
+; enemyTouchingPlayer = 1;
+;
+L0014:	lda     #$01
+;
+; enemyTouchingPlayer = 0;
+;
+L0011:	sta     _enemyTouchingPlayer
 ;
 ; if (enemyTouchingPlayer)
 ;
@@ -15142,13 +15193,9 @@ L0006:	bpl     L0003
 ; for (i = 0; i < MAX_ENEMIES; i++)
 ;
 L0004:	inc     _i
-	bne     L0002
+	jne     L0002
 	inc     _i+1
 	jmp     L0002
-;
-; }
-;
-L0003:	rts
 
 .endproc
 
