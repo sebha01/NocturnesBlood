@@ -176,15 +176,24 @@ typedef struct
 	char isAlive;
 } Enemy;
 
-Enemy enemies[MAX_ENEMIES];
-
+Enemy enemies[MAX_ENEMIES] = 
+{
+	{50, 215, 1, 1},
+	{100, 215, -1, 1},
+	{150, 215, -1, 1},
+	{200, 215, 1, 1},
+	{250, 215, 1, 1},
+	{300, 215, -1, 1},
+	{350, 215, 1, 1}
+};
+ 
 
 //function prototypes
 void DrawTitleScreen(void);
 void GameLoop(void);
 void Fade(void);
 void MovePlayer(void);
-void DrawPlayer(void);
+void DrawSprites(void);
 unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY);
 void CheckIfEnd(void);
 void DrawEndScreen(void);
@@ -196,10 +205,7 @@ char CheckIfGoalTile(unsigned char tile);
 void UpdateColliderPositions(void);
 void DashEnd(void);
 char CheckIfPlatformTile(unsigned char tile);
-void setPlayerValues(void);
-//Enemies
-void spawnEnemies(void);
-void updateEnemyMovement(void);
+void SetPlayerValues(void);
 
 /*
 ----------------
@@ -209,7 +215,7 @@ void updateEnemyMovement(void);
 
 void main (void) 
 {
-	setPlayerValues();
+	SetPlayerValues();
 	DrawTitleScreen();
 
 	// infinite loop
@@ -233,8 +239,11 @@ void main (void)
 			case GAME_LOOP:
 				//Player code
 				UpdateColliderPositions();
+				//Movement
 				MovePlayer();
-				DrawPlayer();
+				//Draw sprites
+				DrawSprites();
+				//Update scrolling
 				scroll(player.scrollX, 0);
 				//Check if player has reached end goal
 				CheckIfEnd();
@@ -520,16 +529,18 @@ void MovePlayer(void)
     }
 }
 
-void DrawPlayer(void)
+void DrawSprites(void)
 {
 	unsigned char playerAttributes =  player.isDashing ? 0x03 :
 							currentLevel == 3 ? 0X02 : 0x01;
+	unsigned char enemyAttributes = 0x03;
 
 	if (!player.facingRight)
 	{
 		playerAttributes |= 0x40;
 	}
 
+	//Draw the player
 	//Clears all sprite entries in Object Attribute Memory OAM special memopry area that holds info about sprites
 	//Such as pos, tile index, palette etc.
 	oam_clear();
@@ -560,6 +571,24 @@ void DrawPlayer(void)
 		oam_spr((player.facingRight ? player.left : player.x), player.y, 0x18, playerAttributes);
     	oam_spr((player.facingRight ? player.x : player.left), player.y, 0x19, playerAttributes);
 	}
+
+	//Draw the enemies
+	
+
+	for (i = 0; i < MAX_ENEMIES; i++)
+	{
+		if (!enemies[i].facingRight)
+		{
+			enemyAttributes |= 0x40;
+		}
+
+		oam_spr((player.facingRight ? player.left : player.x), player.top, 0x08, playerAttributes);
+		oam_spr((player.facingRight ? player.x : player.left), player.top, 0x09, playerAttributes);
+		oam_spr((player.facingRight ? player.left : player.x), player.y, 0x18, playerAttributes);
+    	oam_spr((player.facingRight ? player.x : player.left), player.y, 0x19, playerAttributes);
+
+	}
+
 }
 
 unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY)
@@ -736,7 +765,7 @@ char CheckIfPlatformTile(unsigned char tile)
     return tile == 0x84 || tile == 0x85 || tile == 0x94 || tile == 0x95;
 }
 
-void setPlayerValues(void)
+void SetPlayerValues(void)
 {
 	player.x = 30;
 	player.y = 215;

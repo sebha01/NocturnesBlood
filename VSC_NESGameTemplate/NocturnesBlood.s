@@ -51,7 +51,7 @@
 	.export		_DrawTitleScreen
 	.export		_GameLoop
 	.export		_MovePlayer
-	.export		_DrawPlayer
+	.export		_DrawSprites
 	.export		_GetTileIndex
 	.export		_CheckIfEnd
 	.export		_DrawEndScreen
@@ -63,7 +63,7 @@
 	.export		_UpdateColliderPositions
 	.export		_DashEnd
 	.export		_CheckIfPlatformTile
-	.export		_setPlayerValues
+	.export		_SetPlayerValues
 	.export		_main
 
 .segment	"DATA"
@@ -74,6 +74,35 @@ _i:
 	.word	$0000
 _currentLevel:
 	.word	$0001
+_enemies:
+	.word	$0032
+	.word	$00d7
+	.byte	$01
+	.byte	$01
+	.word	$0064
+	.word	$00d7
+	.byte	$ff
+	.byte	$01
+	.word	$0096
+	.word	$00d7
+	.byte	$ff
+	.byte	$01
+	.word	$00c8
+	.word	$00d7
+	.byte	$01
+	.byte	$01
+	.word	$00fa
+	.word	$00d7
+	.byte	$01
+	.byte	$01
+	.word	$012c
+	.word	$00d7
+	.byte	$ff
+	.byte	$01
+	.word	$015e
+	.word	$00d7
+	.byte	$01
+	.byte	$01
 
 .segment	"RODATA"
 
@@ -12428,8 +12457,6 @@ _currentLevelData:
 	.res	2,$00
 _player:
 	.res	27,$00
-_enemies:
-	.res	42,$00
 
 ; ---------------------------------------------------------------
 ; void __near__ DrawTitleScreen (void)
@@ -13219,12 +13246,12 @@ L004B:	rts
 .endproc
 
 ; ---------------------------------------------------------------
-; void __near__ DrawPlayer (void)
+; void __near__ DrawSprites (void)
 ; ---------------------------------------------------------------
 
 .segment	"CODE"
 
-.proc	_DrawPlayer: near
+.proc	_DrawSprites: near
 
 .segment	"CODE"
 
@@ -13235,7 +13262,7 @@ L004B:	rts
 	ora     _player+20+1
 	beq     L0002
 	lda     #$03
-	jmp     L0025
+	jmp     L0034
 ;
 ; currentLevel == 3 ? 0X02 : 0x01;
 ;
@@ -13245,9 +13272,14 @@ L0002:	lda     _currentLevel+1
 	cmp     #$03
 	bne     L0005
 	lda     #$02
-	jmp     L0025
+	jmp     L0034
 L0005:	lda     #$01
-L0025:	jsr     pusha
+L0034:	jsr     pusha
+;
+; unsigned char enemyAttributes = 0x03;
+;
+	lda     #$03
+	jsr     pusha
 ;
 ; if (!player.facingRight)
 ;
@@ -13256,7 +13288,7 @@ L0025:	jsr     pusha
 ;
 ; playerAttributes |= 0x40;
 ;
-	tay
+	ldy     #$01
 	lda     (sp),y
 	ora     #$40
 	sta     (sp),y
@@ -13291,7 +13323,7 @@ L000A:	ldy     #$02
 	lda     #$88
 	dey
 	sta     (sp),y
-	ldy     #$03
+	ldy     #$04
 	lda     (sp),y
 	jsr     _oam_spr
 ;
@@ -13311,7 +13343,7 @@ L000C:	ldy     #$02
 	lda     #$89
 	dey
 	sta     (sp),y
-	ldy     #$03
+	ldy     #$04
 	lda     (sp),y
 	jsr     _oam_spr
 ;
@@ -13331,7 +13363,7 @@ L000E:	ldy     #$02
 	lda     #$98
 	dey
 	sta     (sp),y
-	ldy     #$03
+	ldy     #$04
 	lda     (sp),y
 	jsr     _oam_spr
 ;
@@ -13352,7 +13384,7 @@ L0010:	ldy     #$02
 ;
 ; else if (player.isJumping)
 ;
-	jmp     L0029
+	jmp     L0038
 L0008:	lda     _player+18
 	jeq     L0012
 ;
@@ -13372,7 +13404,7 @@ L0014:	ldy     #$02
 	lda     #$0A
 	dey
 	sta     (sp),y
-	ldy     #$03
+	ldy     #$04
 	lda     (sp),y
 	jsr     _oam_spr
 ;
@@ -13392,7 +13424,7 @@ L0016:	ldy     #$02
 	lda     #$0B
 	dey
 	sta     (sp),y
-	ldy     #$03
+	ldy     #$04
 	lda     (sp),y
 	jsr     _oam_spr
 ;
@@ -13412,7 +13444,7 @@ L0018:	ldy     #$02
 	lda     #$1A
 	dey
 	sta     (sp),y
-	ldy     #$03
+	ldy     #$04
 	lda     (sp),y
 	jsr     _oam_spr
 ;
@@ -13433,7 +13465,7 @@ L001A:	ldy     #$02
 ;
 ; else
 ;
-	jmp     L0029
+	jmp     L0038
 ;
 ; oam_spr((player.facingRight ? player.left : player.x), player.top, 0x08, playerAttributes);
 ;
@@ -13451,7 +13483,7 @@ L001D:	ldy     #$02
 	lda     #$08
 	dey
 	sta     (sp),y
-	ldy     #$03
+	ldy     #$04
 	lda     (sp),y
 	jsr     _oam_spr
 ;
@@ -13471,7 +13503,7 @@ L001F:	ldy     #$02
 	lda     #$09
 	dey
 	sta     (sp),y
-	ldy     #$03
+	ldy     #$04
 	lda     (sp),y
 	jsr     _oam_spr
 ;
@@ -13491,7 +13523,7 @@ L0021:	ldy     #$02
 	lda     #$18
 	dey
 	sta     (sp),y
-	ldy     #$03
+	ldy     #$04
 	lda     (sp),y
 	jsr     _oam_spr
 ;
@@ -13509,15 +13541,137 @@ L0023:	ldy     #$02
 	dey
 	sta     (sp),y
 	lda     #$19
-L0029:	dey
+L0038:	dey
 	sta     (sp),y
-	ldy     #$03
+	ldy     #$04
 	lda     (sp),y
 	jsr     _oam_spr
 ;
+; for (i = 0; i < MAX_ENEMIES; i++)
+;
+	lda     #$00
+	sta     _i
+	sta     _i+1
+L0024:	lda     _i
+	cmp     #$07
+	lda     _i+1
+	sbc     #$00
+	bvc     L0028
+	eor     #$80
+L0028:	jpl     L0025
+;
+; if (!enemies[i].facingRight)
+;
+	lda     _i
+	ldx     _i+1
+	jsr     mulax6
+	clc
+	adc     #<(_enemies)
+	sta     ptr1
+	txa
+	adc     #>(_enemies)
+	sta     ptr1+1
+	ldy     #$04
+	lda     (ptr1),y
+	bne     L002A
+;
+; enemyAttributes |= 0x40;
+;
+	tay
+	lda     (sp),y
+	ora     #$40
+	sta     (sp),y
+;
+; oam_spr((player.facingRight ? player.left : player.x), player.top, 0x08, playerAttributes);
+;
+L002A:	jsr     decsp3
+	lda     _player+15
+	beq     L002B
+	lda     _player+5
+	jmp     L002C
+L002B:	lda     _player
+L002C:	ldy     #$02
+	sta     (sp),y
+	lda     _player+9
+	dey
+	sta     (sp),y
+	lda     #$08
+	dey
+	sta     (sp),y
+	ldy     #$04
+	lda     (sp),y
+	jsr     _oam_spr
+;
+; oam_spr((player.facingRight ? player.x : player.left), player.top, 0x09, playerAttributes);
+;
+	jsr     decsp3
+	lda     _player+15
+	beq     L002D
+	lda     _player
+	jmp     L002E
+L002D:	lda     _player+5
+L002E:	ldy     #$02
+	sta     (sp),y
+	lda     _player+9
+	dey
+	sta     (sp),y
+	lda     #$09
+	dey
+	sta     (sp),y
+	ldy     #$04
+	lda     (sp),y
+	jsr     _oam_spr
+;
+; oam_spr((player.facingRight ? player.left : player.x), player.y, 0x18, playerAttributes);
+;
+	jsr     decsp3
+	lda     _player+15
+	beq     L002F
+	lda     _player+5
+	jmp     L0030
+L002F:	lda     _player
+L0030:	ldy     #$02
+	sta     (sp),y
+	lda     _player+2
+	dey
+	sta     (sp),y
+	lda     #$18
+	dey
+	sta     (sp),y
+	ldy     #$04
+	lda     (sp),y
+	jsr     _oam_spr
+;
+; oam_spr((player.facingRight ? player.x : player.left), player.y, 0x19, playerAttributes);
+;
+	jsr     decsp3
+	lda     _player+15
+	beq     L0031
+	lda     _player
+	jmp     L0032
+L0031:	lda     _player+5
+L0032:	ldy     #$02
+	sta     (sp),y
+	lda     _player+2
+	dey
+	sta     (sp),y
+	lda     #$19
+	dey
+	sta     (sp),y
+	ldy     #$04
+	lda     (sp),y
+	jsr     _oam_spr
+;
+; for (i = 0; i < MAX_ENEMIES; i++)
+;
+	inc     _i
+	jne     L0024
+	inc     _i+1
+	jmp     L0024
+;
 ; }
 ;
-	jmp     incsp1
+L0025:	jmp     incsp2
 
 .endproc
 
@@ -14476,12 +14630,12 @@ L0004:	lda     #$01
 .endproc
 
 ; ---------------------------------------------------------------
-; void __near__ setPlayerValues (void)
+; void __near__ SetPlayerValues (void)
 ; ---------------------------------------------------------------
 
 .segment	"CODE"
 
-.proc	_setPlayerValues: near
+.proc	_SetPlayerValues: near
 
 .segment	"CODE"
 
@@ -14587,9 +14741,9 @@ L0004:	lda     #$01
 .segment	"CODE"
 
 ;
-; setPlayerValues();
+; SetPlayerValues();
 ;
-	jsr     _setPlayerValues
+	jsr     _SetPlayerValues
 ;
 ; DrawTitleScreen();
 ;
@@ -14651,9 +14805,9 @@ L0009:	jsr     _UpdateColliderPositions
 ;
 	jsr     _MovePlayer
 ;
-; DrawPlayer();
+; DrawSprites();
 ;
-	jsr     _DrawPlayer
+	jsr     _DrawSprites
 ;
 ; scroll(player.scrollX, 0);
 ;
