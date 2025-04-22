@@ -192,6 +192,7 @@ char CheckIfPlatformTile(unsigned char tile);
 void SetPlayerValues(void);
 char CheckIfSpikes(unsigned char tile);
 void DrawDeathScreen(void);
+void damagePlayer(void);
 
 /*
 ----------------
@@ -477,8 +478,7 @@ void MovePlayer(void)
 			// Check for head collision and make sure player doesn't jump out the map
 			if (player.velocityY < 0) 
 			{
-				if (CheckIfCollidableTile(currentLevelData[GetTileIndex(player.x, player.top)]) ||
-				CheckIfSpikes(currentLevelData[GetTileIndex(player.x, player.top + 4)])) 
+				if (CheckIfCollidableTile(currentLevelData[GetTileIndex(player.x, player.top)]))
 				{
 					//Make sure player cannot jump higher and the player doesn't get stuck
 					player.velocityY = 0;
