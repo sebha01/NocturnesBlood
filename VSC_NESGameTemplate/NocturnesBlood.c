@@ -162,15 +162,15 @@ int i = 0;
 int currentLevel = 1;
 const unsigned char* currentLevelData;
 
-struct Enemy 
+typedef struct 
 {
 	signed int x;
 	signed int y;
 	char facingRight;
 	char isAlive;
-};
+} Enemy;
 
-struct Enemy enemies[MAX_ENEMIES];
+Enemy enemies[MAX_ENEMIES];
 
 
 //function prototypes
@@ -190,6 +190,9 @@ char CheckIfGoalTile(unsigned char tile);
 void UpdateColliderPositions(void);
 void DashEnd(void);
 char CheckIfPlatformTile(unsigned char tile);
+//Enemies
+void spawnEnemies(void);
+void updateEnemyMovement(void);
 
 /*
 ----------------
