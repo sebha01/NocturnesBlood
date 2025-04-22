@@ -170,33 +170,12 @@ typedef struct
 
 Player player;
 
-typedef struct 
-{
-	unsigned char x;
-	unsigned char y;
-	unsigned char height;
-	unsigned char width;
-	unsigned char right;
-	unsigned char left;
-	char facingRight;
-	char isAlive;
-} Enemy;
-
-Enemy enemies[MAX_ENEMIES] = 
-{
-	{100, 215, 8, 4, 120, 80, 1, 1},
-	{200, 215, 8, 4, 220, 180, -1, 1}
-};
- 
-
-unsigned char enemyTouchingPlayer = 0;
-
 //function prototypes
 void DrawTitleScreen(void);
 void GameLoop(void);
 void Fade(void);
 void MovePlayer(void);
-void DrawSprites(void);
+void DrawPlayer(void);
 unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY);
 void CheckIfEnd(void);
 void DrawEndScreen(void);
@@ -209,8 +188,6 @@ void UpdateColliderPositions(void);
 void DashEnd(void);
 char CheckIfPlatformTile(unsigned char tile);
 void SetPlayerValues(void);
-void MoveEnemies(void);
-void CheckForEnemColl(void);
 
 /*
 ----------------
@@ -246,15 +223,12 @@ void main (void)
 				UpdateColliderPositions();
 				//Movement
 				MovePlayer();
-				MoveEnemies();
 				//Draw sprites
-				DrawSprites();
+				DrawPlayer();
 				//Update scrolling
 				scroll(player.scrollX, 0);
 				//Check if player has reached end goal
 				CheckIfEnd();
-
-				CheckForEnemColl();
 				break;
 			case END_SCREEN:
 				//Check if player has pressed start
@@ -537,11 +511,10 @@ void MovePlayer(void)
     }
 }
 
-void DrawSprites(void)
+void DrawPlayer(void)
 {
 	unsigned char playerAttributes =  player.isDashing ? 0x03 :
 							currentLevel == 3 ? 0X02 : 0x01;
-	unsigned char enemyAttributes;
 
 	if (!player.facingRight)
 	{
@@ -579,27 +552,6 @@ void DrawSprites(void)
 		oam_spr((player.facingRight ? player.left : player.x), player.y, 0x18, playerAttributes);
     	oam_spr((player.facingRight ? player.x : player.left), player.y, 0x19, playerAttributes);
 	}
-
-	//Draw the enemies
-	
-
-	for (i = 0; i < MAX_ENEMIES; i++)
-	{
-		enemyAttributes = 0x03;
-		if (!enemies[i].facingRight)
-		{
-			enemyAttributes |= 0x40;
-		}
-
-		if (enemies[i].x - player.scrollX < 256)
-		{
-			oam_spr((enemies[i].x + (enemies[i].facingRight ? -8 : 0)) - player.scrollX, enemies[i].y - 8, 0xC2, enemyAttributes);
-			oam_spr((enemies[i].x + (enemies[i].facingRight ? 0 : -8)) - player.scrollX, enemies[i].y - 8, 0xC3, enemyAttributes);
-			oam_spr((enemies[i].x + (enemies[i].facingRight ? -8 : 0)) - player.scrollX, enemies[i].y, 0xD2, enemyAttributes);
-			oam_spr((enemies[i].x + (enemies[i].facingRight ? 0 : -8)) - player.scrollX, enemies[i].y, 0xD3, enemyAttributes);
-		}
-	}
-
 }
 
 unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY)
@@ -648,12 +600,6 @@ void DrawEndScreen()
 {
 	ppu_off(); // screen off
 	pal_bg(palette); //	load the BG palette
-
-	enemyTouchingPlayer = 0;
-	player.scrollX = 0;
-	set_scroll_x(player.scrollX);
-	player.x = 30;
-	player.y = 215;
 
 	//Clear all sprite data
 	oam_clear();
@@ -804,62 +750,4 @@ void SetPlayerValues(void)
 	player.dashCooldown = 0;
 	player.hasDashedInAir = 0;
 	player.dashDirection = 0; 
-}
-
-void MoveEnemies(void)
-{
-    // Loop through each enemy
-    for (i = 0; i < MAX_ENEMIES; i++)
-    {
-        // Check if the enemy is alive
-        if (enemies[i].isAlive)
-        {
-            // Move the enemy depending on the direction it's facing
-            if (enemies[i].facingRight)
-            {
-                // Move enemy to the right
-                enemies[i].x += 1; 
-
-                // Check if the enemy has reached the right patrol boundary
-                if (enemies[i].x >= enemies[i].right)
-                {
-                    // Flip the direction
-                    enemies[i].facingRight = 0;  // Set to move left
-                }
-            }
-            else
-            {
-                // Move enemy to the left
-                enemies[i].x -= 1;
-
-                // Check if the enemy has reached the left patrol boundary
-                if (enemies[i].x <= enemies[i].left)
-                {
-                    // Flip the direction
-                    enemies[i].facingRight = 1;  // Set to move right
-                }
-            }
-        }
-    }
-}
-
-void CheckForEnemColl(void)
-{
-	for (i = 0; i < MAX_ENEMIES; i++)
-	{
-		if (abs(enemies[i].x - (player.x + player.scrollX)) < 4 && abs(enemies[i].y - player.y) < 2)
-		{
-			enemyTouchingPlayer = 1;
-		}
-		else
-		{
-			enemyTouchingPlayer = 0;
-		}
-
-		if (enemyTouchingPlayer)
-		{
-			currentGameState = END_SCREEN;
-			DrawEndScreen();
-		}
-	}
 }

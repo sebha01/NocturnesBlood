@@ -28,7 +28,6 @@
 	.export		_Level1Data
 	.export		_Level2Data
 	.export		_Level3Data
-	.import		_abs
 	.export		_Level1A
 	.export		_Level1B
 	.export		_Level2A
@@ -48,12 +47,10 @@
 	.export		_currentLevel
 	.export		_currentLevelData
 	.export		_player
-	.export		_enemies
-	.export		_enemyTouchingPlayer
 	.export		_DrawTitleScreen
 	.export		_GameLoop
 	.export		_MovePlayer
-	.export		_DrawSprites
+	.export		_DrawPlayer
 	.export		_GetTileIndex
 	.export		_CheckIfEnd
 	.export		_DrawEndScreen
@@ -66,8 +63,6 @@
 	.export		_DashEnd
 	.export		_CheckIfPlatformTile
 	.export		_SetPlayerValues
-	.export		_MoveEnemies
-	.export		_CheckForEnemColl
 	.export		_main
 
 .segment	"DATA"
@@ -78,25 +73,6 @@ _i:
 	.word	$0000
 _currentLevel:
 	.word	$0001
-_enemies:
-	.byte	$64
-	.byte	$d7
-	.byte	$08
-	.byte	$04
-	.byte	$78
-	.byte	$50
-	.byte	$01
-	.byte	$01
-	.byte	$c8
-	.byte	$d7
-	.byte	$08
-	.byte	$04
-	.byte	$dc
-	.byte	$b4
-	.byte	$ff
-	.byte	$01
-_enemyTouchingPlayer:
-	.byte	$00
 
 .segment	"RODATA"
 
@@ -231,7 +207,7 @@ _Level1Data:
 	.byte	$b3
 	.byte	$82
 	.byte	$83
-	.byte	$b3
+	.byte	$8b
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -290,12 +266,12 @@ _Level1Data:
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
-	.byte	$b2
+	.byte	$8a
 	.byte	$83
 	.byte	$82
 	.byte	$92
 	.byte	$93
-	.byte	$a3
+	.byte	$9b
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
@@ -354,12 +330,12 @@ _Level1Data:
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
-	.byte	$a2
+	.byte	$9a
 	.byte	$93
 	.byte	$92
 	.byte	$82
 	.byte	$83
-	.byte	$a2
+	.byte	$8b
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
@@ -418,12 +394,12 @@ _Level1Data:
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
-	.byte	$b3
+	.byte	$8a
 	.byte	$83
 	.byte	$82
 	.byte	$92
 	.byte	$93
-	.byte	$b2
+	.byte	$9b
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
@@ -482,12 +458,12 @@ _Level1Data:
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
-	.byte	$a3
+	.byte	$9a
 	.byte	$93
 	.byte	$92
 	.byte	$82
 	.byte	$83
-	.byte	$b3
+	.byte	$8b
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -546,12 +522,12 @@ _Level1Data:
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
-	.byte	$b2
+	.byte	$8a
 	.byte	$83
 	.byte	$82
 	.byte	$92
 	.byte	$93
-	.byte	$a3
+	.byte	$9b
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
@@ -610,12 +586,12 @@ _Level1Data:
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
-	.byte	$a2
+	.byte	$9a
 	.byte	$93
 	.byte	$92
 	.byte	$82
 	.byte	$83
-	.byte	$a2
+	.byte	$8b
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
@@ -674,12 +650,12 @@ _Level1Data:
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
-	.byte	$b3
+	.byte	$8a
 	.byte	$83
 	.byte	$82
 	.byte	$92
 	.byte	$93
-	.byte	$b2
+	.byte	$9b
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
@@ -738,7 +714,7 @@ _Level1Data:
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
-	.byte	$a3
+	.byte	$9a
 	.byte	$93
 	.byte	$92
 	.byte	$82
@@ -751,7 +727,7 @@ _Level1Data:
 	.byte	$85
 	.byte	$84
 	.byte	$85
-	.byte	$b3
+	.byte	$8b
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -793,16 +769,16 @@ _Level1Data:
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
-	.byte	$a3
-	.byte	$b2
+	.byte	$aa
+	.byte	$ab
+	.byte	$aa
+	.byte	$ab
+	.byte	$aa
+	.byte	$ab
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
+	.byte	$8a
 	.byte	$83
 	.byte	$82
 	.byte	$92
@@ -815,7 +791,7 @@ _Level1Data:
 	.byte	$95
 	.byte	$94
 	.byte	$95
-	.byte	$a3
+	.byte	$9b
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
@@ -866,19 +842,19 @@ _Level1Data:
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
-	.byte	$a2
+	.byte	$9a
 	.byte	$93
 	.byte	$92
 	.byte	$82
 	.byte	$83
-	.byte	$a2
+	.byte	$8b
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
-	.byte	$b2
-	.byte	$b3
+	.byte	$ea
+	.byte	$ab
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -930,12 +906,12 @@ _Level1Data:
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
-	.byte	$b3
+	.byte	$8a
 	.byte	$83
 	.byte	$82
 	.byte	$92
 	.byte	$93
-	.byte	$b2
+	.byte	$9b
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
@@ -994,17 +970,17 @@ _Level1Data:
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
-	.byte	$a3
+	.byte	$9a
 	.byte	$93
 	.byte	$92
 	.byte	$82
 	.byte	$83
-	.byte	$a3
+	.byte	$8b
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
-	.byte	$a2
+	.byte	$8a
 	.byte	$84
 	.byte	$85
 	.byte	$84
@@ -1013,7 +989,7 @@ _Level1Data:
 	.byte	$85
 	.byte	$84
 	.byte	$85
-	.byte	$b3
+	.byte	$8b
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
@@ -1039,8 +1015,12 @@ _Level1Data:
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
-	.byte	$b3
-	.byte	$a2
+	.byte	$aa
+	.byte	$ab
+	.byte	$aa
+	.byte	$ab
+	.byte	$aa
+	.byte	$ab
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
@@ -1054,21 +1034,17 @@ _Level1Data:
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
+	.byte	$8a
 	.byte	$83
 	.byte	$82
 	.byte	$92
 	.byte	$93
-	.byte	$b3
+	.byte	$9b
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
-	.byte	$b2
+	.byte	$9a
 	.byte	$94
 	.byte	$95
 	.byte	$94
@@ -1077,10 +1053,26 @@ _Level1Data:
 	.byte	$95
 	.byte	$94
 	.byte	$95
-	.byte	$a3
+	.byte	$9b
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$d8
+	.byte	$d9
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
@@ -1106,41 +1098,25 @@ _Level1Data:
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
+	.byte	$9a
 	.byte	$93
 	.byte	$92
 	.byte	$82
 	.byte	$83
-	.byte	$a2
+	.byte	$8b
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
+	.byte	$aa
+	.byte	$ab
+	.byte	$aa
+	.byte	$ab
+	.byte	$aa
+	.byte	$ab
+	.byte	$aa
+	.byte	$ab
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
@@ -1186,12 +1162,12 @@ _Level1Data:
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
-	.byte	$b3
+	.byte	$8a
 	.byte	$83
 	.byte	$82
 	.byte	$92
 	.byte	$93
-	.byte	$b2
+	.byte	$9b
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
@@ -1211,12 +1187,12 @@ _Level1Data:
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
-	.byte	$b2
-	.byte	$b3
+	.byte	$d8
+	.byte	$d9
 	.byte	$a2
 	.byte	$a3
-	.byte	$b2
-	.byte	$b3
+	.byte	$d8
+	.byte	$d9
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -1250,12 +1226,12 @@ _Level1Data:
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
-	.byte	$a3
+	.byte	$9a
 	.byte	$93
 	.byte	$92
 	.byte	$82
 	.byte	$83
-	.byte	$a3
+	.byte	$8b
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -1272,7 +1248,7 @@ _Level1Data:
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
-	.byte	$a2
+	.byte	$8a
 	.byte	$84
 	.byte	$85
 	.byte	$84
@@ -1281,16 +1257,16 @@ _Level1Data:
 	.byte	$85
 	.byte	$84
 	.byte	$85
-	.byte	$b3
+	.byte	$8b
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
+	.byte	$aa
+	.byte	$ab
+	.byte	$aa
+	.byte	$ab
+	.byte	$aa
+	.byte	$ab
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
@@ -1314,12 +1290,12 @@ _Level1Data:
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
-	.byte	$b2
+	.byte	$8a
 	.byte	$83
 	.byte	$82
 	.byte	$92
 	.byte	$93
-	.byte	$b3
+	.byte	$9b
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
@@ -1336,7 +1312,7 @@ _Level1Data:
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
-	.byte	$b2
+	.byte	$9a
 	.byte	$94
 	.byte	$95
 	.byte	$94
@@ -1345,7 +1321,7 @@ _Level1Data:
 	.byte	$95
 	.byte	$94
 	.byte	$95
-	.byte	$a3
+	.byte	$9b
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -1378,13 +1354,37 @@ _Level1Data:
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
-	.byte	$a2
+	.byte	$9a
 	.byte	$93
 	.byte	$92
 	.byte	$82
 	.byte	$83
+	.byte	$8b
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
 	.byte	$a2
 	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$aa
+	.byte	$ab
+	.byte	$aa
+	.byte	$ab
+	.byte	$aa
+	.byte	$ab
+	.byte	$aa
+	.byte	$ab
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
@@ -1403,8 +1403,12 @@ _Level1Data:
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
-	.byte	$a2
-	.byte	$a3
+	.byte	$aa
+	.byte	$ab
+	.byte	$aa
+	.byte	$ab
+	.byte	$aa
+	.byte	$ab
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
@@ -1414,41 +1418,37 @@ _Level1Data:
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
+	.byte	$8a
 	.byte	$83
 	.byte	$82
 	.byte	$92
 	.byte	$93
+	.byte	$9b
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
 	.byte	$b2
 	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$c8
+	.byte	$c9
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$d8
+	.byte	$d9
+	.byte	$b2
+	.byte	$b3
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -1482,43 +1482,19 @@ _Level1Data:
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
+	.byte	$9a
 	.byte	$93
 	.byte	$92
 	.byte	$82
 	.byte	$83
-	.byte	$b3
+	.byte	$8b
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
-	.byte	$b2
+	.byte	$8a
 	.byte	$84
 	.byte	$85
 	.byte	$84
@@ -1527,7 +1503,7 @@ _Level1Data:
 	.byte	$85
 	.byte	$84
 	.byte	$85
-	.byte	$a3
+	.byte	$8b
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -1575,14 +1551,14 @@ _Level1Data:
 	.byte	$82
 	.byte	$92
 	.byte	$93
-	.byte	$a3
+	.byte	$9b
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
-	.byte	$a2
+	.byte	$9a
 	.byte	$94
 	.byte	$95
 	.byte	$94
@@ -1591,7 +1567,7 @@ _Level1Data:
 	.byte	$95
 	.byte	$94
 	.byte	$95
-	.byte	$b3
+	.byte	$9b
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
@@ -1639,6 +1615,22 @@ _Level1Data:
 	.byte	$92
 	.byte	$82
 	.byte	$83
+	.byte	$8b
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$aa
+	.byte	$ab
+	.byte	$aa
+	.byte	$ab
+	.byte	$aa
+	.byte	$ab
+	.byte	$aa
+	.byte	$ab
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -1682,28 +1674,12 @@ _Level1Data:
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
+	.byte	$8a
 	.byte	$83
 	.byte	$82
 	.byte	$92
 	.byte	$93
-	.byte	$b2
+	.byte	$9b
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
@@ -1762,12 +1738,12 @@ _Level1Data:
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
-	.byte	$a3
+	.byte	$9a
 	.byte	$93
 	.byte	$92
 	.byte	$82
 	.byte	$83
-	.byte	$b3
+	.byte	$8b
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -1826,12 +1802,12 @@ _Level1Data:
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
-	.byte	$b2
+	.byte	$8a
 	.byte	$83
 	.byte	$82
 	.byte	$92
 	.byte	$93
-	.byte	$a3
+	.byte	$9b
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
@@ -1890,7 +1866,7 @@ _Level1Data:
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
-	.byte	$a2
+	.byte	$9a
 	.byte	$93
 	.byte	$92
 	.byte	$a2
@@ -6314,7 +6290,7 @@ _Level1A:
 	.byte	$91
 	.byte	$82
 	.byte	$83
-	.byte	$b3
+	.byte	$8b
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -6346,7 +6322,7 @@ _Level1A:
 	.byte	$a2
 	.byte	$92
 	.byte	$93
-	.byte	$a3
+	.byte	$9b
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
@@ -6378,7 +6354,7 @@ _Level1A:
 	.byte	$b2
 	.byte	$82
 	.byte	$83
-	.byte	$a2
+	.byte	$8b
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
@@ -6410,7 +6386,7 @@ _Level1A:
 	.byte	$a3
 	.byte	$92
 	.byte	$93
-	.byte	$b2
+	.byte	$9b
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
@@ -6442,7 +6418,7 @@ _Level1A:
 	.byte	$b3
 	.byte	$82
 	.byte	$83
-	.byte	$b3
+	.byte	$8b
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -6474,7 +6450,7 @@ _Level1A:
 	.byte	$a2
 	.byte	$92
 	.byte	$93
-	.byte	$a3
+	.byte	$9b
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
@@ -6506,7 +6482,7 @@ _Level1A:
 	.byte	$b2
 	.byte	$82
 	.byte	$83
-	.byte	$a2
+	.byte	$8b
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
@@ -6538,7 +6514,7 @@ _Level1A:
 	.byte	$a3
 	.byte	$92
 	.byte	$93
-	.byte	$b2
+	.byte	$9b
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
@@ -6578,7 +6554,7 @@ _Level1A:
 	.byte	$85
 	.byte	$84
 	.byte	$85
-	.byte	$b3
+	.byte	$8b
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -6610,7 +6586,7 @@ _Level1A:
 	.byte	$95
 	.byte	$94
 	.byte	$95
-	.byte	$a3
+	.byte	$9b
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
@@ -6634,142 +6610,14 @@ _Level1A:
 	.byte	$b2
 	.byte	$82
 	.byte	$83
-	.byte	$a2
+	.byte	$8b
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$92
-	.byte	$93
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$82
-	.byte	$83
-	.byte	$a3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$84
-	.byte	$85
-	.byte	$84
-	.byte	$85
-	.byte	$84
-	.byte	$85
-	.byte	$84
-	.byte	$85
-	.byte	$b3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$92
-	.byte	$93
-	.byte	$b3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$94
-	.byte	$95
-	.byte	$94
-	.byte	$95
-	.byte	$94
-	.byte	$95
-	.byte	$94
-	.byte	$95
-	.byte	$a3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$82
-	.byte	$83
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
+	.byte	$ea
+	.byte	$ab
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -6794,7 +6642,7 @@ _Level1A:
 	.byte	$a3
 	.byte	$92
 	.byte	$93
-	.byte	$b2
+	.byte	$9b
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
@@ -6826,24 +6674,12 @@ _Level1A:
 	.byte	$b3
 	.byte	$82
 	.byte	$83
-	.byte	$a3
+	.byte	$8b
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
+	.byte	$8a
 	.byte	$84
 	.byte	$85
 	.byte	$84
@@ -6852,125 +6688,9 @@ _Level1A:
 	.byte	$85
 	.byte	$84
 	.byte	$85
-	.byte	$b3
+	.byte	$8b
 	.byte	$b2
 	.byte	$b3
-	.byte	$a2
-	.byte	$92
-	.byte	$93
-	.byte	$b3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$94
-	.byte	$95
-	.byte	$94
-	.byte	$95
-	.byte	$94
-	.byte	$95
-	.byte	$94
-	.byte	$95
-	.byte	$a3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$82
-	.byte	$83
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$92
-	.byte	$93
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$82
-	.byte	$83
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$84
-	.byte	$85
-	.byte	$84
-	.byte	$85
-	.byte	$84
-	.byte	$85
-	.byte	$84
-	.byte	$85
-	.byte	$a3
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -6986,23 +6706,23 @@ _Level1A:
 	.byte	$a2
 	.byte	$92
 	.byte	$93
-	.byte	$a3
+	.byte	$9b
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
-	.byte	$b2
-	.byte	$b3
+	.byte	$9a
+	.byte	$94
+	.byte	$95
+	.byte	$94
+	.byte	$95
+	.byte	$94
+	.byte	$95
+	.byte	$94
+	.byte	$95
+	.byte	$9b
 	.byte	$a2
-	.byte	$94
-	.byte	$95
-	.byte	$94
-	.byte	$95
-	.byte	$94
-	.byte	$95
-	.byte	$94
-	.byte	$95
-	.byte	$b3
+	.byte	$a3
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
@@ -7018,20 +6738,20 @@ _Level1A:
 	.byte	$b2
 	.byte	$82
 	.byte	$83
-	.byte	$a2
+	.byte	$8b
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
+	.byte	$aa
+	.byte	$ab
+	.byte	$aa
+	.byte	$ab
+	.byte	$aa
+	.byte	$ab
+	.byte	$aa
+	.byte	$ab
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
@@ -7050,7 +6770,263 @@ _Level1A:
 	.byte	$a3
 	.byte	$92
 	.byte	$93
+	.byte	$9b
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
 	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$d8
+	.byte	$d9
+	.byte	$a2
+	.byte	$a3
+	.byte	$d8
+	.byte	$d9
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$82
+	.byte	$83
+	.byte	$8b
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$8a
+	.byte	$84
+	.byte	$85
+	.byte	$84
+	.byte	$85
+	.byte	$84
+	.byte	$85
+	.byte	$84
+	.byte	$85
+	.byte	$8b
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$92
+	.byte	$93
+	.byte	$9b
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$9a
+	.byte	$94
+	.byte	$95
+	.byte	$94
+	.byte	$95
+	.byte	$94
+	.byte	$95
+	.byte	$94
+	.byte	$95
+	.byte	$9b
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$82
+	.byte	$83
+	.byte	$8b
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$aa
+	.byte	$ab
+	.byte	$aa
+	.byte	$ab
+	.byte	$aa
+	.byte	$ab
+	.byte	$aa
+	.byte	$ab
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$92
+	.byte	$93
+	.byte	$9b
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$c8
+	.byte	$c9
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$d8
+	.byte	$d9
+	.byte	$b2
+	.byte	$b3
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$82
+	.byte	$83
+	.byte	$8b
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$8a
+	.byte	$84
+	.byte	$85
+	.byte	$84
+	.byte	$85
+	.byte	$84
+	.byte	$85
+	.byte	$84
+	.byte	$85
+	.byte	$8b
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$92
+	.byte	$93
+	.byte	$9b
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$9a
+	.byte	$94
+	.byte	$95
+	.byte	$94
+	.byte	$95
+	.byte	$94
+	.byte	$95
+	.byte	$94
+	.byte	$95
+	.byte	$9b
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$82
+	.byte	$83
+	.byte	$8b
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$aa
+	.byte	$ab
+	.byte	$aa
+	.byte	$ab
+	.byte	$aa
+	.byte	$ab
+	.byte	$aa
+	.byte	$ab
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$92
+	.byte	$93
+	.byte	$9b
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
@@ -7082,7 +7058,7 @@ _Level1A:
 	.byte	$b3
 	.byte	$82
 	.byte	$83
-	.byte	$b3
+	.byte	$8b
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -7114,7 +7090,7 @@ _Level1A:
 	.byte	$a2
 	.byte	$92
 	.byte	$93
-	.byte	$a3
+	.byte	$9b
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
@@ -7366,7 +7342,7 @@ _Level1B:
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
-	.byte	$b2
+	.byte	$8a
 	.byte	$83
 	.byte	$82
 	.byte	$b3
@@ -7398,7 +7374,7 @@ _Level1B:
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
-	.byte	$a2
+	.byte	$9a
 	.byte	$93
 	.byte	$92
 	.byte	$b2
@@ -7430,7 +7406,7 @@ _Level1B:
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
-	.byte	$b3
+	.byte	$8a
 	.byte	$83
 	.byte	$82
 	.byte	$a2
@@ -7462,7 +7438,7 @@ _Level1B:
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
-	.byte	$a3
+	.byte	$9a
 	.byte	$93
 	.byte	$92
 	.byte	$a3
@@ -7494,7 +7470,7 @@ _Level1B:
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
-	.byte	$b2
+	.byte	$8a
 	.byte	$83
 	.byte	$82
 	.byte	$b3
@@ -7526,7 +7502,7 @@ _Level1B:
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
-	.byte	$a2
+	.byte	$9a
 	.byte	$93
 	.byte	$92
 	.byte	$b2
@@ -7558,7 +7534,7 @@ _Level1B:
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
-	.byte	$b3
+	.byte	$8a
 	.byte	$83
 	.byte	$82
 	.byte	$a2
@@ -7590,7 +7566,519 @@ _Level1B:
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
+	.byte	$9a
+	.byte	$93
+	.byte	$92
 	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$aa
+	.byte	$ab
+	.byte	$aa
+	.byte	$ab
+	.byte	$aa
+	.byte	$ab
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$8a
+	.byte	$83
+	.byte	$82
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$9a
+	.byte	$93
+	.byte	$92
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$84
+	.byte	$85
+	.byte	$84
+	.byte	$85
+	.byte	$84
+	.byte	$85
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$8a
+	.byte	$83
+	.byte	$82
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$94
+	.byte	$95
+	.byte	$94
+	.byte	$95
+	.byte	$94
+	.byte	$95
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$9a
+	.byte	$93
+	.byte	$92
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$aa
+	.byte	$ab
+	.byte	$aa
+	.byte	$ab
+	.byte	$aa
+	.byte	$ab
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$8a
+	.byte	$83
+	.byte	$82
+	.byte	$b3
+	.byte	$a2
+	.byte	$d8
+	.byte	$d9
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$9a
+	.byte	$93
+	.byte	$92
+	.byte	$84
+	.byte	$85
+	.byte	$84
+	.byte	$85
+	.byte	$84
+	.byte	$85
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$8a
+	.byte	$83
+	.byte	$82
+	.byte	$94
+	.byte	$95
+	.byte	$94
+	.byte	$95
+	.byte	$94
+	.byte	$95
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$9a
+	.byte	$93
+	.byte	$92
+	.byte	$aa
+	.byte	$ab
+	.byte	$aa
+	.byte	$ab
+	.byte	$aa
+	.byte	$ab
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$84
+	.byte	$85
+	.byte	$84
+	.byte	$85
+	.byte	$84
+	.byte	$85
+	.byte	$b3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$8a
+	.byte	$83
+	.byte	$82
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$94
+	.byte	$95
+	.byte	$94
+	.byte	$95
+	.byte	$94
+	.byte	$95
+	.byte	$a3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$9a
+	.byte	$93
+	.byte	$92
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$aa
+	.byte	$ab
+	.byte	$aa
+	.byte	$ab
+	.byte	$aa
+	.byte	$ab
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$8a
+	.byte	$83
+	.byte	$82
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$9a
+	.byte	$93
+	.byte	$92
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$84
+	.byte	$85
+	.byte	$84
+	.byte	$85
+	.byte	$84
+	.byte	$85
+	.byte	$83
+	.byte	$82
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$94
+	.byte	$95
+	.byte	$94
+	.byte	$95
+	.byte	$94
+	.byte	$95
+	.byte	$93
+	.byte	$92
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$8a
+	.byte	$83
+	.byte	$82
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$9a
 	.byte	$93
 	.byte	$92
 	.byte	$a3
@@ -7622,7 +8110,7 @@ _Level1B:
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
-	.byte	$b2
+	.byte	$8a
 	.byte	$83
 	.byte	$82
 	.byte	$b3
@@ -7654,519 +8142,7 @@ _Level1B:
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
-	.byte	$a2
-	.byte	$93
-	.byte	$92
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$84
-	.byte	$85
-	.byte	$84
-	.byte	$85
-	.byte	$84
-	.byte	$85
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$83
-	.byte	$82
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$94
-	.byte	$95
-	.byte	$94
-	.byte	$95
-	.byte	$94
-	.byte	$95
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$93
-	.byte	$92
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$83
-	.byte	$82
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$93
-	.byte	$92
-	.byte	$84
-	.byte	$85
-	.byte	$84
-	.byte	$85
-	.byte	$84
-	.byte	$85
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$83
-	.byte	$82
-	.byte	$94
-	.byte	$95
-	.byte	$94
-	.byte	$95
-	.byte	$94
-	.byte	$95
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$93
-	.byte	$92
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$84
-	.byte	$85
-	.byte	$84
-	.byte	$85
-	.byte	$84
-	.byte	$85
-	.byte	$b3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$83
-	.byte	$82
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$94
-	.byte	$95
-	.byte	$94
-	.byte	$95
-	.byte	$94
-	.byte	$95
-	.byte	$a3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$93
-	.byte	$92
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$83
-	.byte	$82
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$93
-	.byte	$92
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$84
-	.byte	$85
-	.byte	$84
-	.byte	$85
-	.byte	$84
-	.byte	$85
-	.byte	$83
-	.byte	$82
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$94
-	.byte	$95
-	.byte	$94
-	.byte	$95
-	.byte	$94
-	.byte	$95
-	.byte	$93
-	.byte	$92
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$83
-	.byte	$82
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$93
-	.byte	$92
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$83
-	.byte	$82
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
+	.byte	$9a
 	.byte	$93
 	.byte	$92
 	.byte	$a0
@@ -13229,12 +13205,12 @@ L0048:	rts
 .endproc
 
 ; ---------------------------------------------------------------
-; void __near__ DrawSprites (void)
+; void __near__ DrawPlayer (void)
 ; ---------------------------------------------------------------
 
 .segment	"CODE"
 
-.proc	_DrawSprites: near
+.proc	_DrawPlayer: near
 
 .segment	"CODE"
 
@@ -13245,7 +13221,7 @@ L0048:	rts
 	ora     _player+20+1
 	beq     L0002
 	lda     #$03
-	jmp     L003B
+	jmp     L0025
 ;
 ; currentLevel == 3 ? 0X02 : 0x01;
 ;
@@ -13255,19 +13231,18 @@ L0002:	lda     _currentLevel+1
 	cmp     #$03
 	bne     L0005
 	lda     #$02
-	jmp     L003B
+	jmp     L0025
 L0005:	lda     #$01
-L003B:	jsr     pusha
+L0025:	jsr     pusha
 ;
 ; if (!player.facingRight)
 ;
-	jsr     decsp1
 	lda     _player+15
 	bne     L0007
 ;
 ; playerAttributes |= 0x40;
 ;
-	ldy     #$01
+	tay
 	lda     (sp),y
 	ora     #$40
 	sta     (sp),y
@@ -13302,7 +13277,7 @@ L000A:	ldy     #$02
 	lda     #$88
 	dey
 	sta     (sp),y
-	ldy     #$04
+	ldy     #$03
 	lda     (sp),y
 	jsr     _oam_spr
 ;
@@ -13312,9 +13287,9 @@ L000A:	ldy     #$02
 	lda     _player+15
 	beq     L000B
 	lda     _player
-	jmp     L003C
+	jmp     L0026
 L000B:	lda     _player+5
-L003C:	ldy     #$02
+L0026:	ldy     #$02
 	sta     (sp),y
 	lda     _player+9
 	dey
@@ -13322,7 +13297,7 @@ L003C:	ldy     #$02
 	lda     #$89
 	dey
 	sta     (sp),y
-	ldy     #$04
+	ldy     #$03
 	lda     (sp),y
 	jsr     _oam_spr
 ;
@@ -13342,7 +13317,7 @@ L000E:	ldy     #$02
 	lda     #$98
 	dey
 	sta     (sp),y
-	ldy     #$04
+	ldy     #$03
 	lda     (sp),y
 	jsr     _oam_spr
 ;
@@ -13352,9 +13327,9 @@ L000E:	ldy     #$02
 	lda     _player+15
 	beq     L000F
 	lda     _player
-	jmp     L003D
+	jmp     L0027
 L000F:	lda     _player+5
-L003D:	ldy     #$02
+L0027:	ldy     #$02
 	sta     (sp),y
 	lda     _player+1
 	dey
@@ -13363,7 +13338,7 @@ L003D:	ldy     #$02
 ;
 ; else if (player.isJumping)
 ;
-	jmp     L0047
+	jmp     L002F
 L0008:	lda     _player+18
 	jeq     L0012
 ;
@@ -13383,7 +13358,7 @@ L0014:	ldy     #$02
 	lda     #$0A
 	dey
 	sta     (sp),y
-	ldy     #$04
+	ldy     #$03
 	lda     (sp),y
 	jsr     _oam_spr
 ;
@@ -13393,9 +13368,9 @@ L0014:	ldy     #$02
 	lda     _player+15
 	beq     L0015
 	lda     _player
-	jmp     L003E
+	jmp     L0028
 L0015:	lda     _player+5
-L003E:	ldy     #$02
+L0028:	ldy     #$02
 	sta     (sp),y
 	lda     _player+9
 	dey
@@ -13403,7 +13378,7 @@ L003E:	ldy     #$02
 	lda     #$0B
 	dey
 	sta     (sp),y
-	ldy     #$04
+	ldy     #$03
 	lda     (sp),y
 	jsr     _oam_spr
 ;
@@ -13423,7 +13398,7 @@ L0018:	ldy     #$02
 	lda     #$1A
 	dey
 	sta     (sp),y
-	ldy     #$04
+	ldy     #$03
 	lda     (sp),y
 	jsr     _oam_spr
 ;
@@ -13433,9 +13408,9 @@ L0018:	ldy     #$02
 	lda     _player+15
 	beq     L0019
 	lda     _player
-	jmp     L003F
+	jmp     L0029
 L0019:	lda     _player+5
-L003F:	ldy     #$02
+L0029:	ldy     #$02
 	sta     (sp),y
 	lda     _player+1
 	dey
@@ -13444,7 +13419,7 @@ L003F:	ldy     #$02
 ;
 ; else
 ;
-	jmp     L0047
+	jmp     L002F
 ;
 ; oam_spr((player.facingRight ? player.left : player.x), player.top, 0x08, playerAttributes);
 ;
@@ -13462,7 +13437,7 @@ L001D:	ldy     #$02
 	lda     #$08
 	dey
 	sta     (sp),y
-	ldy     #$04
+	ldy     #$03
 	lda     (sp),y
 	jsr     _oam_spr
 ;
@@ -13472,9 +13447,9 @@ L001D:	ldy     #$02
 	lda     _player+15
 	beq     L001E
 	lda     _player
-	jmp     L0040
+	jmp     L002A
 L001E:	lda     _player+5
-L0040:	ldy     #$02
+L002A:	ldy     #$02
 	sta     (sp),y
 	lda     _player+9
 	dey
@@ -13482,7 +13457,7 @@ L0040:	ldy     #$02
 	lda     #$09
 	dey
 	sta     (sp),y
-	ldy     #$04
+	ldy     #$03
 	lda     (sp),y
 	jsr     _oam_spr
 ;
@@ -13502,7 +13477,7 @@ L0021:	ldy     #$02
 	lda     #$18
 	dey
 	sta     (sp),y
-	ldy     #$04
+	ldy     #$03
 	lda     (sp),y
 	jsr     _oam_spr
 ;
@@ -13512,339 +13487,23 @@ L0021:	ldy     #$02
 	lda     _player+15
 	beq     L0022
 	lda     _player
-	jmp     L0041
+	jmp     L002B
 L0022:	lda     _player+5
-L0041:	ldy     #$02
+L002B:	ldy     #$02
 	sta     (sp),y
 	lda     _player+1
 	dey
 	sta     (sp),y
 	lda     #$19
-L0047:	dey
-	sta     (sp),y
-	ldy     #$04
-	lda     (sp),y
-	jsr     _oam_spr
-;
-; for (i = 0; i < MAX_ENEMIES; i++)
-;
-	lda     #$00
-	sta     _i
-	sta     _i+1
-L0024:	lda     _i
-	cmp     #$02
-	lda     _i+1
-	sbc     #$00
-	bvc     L0028
-	eor     #$80
-L0028:	jpl     L0025
-;
-; enemyAttributes = 0x03;
-;
-	lda     #$03
-	ldy     #$00
-	sta     (sp),y
-;
-; if (!enemies[i].facingRight)
-;
-	lda     _i
-	ldx     _i+1
-	jsr     aslax3
-	clc
-	adc     #<(_enemies)
-	sta     ptr1
-	txa
-	adc     #>(_enemies)
-	sta     ptr1+1
-	ldy     #$06
-	lda     (ptr1),y
-	bne     L002A
-;
-; enemyAttributes |= 0x40;
-;
-	tay
-	lda     (sp),y
-	ora     #$40
-	sta     (sp),y
-;
-; if (enemies[i].x - player.scrollX < 256)
-;
-L002A:	lda     _i
-	ldx     _i+1
-	jsr     aslax3
-	sta     ptr1
-	txa
-	clc
-	adc     #>(_enemies)
-	sta     ptr1+1
-	ldy     #<(_enemies)
-	lda     (ptr1),y
-	sec
-	sbc     _player+13
-	lda     #$00
-	sbc     _player+13+1
-	tax
-	cpx     #$01
-	jcs     L0026
-;
-; oam_spr((enemies[i].x + (enemies[i].facingRight ? -8 : 0)) - player.scrollX, enemies[i].y - 8, 0xC2, enemyAttributes);
-;
-	jsr     decsp3
-	lda     _i
-	ldx     _i+1
-	jsr     aslax3
-	sta     ptr1
-	txa
-	clc
-	adc     #>(_enemies)
-	sta     ptr1+1
-	ldy     #<(_enemies)
-	lda     (ptr1),y
-	sta     sreg
-	lda     _i
-	ldx     _i+1
-	jsr     aslax3
-	clc
-	adc     #<(_enemies)
-	sta     ptr1
-	txa
-	adc     #>(_enemies)
-	sta     ptr1+1
-	ldy     #$06
-	ldx     #$00
-	lda     (ptr1),y
-	beq     L002D
-	dex
-	lda     #$F8
-L002D:	clc
-	adc     sreg
-	bcc     L0036
-	inx
-L0036:	sec
-	sbc     _player+13
-	pha
-	txa
-	sbc     _player+13+1
-	pla
-	ldy     #$02
-	sta     (sp),y
-	lda     _i
-	ldx     _i+1
-	jsr     aslax3
-	clc
-	adc     #<(_enemies)
-	sta     ptr1
-	txa
-	adc     #>(_enemies)
-	sta     ptr1+1
-	dey
-	lda     (ptr1),y
-	sec
-	sbc     #$08
-	sta     (sp),y
-	lda     #$C2
-	dey
+L002F:	dey
 	sta     (sp),y
 	ldy     #$03
 	lda     (sp),y
 	jsr     _oam_spr
-;
-; oam_spr((enemies[i].x + (enemies[i].facingRight ? 0 : -8)) - player.scrollX, enemies[i].y - 8, 0xC3, enemyAttributes);
-;
-	jsr     decsp3
-	lda     _i
-	ldx     _i+1
-	jsr     aslax3
-	sta     ptr1
-	txa
-	clc
-	adc     #>(_enemies)
-	sta     ptr1+1
-	ldy     #<(_enemies)
-	lda     (ptr1),y
-	sta     sreg
-	lda     _i
-	ldx     _i+1
-	jsr     aslax3
-	clc
-	adc     #<(_enemies)
-	sta     ptr1
-	txa
-	adc     #>(_enemies)
-	sta     ptr1+1
-	ldy     #$06
-	lda     (ptr1),y
-	beq     L002F
-	ldx     #$00
-	txa
-	jmp     L0030
-L002F:	ldx     #$FF
-	lda     #$F8
-L0030:	clc
-	adc     sreg
-	bcc     L0037
-	inx
-L0037:	sec
-	sbc     _player+13
-	pha
-	txa
-	sbc     _player+13+1
-	pla
-	ldy     #$02
-	sta     (sp),y
-	lda     _i
-	ldx     _i+1
-	jsr     aslax3
-	clc
-	adc     #<(_enemies)
-	sta     ptr1
-	txa
-	adc     #>(_enemies)
-	sta     ptr1+1
-	dey
-	lda     (ptr1),y
-	sec
-	sbc     #$08
-	sta     (sp),y
-	lda     #$C3
-	dey
-	sta     (sp),y
-	ldy     #$03
-	lda     (sp),y
-	jsr     _oam_spr
-;
-; oam_spr((enemies[i].x + (enemies[i].facingRight ? -8 : 0)) - player.scrollX, enemies[i].y, 0xD2, enemyAttributes);
-;
-	jsr     decsp3
-	lda     _i
-	ldx     _i+1
-	jsr     aslax3
-	sta     ptr1
-	txa
-	clc
-	adc     #>(_enemies)
-	sta     ptr1+1
-	ldy     #<(_enemies)
-	lda     (ptr1),y
-	sta     sreg
-	lda     _i
-	ldx     _i+1
-	jsr     aslax3
-	clc
-	adc     #<(_enemies)
-	sta     ptr1
-	txa
-	adc     #>(_enemies)
-	sta     ptr1+1
-	ldy     #$06
-	ldx     #$00
-	lda     (ptr1),y
-	beq     L0033
-	dex
-	lda     #$F8
-L0033:	clc
-	adc     sreg
-	bcc     L0038
-	inx
-L0038:	sec
-	sbc     _player+13
-	pha
-	txa
-	sbc     _player+13+1
-	pla
-	ldy     #$02
-	sta     (sp),y
-	lda     _i
-	ldx     _i+1
-	jsr     aslax3
-	clc
-	adc     #<(_enemies)
-	sta     ptr1
-	txa
-	adc     #>(_enemies)
-	sta     ptr1+1
-	dey
-	lda     (ptr1),y
-	sta     (sp),y
-	lda     #$D2
-	dey
-	sta     (sp),y
-	ldy     #$03
-	lda     (sp),y
-	jsr     _oam_spr
-;
-; oam_spr((enemies[i].x + (enemies[i].facingRight ? 0 : -8)) - player.scrollX, enemies[i].y, 0xD3, enemyAttributes);
-;
-	jsr     decsp3
-	lda     _i
-	ldx     _i+1
-	jsr     aslax3
-	sta     ptr1
-	txa
-	clc
-	adc     #>(_enemies)
-	sta     ptr1+1
-	ldy     #<(_enemies)
-	lda     (ptr1),y
-	sta     sreg
-	lda     _i
-	ldx     _i+1
-	jsr     aslax3
-	clc
-	adc     #<(_enemies)
-	sta     ptr1
-	txa
-	adc     #>(_enemies)
-	sta     ptr1+1
-	ldy     #$06
-	lda     (ptr1),y
-	beq     L0034
-	ldx     #$00
-	txa
-	jmp     L0035
-L0034:	ldx     #$FF
-	lda     #$F8
-L0035:	clc
-	adc     sreg
-	bcc     L0039
-	inx
-L0039:	sec
-	sbc     _player+13
-	pha
-	txa
-	sbc     _player+13+1
-	pla
-	ldy     #$02
-	sta     (sp),y
-	lda     _i
-	ldx     _i+1
-	jsr     aslax3
-	clc
-	adc     #<(_enemies)
-	sta     ptr1
-	txa
-	adc     #>(_enemies)
-	sta     ptr1+1
-	dey
-	lda     (ptr1),y
-	sta     (sp),y
-	lda     #$D3
-	dey
-	sta     (sp),y
-	ldy     #$03
-	lda     (sp),y
-	jsr     _oam_spr
-;
-; for (i = 0; i < MAX_ENEMIES; i++)
-;
-L0026:	inc     _i
-	jne     L0024
-	inc     _i+1
-	jmp     L0024
 ;
 ; }
 ;
-L0025:	jmp     incsp2
+	jmp     incsp1
 
 .endproc
 
@@ -14060,31 +13719,6 @@ L000A:	ldx     #$00
 	lda     #<(_palette)
 	ldx     #>(_palette)
 	jsr     _pal_bg
-;
-; enemyTouchingPlayer = 0;
-;
-	lda     #$00
-	sta     _enemyTouchingPlayer
-;
-; player.scrollX = 0;
-;
-	tax
-	sta     _player+13
-	sta     _player+13+1
-;
-; set_scroll_x(player.scrollX);
-;
-	jsr     _set_scroll_x
-;
-; player.x = 30;
-;
-	lda     #$1E
-	sta     _player
-;
-; player.y = 215;
-;
-	lda     #$D7
-	sta     _player+1
 ;
 ; oam_clear();
 ;
@@ -14896,310 +14530,6 @@ L0004:	lda     #$01
 .endproc
 
 ; ---------------------------------------------------------------
-; void __near__ MoveEnemies (void)
-; ---------------------------------------------------------------
-
-.segment	"CODE"
-
-.proc	_MoveEnemies: near
-
-.segment	"CODE"
-
-;
-; for (i = 0; i < MAX_ENEMIES; i++)
-;
-	lda     #$00
-	sta     _i
-	sta     _i+1
-L0002:	lda     _i
-	cmp     #$02
-	lda     _i+1
-	sbc     #$00
-	bvc     L0006
-	eor     #$80
-L0006:	bmi     L0010
-;
-; }
-;
-	rts
-;
-; if (enemies[i].isAlive)
-;
-L0010:	lda     _i
-	ldx     _i+1
-	jsr     aslax3
-	clc
-	adc     #<(_enemies)
-	sta     ptr1
-	txa
-	adc     #>(_enemies)
-	sta     ptr1+1
-	ldy     #$07
-	lda     (ptr1),y
-	jeq     L0004
-;
-; if (enemies[i].facingRight)
-;
-	lda     _i
-	ldx     _i+1
-	jsr     aslax3
-	clc
-	adc     #<(_enemies)
-	sta     ptr1
-	txa
-	adc     #>(_enemies)
-	sta     ptr1+1
-	dey
-	lda     (ptr1),y
-	beq     L0009
-;
-; enemies[i].x += 1; 
-;
-	lda     _i
-	ldx     _i+1
-	jsr     aslax3
-	clc
-	adc     #<(_enemies)
-	sta     ptr1
-	txa
-	adc     #>(_enemies)
-	sta     ptr1+1
-	ldy     #$00
-	lda     (ptr1),y
-	clc
-	adc     #$01
-	sta     (ptr1),y
-;
-; if (enemies[i].x >= enemies[i].right)
-;
-	lda     _i
-	ldx     _i+1
-	jsr     aslax3
-	sta     ptr1
-	txa
-	clc
-	adc     #>(_enemies)
-	sta     ptr1+1
-	ldy     #<(_enemies)
-	lda     (ptr1),y
-	sta     sreg
-	lda     _i
-	ldx     _i+1
-	jsr     aslax3
-	clc
-	adc     #<(_enemies)
-	sta     ptr1
-	txa
-	adc     #>(_enemies)
-	sta     ptr1+1
-	ldy     #$04
-	lda     (ptr1),y
-	cmp     sreg
-	beq     L000E
-	jcs     L0004
-;
-; enemies[i].facingRight = 0;  // Set to move left
-;
-L000E:	lda     _i
-	ldx     _i+1
-	jsr     aslax3
-	clc
-	adc     #<(_enemies)
-	sta     ptr1
-	txa
-	adc     #>(_enemies)
-	sta     ptr1+1
-	lda     #$00
-;
-; else
-;
-	jmp     L000F
-;
-; enemies[i].x -= 1;
-;
-L0009:	lda     _i
-	ldx     _i+1
-	jsr     aslax3
-	clc
-	adc     #<(_enemies)
-	sta     ptr1
-	txa
-	adc     #>(_enemies)
-	sta     ptr1+1
-	ldy     #$00
-	lda     (ptr1),y
-	sec
-	sbc     #$01
-	sta     (ptr1),y
-;
-; if (enemies[i].x <= enemies[i].left)
-;
-	lda     _i
-	ldx     _i+1
-	jsr     aslax3
-	sta     ptr1
-	txa
-	clc
-	adc     #>(_enemies)
-	sta     ptr1+1
-	ldy     #<(_enemies)
-	lda     (ptr1),y
-	sta     sreg
-	lda     _i
-	ldx     _i+1
-	jsr     aslax3
-	clc
-	adc     #<(_enemies)
-	sta     ptr1
-	txa
-	adc     #>(_enemies)
-	sta     ptr1+1
-	ldy     #$05
-	lda     (ptr1),y
-	cmp     sreg
-	bcc     L0004
-;
-; enemies[i].facingRight = 1;  // Set to move right
-;
-	lda     _i
-	ldx     _i+1
-	jsr     aslax3
-	clc
-	adc     #<(_enemies)
-	sta     ptr1
-	txa
-	adc     #>(_enemies)
-	sta     ptr1+1
-	lda     #$01
-L000F:	ldy     #$06
-	sta     (ptr1),y
-;
-; for (i = 0; i < MAX_ENEMIES; i++)
-;
-L0004:	inc     _i
-	jne     L0002
-	inc     _i+1
-	jmp     L0002
-
-.endproc
-
-; ---------------------------------------------------------------
-; void __near__ CheckForEnemColl (void)
-; ---------------------------------------------------------------
-
-.segment	"CODE"
-
-.proc	_CheckForEnemColl: near
-
-.segment	"CODE"
-
-;
-; for (i = 0; i < MAX_ENEMIES; i++)
-;
-	lda     #$00
-	sta     _i
-	sta     _i+1
-L0002:	lda     _i
-	cmp     #$02
-	lda     _i+1
-	sbc     #$00
-	bvc     L0006
-	eor     #$80
-L0006:	bmi     L0016
-;
-; }
-;
-	rts
-;
-; if (abs(enemies[i].x - (player.x + player.scrollX)) < 4 && abs(enemies[i].y - player.y) < 2)
-;
-L0016:	lda     _i
-	ldx     _i+1
-	jsr     aslax3
-	sta     ptr1
-	txa
-	clc
-	adc     #>(_enemies)
-	sta     ptr1+1
-	ldy     #<(_enemies)
-	lda     (ptr1),y
-	jsr     pusha0
-	lda     _player
-	clc
-	adc     _player+13
-	pha
-	lda     #$00
-	adc     _player+13+1
-	tax
-	pla
-	jsr     tossubax
-	jsr     _abs
-	cmp     #$04
-	txa
-	sbc     #$00
-	bvc     L0009
-	eor     #$80
-L0009:	asl     a
-	lda     #$00
-	bcc     L0011
-	lda     _i
-	ldx     _i+1
-	jsr     aslax3
-	clc
-	adc     #<(_enemies)
-	sta     ptr1
-	txa
-	adc     #>(_enemies)
-	sta     ptr1+1
-	ldy     #$01
-	lda     (ptr1),y
-	sec
-	sbc     _player+1
-	ldx     #$00
-	bcs     L0010
-	dex
-L0010:	jsr     _abs
-	cmp     #$02
-	txa
-	sbc     #$00
-	bvc     L000B
-	eor     #$80
-L000B:	bmi     L0014
-	lda     #$00
-	jmp     L0011
-;
-; enemyTouchingPlayer = 1;
-;
-L0014:	lda     #$01
-;
-; enemyTouchingPlayer = 0;
-;
-L0011:	sta     _enemyTouchingPlayer
-;
-; if (enemyTouchingPlayer)
-;
-	lda     _enemyTouchingPlayer
-	beq     L0004
-;
-; currentGameState = END_SCREEN;
-;
-	lda     #$02
-	sta     _currentGameState
-;
-; DrawEndScreen();
-;
-	jsr     _DrawEndScreen
-;
-; for (i = 0; i < MAX_ENEMIES; i++)
-;
-L0004:	inc     _i
-	jne     L0002
-	inc     _i+1
-	jmp     L0002
-
-.endproc
-
-; ---------------------------------------------------------------
 ; void __near__ main (void)
 ; ---------------------------------------------------------------
 
@@ -15274,13 +14604,9 @@ L0009:	jsr     _UpdateColliderPositions
 ;
 	jsr     _MovePlayer
 ;
-; MoveEnemies();
+; DrawPlayer();
 ;
-	jsr     _MoveEnemies
-;
-; DrawSprites();
-;
-	jsr     _DrawSprites
+	jsr     _DrawPlayer
 ;
 ; scroll(player.scrollX, 0);
 ;
@@ -15294,10 +14620,6 @@ L0009:	jsr     _UpdateColliderPositions
 ; CheckIfEnd();
 ;
 	jsr     _CheckIfEnd
-;
-; CheckForEnemColl();
-;
-	jsr     _CheckForEnemColl
 ;
 ; break;
 ;
