@@ -77,30 +77,58 @@ _currentLevel:
 _enemies:
 	.word	$0032
 	.word	$00d7
+	.word	$002a
+	.word	$003a
+	.word	$00cf
+	.word	$00de
 	.byte	$01
 	.byte	$01
 	.word	$0064
 	.word	$00d7
+	.word	$005c
+	.word	$006c
+	.word	$00cf
+	.word	$00de
 	.byte	$ff
 	.byte	$01
 	.word	$0096
 	.word	$00d7
+	.word	$008e
+	.word	$009e
+	.word	$00cf
+	.word	$00de
 	.byte	$ff
 	.byte	$01
 	.word	$00c8
 	.word	$00d7
+	.word	$00c0
+	.word	$00d0
+	.word	$00cf
+	.word	$00de
 	.byte	$01
 	.byte	$01
 	.word	$00fa
 	.word	$00d7
+	.word	$00f2
+	.word	$0102
+	.word	$00cf
+	.word	$00de
 	.byte	$01
 	.byte	$01
 	.word	$012c
 	.word	$00d7
+	.word	$0124
+	.word	$0134
+	.word	$00cf
+	.word	$00de
 	.byte	$ff
 	.byte	$01
 	.word	$015e
 	.word	$00d7
+	.word	$0156
+	.word	$0166
+	.word	$00cf
+	.word	$00de
 	.byte	$01
 	.byte	$01
 
@@ -13564,14 +13592,16 @@ L0028:	jpl     L0025
 ;
 	lda     _i
 	ldx     _i+1
-	jsr     mulax6
+	jsr     pushax
+	lda     #$0E
+	jsr     tosmula0
 	clc
 	adc     #<(_enemies)
 	sta     ptr1
 	txa
 	adc     #>(_enemies)
 	sta     ptr1+1
-	ldy     #$04
+	ldy     #$0C
 	lda     (ptr1),y
 	bne     L002A
 ;
@@ -13582,10 +13612,22 @@ L0028:	jpl     L0025
 	ora     #$40
 	sta     (sp),y
 ;
-; oam_spr((player.facingRight ? player.left : player.x), player.top, 0x08, playerAttributes);
+; oam_spr((enemies[i].facingRight ? player.left : player.x), player.top, 0x08, playerAttributes);
 ;
 L002A:	jsr     decsp3
-	lda     _player+15
+	lda     _i
+	ldx     _i+1
+	jsr     pushax
+	lda     #$0E
+	jsr     tosmula0
+	clc
+	adc     #<(_enemies)
+	sta     ptr1
+	txa
+	adc     #>(_enemies)
+	sta     ptr1+1
+	ldy     #$0C
+	lda     (ptr1),y
 	beq     L002B
 	lda     _player+5
 	jmp     L002C
@@ -13602,10 +13644,22 @@ L002C:	ldy     #$02
 	lda     (sp),y
 	jsr     _oam_spr
 ;
-; oam_spr((player.facingRight ? player.x : player.left), player.top, 0x09, playerAttributes);
+; oam_spr((enemies[i].facingRight ? player.x : player.left), player.top, 0x09, playerAttributes);
 ;
 	jsr     decsp3
-	lda     _player+15
+	lda     _i
+	ldx     _i+1
+	jsr     pushax
+	lda     #$0E
+	jsr     tosmula0
+	clc
+	adc     #<(_enemies)
+	sta     ptr1
+	txa
+	adc     #>(_enemies)
+	sta     ptr1+1
+	ldy     #$0C
+	lda     (ptr1),y
 	beq     L002D
 	lda     _player
 	jmp     L002E
@@ -13622,10 +13676,22 @@ L002E:	ldy     #$02
 	lda     (sp),y
 	jsr     _oam_spr
 ;
-; oam_spr((player.facingRight ? player.left : player.x), player.y, 0x18, playerAttributes);
+; oam_spr((enemies[i].facingRight ? player.left : player.x), player.y, 0x18, playerAttributes);
 ;
 	jsr     decsp3
-	lda     _player+15
+	lda     _i
+	ldx     _i+1
+	jsr     pushax
+	lda     #$0E
+	jsr     tosmula0
+	clc
+	adc     #<(_enemies)
+	sta     ptr1
+	txa
+	adc     #>(_enemies)
+	sta     ptr1+1
+	ldy     #$0C
+	lda     (ptr1),y
 	beq     L002F
 	lda     _player+5
 	jmp     L0030
@@ -13642,10 +13708,22 @@ L0030:	ldy     #$02
 	lda     (sp),y
 	jsr     _oam_spr
 ;
-; oam_spr((player.facingRight ? player.x : player.left), player.y, 0x19, playerAttributes);
+; oam_spr((enemies[i].facingRight ? player.x : player.left), player.y, 0x19, playerAttributes);
 ;
 	jsr     decsp3
-	lda     _player+15
+	lda     _i
+	ldx     _i+1
+	jsr     pushax
+	lda     #$0E
+	jsr     tosmula0
+	clc
+	adc     #<(_enemies)
+	sta     ptr1
+	txa
+	adc     #>(_enemies)
+	sta     ptr1+1
+	ldy     #$0C
+	lda     (ptr1),y
 	beq     L0031
 	lda     _player
 	jmp     L0032
@@ -14550,9 +14628,181 @@ L0004:	sta     _player+9
 L0005:	sta     _player+11
 	stx     _player+11+1
 ;
+; for (i = 0; i < MAX_ENEMIES; i++)
+;
+	lda     #$00
+	sta     _i
+	sta     _i+1
+L0006:	lda     _i
+	cmp     #$07
+	lda     _i+1
+	sbc     #$00
+	bvc     L000A
+	eor     #$80
+L000A:	bmi     L0010
+;
 ; }
 ;
 	rts
+;
+; enemies[i].left = enemies[i].x - 8;
+;
+L0010:	lda     _i
+	ldx     _i+1
+	jsr     pushax
+	lda     #$0E
+	jsr     tosmula0
+	clc
+	adc     #<(_enemies)
+	tay
+	txa
+	adc     #>(_enemies)
+	tax
+	tya
+	jsr     pushax
+	lda     _i
+	ldx     _i+1
+	jsr     pushax
+	lda     #$0E
+	jsr     tosmula0
+	clc
+	adc     #<(_enemies)
+	sta     ptr1
+	txa
+	adc     #>(_enemies)
+	sta     ptr1+1
+	ldy     #$01
+	lda     (ptr1),y
+	tax
+	dey
+	lda     (ptr1),y
+	sec
+	sbc     #$08
+	bcs     L000C
+	dex
+L000C:	ldy     #$04
+	jsr     staxspidx
+;
+; enemies[i].right = enemies[i].x + 8;
+;
+	lda     _i
+	ldx     _i+1
+	jsr     pushax
+	lda     #$0E
+	jsr     tosmula0
+	clc
+	adc     #<(_enemies)
+	tay
+	txa
+	adc     #>(_enemies)
+	tax
+	tya
+	jsr     pushax
+	lda     _i
+	ldx     _i+1
+	jsr     pushax
+	lda     #$0E
+	jsr     tosmula0
+	clc
+	adc     #<(_enemies)
+	sta     ptr1
+	txa
+	adc     #>(_enemies)
+	sta     ptr1+1
+	ldy     #$01
+	lda     (ptr1),y
+	tax
+	dey
+	lda     (ptr1),y
+	clc
+	adc     #$08
+	bcc     L000D
+	inx
+L000D:	ldy     #$06
+	jsr     staxspidx
+;
+; enemies[i].top = enemies[i].y - 8;
+;
+	lda     _i
+	ldx     _i+1
+	jsr     pushax
+	lda     #$0E
+	jsr     tosmula0
+	clc
+	adc     #<(_enemies)
+	tay
+	txa
+	adc     #>(_enemies)
+	tax
+	tya
+	jsr     pushax
+	lda     _i
+	ldx     _i+1
+	jsr     pushax
+	lda     #$0E
+	jsr     tosmula0
+	clc
+	adc     #<(_enemies)
+	sta     ptr1
+	txa
+	adc     #>(_enemies)
+	sta     ptr1+1
+	ldy     #$03
+	lda     (ptr1),y
+	tax
+	dey
+	lda     (ptr1),y
+	sec
+	sbc     #$08
+	bcs     L000E
+	dex
+L000E:	ldy     #$08
+	jsr     staxspidx
+;
+; enemies[i].bottom = enemies[i].y + 8;
+;
+	lda     _i
+	ldx     _i+1
+	jsr     pushax
+	lda     #$0E
+	jsr     tosmula0
+	clc
+	adc     #<(_enemies)
+	tay
+	txa
+	adc     #>(_enemies)
+	tax
+	tya
+	jsr     pushax
+	lda     _i
+	ldx     _i+1
+	jsr     pushax
+	lda     #$0E
+	jsr     tosmula0
+	clc
+	adc     #<(_enemies)
+	sta     ptr1
+	txa
+	adc     #>(_enemies)
+	sta     ptr1+1
+	ldy     #$03
+	lda     (ptr1),y
+	tax
+	dey
+	lda     (ptr1),y
+	clc
+	adc     #$08
+	bcc     L000F
+	inx
+L000F:	ldy     #$0A
+	jsr     staxspidx
+;
+; for (i = 0; i < MAX_ENEMIES; i++)
+;
+	inc     _i
+	jne     L0006
+	inc     _i+1
+	jmp     L0006
 
 .endproc
 

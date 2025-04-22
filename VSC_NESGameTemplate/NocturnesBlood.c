@@ -172,19 +172,23 @@ typedef struct
 {
 	signed int x;
 	signed int y;
+	signed int left;
+	signed int right;
+	signed int top;
+	signed int bottom;
 	char facingRight;
 	char isAlive;
 } Enemy;
 
 Enemy enemies[MAX_ENEMIES] = 
 {
-	{50, 215, 1, 1},
-	{100, 215, -1, 1},
-	{150, 215, -1, 1},
-	{200, 215, 1, 1},
-	{250, 215, 1, 1},
-	{300, 215, -1, 1},
-	{350, 215, 1, 1}
+	{50, 215, 42, 58, 207, 222, 1, 1},
+	{100, 215, 92, 108, 207, 222, -1, 1},
+	{150, 215, 142, 158, 207, 222, -1, 1},
+	{200, 215, 192, 208, 207, 222, 1, 1},
+	{250, 215, 242, 258, 207, 222, 1, 1},
+	{300, 215, 292, 308, 207, 222, -1, 1},
+	{350, 215, 342, 358, 207, 222, 1, 1}
 };
  
 
@@ -582,10 +586,10 @@ void DrawSprites(void)
 			enemyAttributes |= 0x40;
 		}
 
-		oam_spr((player.facingRight ? player.left : player.x), player.top, 0x08, playerAttributes);
-		oam_spr((player.facingRight ? player.x : player.left), player.top, 0x09, playerAttributes);
-		oam_spr((player.facingRight ? player.left : player.x), player.y, 0x18, playerAttributes);
-    	oam_spr((player.facingRight ? player.x : player.left), player.y, 0x19, playerAttributes);
+		oam_spr((enemies[i].facingRight ? player.left : player.x), player.top, 0x08, playerAttributes);
+		oam_spr((enemies[i].facingRight ? player.x : player.left), player.top, 0x09, playerAttributes);
+		oam_spr((enemies[i].facingRight ? player.left : player.x), player.y, 0x18, playerAttributes);
+    	oam_spr((enemies[i].facingRight ? player.x : player.left), player.y, 0x19, playerAttributes);
 
 	}
 
@@ -744,10 +748,19 @@ char CheckIfGoalTile(unsigned char tile)
 
 void UpdateColliderPositions(void)
 {
+	//update player colliders
 	player.left = player.x - 8;
 	player.right = player.x + 8;
 	player.top = player.y - 8;
 	player.bottom = player.y + 8;
+	//Update enemy colliders
+	for (i = 0; i < MAX_ENEMIES; i++)
+	{
+		enemies[i].left = enemies[i].x - 8;
+		enemies[i].right = enemies[i].x + 8;
+		enemies[i].top = enemies[i].y - 8;
+		enemies[i].bottom = enemies[i].y + 8;
+	}
 }
 
 void DashEnd(void)
