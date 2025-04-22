@@ -64,6 +64,7 @@
 	.export		_DashEnd
 	.export		_CheckIfPlatformTile
 	.export		_SetPlayerValues
+	.export		_MoveEnemies
 	.export		_main
 
 .segment	"DATA"
@@ -75,12 +76,16 @@ _i:
 _currentLevel:
 	.word	$0001
 _enemies:
-	.word	$0032
-	.word	$00d7
-	.byte	$01
-	.byte	$01
 	.word	$0064
 	.word	$00d7
+	.word	$0078
+	.word	$0050
+	.byte	$01
+	.byte	$01
+	.word	$00c8
+	.word	$00d7
+	.word	$00dc
+	.word	$00b4
 	.byte	$ff
 	.byte	$01
 
@@ -13242,7 +13247,7 @@ L004B:	rts
 	ora     _player+20+1
 	beq     L0002
 	lda     #$03
-	jmp     L0036
+	jmp     L0037
 ;
 ; currentLevel == 3 ? 0X02 : 0x01;
 ;
@@ -13252,17 +13257,13 @@ L0002:	lda     _currentLevel+1
 	cmp     #$03
 	bne     L0005
 	lda     #$02
-	jmp     L0036
+	jmp     L0037
 L0005:	lda     #$01
-L0036:	jsr     pusha
-;
-; unsigned char enemyAttributes = 0x03;
-;
-	lda     #$03
-	jsr     pusha
+L0037:	jsr     pusha
 ;
 ; if (!player.facingRight)
 ;
+	jsr     decsp1
 	lda     _player+15
 	bne     L0007
 ;
@@ -13364,7 +13365,7 @@ L0010:	ldy     #$02
 ;
 ; else if (player.isJumping)
 ;
-	jmp     L003E
+	jmp     L003D
 L0008:	lda     _player+18
 	jeq     L0012
 ;
@@ -13445,7 +13446,7 @@ L001A:	ldy     #$02
 ;
 ; else
 ;
-	jmp     L003E
+	jmp     L003D
 ;
 ; oam_spr((player.facingRight ? player.left : player.x), player.top, 0x08, playerAttributes);
 ;
@@ -13521,7 +13522,7 @@ L0023:	ldy     #$02
 	dey
 	sta     (sp),y
 	lda     #$19
-L003E:	dey
+L003D:	dey
 	sta     (sp),y
 	ldy     #$04
 	lda     (sp),y
@@ -13540,18 +13541,24 @@ L0024:	lda     _i
 	eor     #$80
 L0028:	jpl     L0025
 ;
+; enemyAttributes = 0x03;
+;
+	lda     #$03
+	ldy     #$00
+	sta     (sp),y
+;
 ; if (!enemies[i].facingRight)
 ;
 	lda     _i
 	ldx     _i+1
-	jsr     mulax6
+	jsr     mulax10
 	clc
 	adc     #<(_enemies)
 	sta     ptr1
 	txa
 	adc     #>(_enemies)
 	sta     ptr1+1
-	ldy     #$04
+	ldy     #$08
 	lda     (ptr1),y
 	bne     L002A
 ;
@@ -13562,12 +13569,11 @@ L0028:	jpl     L0025
 	ora     #$40
 	sta     (sp),y
 ;
-; oam_spr((enemies[i].x - (enemies[i].facingRight ? 8 : 0)) - player.scrollX, enemies[i].y - 8, 0xC2, enemyAttributes);
+; if (enemies[i].x - player.scrollX < 256)
 ;
-L002A:	jsr     decsp3
-	lda     _i
+L002A:	lda     _i
 	ldx     _i+1
-	jsr     mulax6
+	jsr     mulax10
 	clc
 	adc     #<(_enemies)
 	sta     ptr1
@@ -13579,21 +13585,55 @@ L002A:	jsr     decsp3
 	tax
 	dey
 	lda     (ptr1),y
-	jsr     pushax
+	sec
+	sbc     _player+13
+	txa
+	sbc     _player+13+1
+	tax
+	cpx     #$01
+	jcs     L0026
+;
+; oam_spr((enemies[i].x + (enemies[i].facingRight ? -8 : 0)) - player.scrollX, enemies[i].y - 8, 0xC2, enemyAttributes);
+;
+	jsr     decsp3
 	lda     _i
 	ldx     _i+1
-	jsr     mulax6
+	jsr     mulax10
 	clc
 	adc     #<(_enemies)
 	sta     ptr1
 	txa
 	adc     #>(_enemies)
 	sta     ptr1+1
-	ldy     #$04
+	iny
 	lda     (ptr1),y
-	beq     L002C
-	lda     #$08
-L002C:	jsr     tossuba0
+	tax
+	dey
+	lda     (ptr1),y
+	sta     sreg
+	stx     sreg+1
+	lda     _i
+	ldx     _i+1
+	jsr     mulax10
+	clc
+	adc     #<(_enemies)
+	sta     ptr1
+	txa
+	adc     #>(_enemies)
+	sta     ptr1+1
+	ldy     #$08
+	ldx     #$00
+	lda     (ptr1),y
+	beq     L002D
+	dex
+	lda     #$F8
+L002D:	clc
+	adc     sreg
+	pha
+	txa
+	adc     sreg+1
+	tax
+	pla
 	sec
 	sbc     _player+13
 	pha
@@ -13604,7 +13644,7 @@ L002C:	jsr     tossuba0
 	sta     (sp),y
 	lda     _i
 	ldx     _i+1
-	jsr     mulax6
+	jsr     mulax10
 	clc
 	adc     #<(_enemies)
 	sta     ptr1
@@ -13623,12 +13663,12 @@ L002C:	jsr     tossuba0
 	lda     (sp),y
 	jsr     _oam_spr
 ;
-; oam_spr((enemies[i].x - (enemies[i].facingRight ? 0 : 8)) - player.scrollX, enemies[i].y - 8, 0xC3, enemyAttributes);
+; oam_spr((enemies[i].x + (enemies[i].facingRight ? 0 : -8)) - player.scrollX, enemies[i].y - 8, 0xC3, enemyAttributes);
 ;
 	jsr     decsp3
 	lda     _i
 	ldx     _i+1
-	jsr     mulax6
+	jsr     mulax10
 	clc
 	adc     #<(_enemies)
 	sta     ptr1
@@ -13640,23 +13680,32 @@ L002C:	jsr     tossuba0
 	tax
 	dey
 	lda     (ptr1),y
-	jsr     pushax
+	sta     sreg
+	stx     sreg+1
 	lda     _i
 	ldx     _i+1
-	jsr     mulax6
+	jsr     mulax10
 	clc
 	adc     #<(_enemies)
 	sta     ptr1
 	txa
 	adc     #>(_enemies)
 	sta     ptr1+1
-	ldy     #$04
+	ldy     #$08
 	lda     (ptr1),y
-	beq     L0038
-	lda     #$00
-	jmp     L002F
-L0038:	lda     #$08
-L002F:	jsr     tossuba0
+	beq     L002F
+	ldx     #$00
+	txa
+	jmp     L0030
+L002F:	ldx     #$FF
+	lda     #$F8
+L0030:	clc
+	adc     sreg
+	pha
+	txa
+	adc     sreg+1
+	tax
+	pla
 	sec
 	sbc     _player+13
 	pha
@@ -13667,7 +13716,7 @@ L002F:	jsr     tossuba0
 	sta     (sp),y
 	lda     _i
 	ldx     _i+1
-	jsr     mulax6
+	jsr     mulax10
 	clc
 	adc     #<(_enemies)
 	sta     ptr1
@@ -13686,12 +13735,12 @@ L002F:	jsr     tossuba0
 	lda     (sp),y
 	jsr     _oam_spr
 ;
-; oam_spr((enemies[i].x - (enemies[i].facingRight ? 8 : 0)) - player.scrollX, enemies[i].y, 0xD2, enemyAttributes);
+; oam_spr((enemies[i].x + (enemies[i].facingRight ? -8 : 0)) - player.scrollX, enemies[i].y, 0xD2, enemyAttributes);
 ;
 	jsr     decsp3
 	lda     _i
 	ldx     _i+1
-	jsr     mulax6
+	jsr     mulax10
 	clc
 	adc     #<(_enemies)
 	sta     ptr1
@@ -13703,21 +13752,30 @@ L002F:	jsr     tossuba0
 	tax
 	dey
 	lda     (ptr1),y
-	jsr     pushax
+	sta     sreg
+	stx     sreg+1
 	lda     _i
 	ldx     _i+1
-	jsr     mulax6
+	jsr     mulax10
 	clc
 	adc     #<(_enemies)
 	sta     ptr1
 	txa
 	adc     #>(_enemies)
 	sta     ptr1+1
-	ldy     #$04
+	ldy     #$08
+	ldx     #$00
 	lda     (ptr1),y
-	beq     L0032
-	lda     #$08
-L0032:	jsr     tossuba0
+	beq     L0033
+	dex
+	lda     #$F8
+L0033:	clc
+	adc     sreg
+	pha
+	txa
+	adc     sreg+1
+	tax
+	pla
 	sec
 	sbc     _player+13
 	pha
@@ -13728,7 +13786,7 @@ L0032:	jsr     tossuba0
 	sta     (sp),y
 	lda     _i
 	ldx     _i+1
-	jsr     mulax6
+	jsr     mulax10
 	clc
 	adc     #<(_enemies)
 	sta     ptr1
@@ -13745,12 +13803,12 @@ L0032:	jsr     tossuba0
 	lda     (sp),y
 	jsr     _oam_spr
 ;
-; oam_spr((enemies[i].x - (enemies[i].facingRight ? 0 : 8)) - player.scrollX, enemies[i].y, 0xD3, enemyAttributes);
+; oam_spr((enemies[i].x + (enemies[i].facingRight ? 0 : -8)) - player.scrollX, enemies[i].y, 0xD3, enemyAttributes);
 ;
 	jsr     decsp3
 	lda     _i
 	ldx     _i+1
-	jsr     mulax6
+	jsr     mulax10
 	clc
 	adc     #<(_enemies)
 	sta     ptr1
@@ -13762,23 +13820,32 @@ L0032:	jsr     tossuba0
 	tax
 	dey
 	lda     (ptr1),y
-	jsr     pushax
+	sta     sreg
+	stx     sreg+1
 	lda     _i
 	ldx     _i+1
-	jsr     mulax6
+	jsr     mulax10
 	clc
 	adc     #<(_enemies)
 	sta     ptr1
 	txa
 	adc     #>(_enemies)
 	sta     ptr1+1
-	ldy     #$04
+	ldy     #$08
 	lda     (ptr1),y
-	beq     L003A
-	lda     #$00
-	jmp     L0034
-L003A:	lda     #$08
-L0034:	jsr     tossuba0
+	beq     L0034
+	ldx     #$00
+	txa
+	jmp     L0035
+L0034:	ldx     #$FF
+	lda     #$F8
+L0035:	clc
+	adc     sreg
+	pha
+	txa
+	adc     sreg+1
+	tax
+	pla
 	sec
 	sbc     _player+13
 	pha
@@ -13789,7 +13856,7 @@ L0034:	jsr     tossuba0
 	sta     (sp),y
 	lda     _i
 	ldx     _i+1
-	jsr     mulax6
+	jsr     mulax10
 	clc
 	adc     #<(_enemies)
 	sta     ptr1
@@ -13808,7 +13875,7 @@ L0034:	jsr     tossuba0
 ;
 ; for (i = 0; i < MAX_ENEMIES; i++)
 ;
-	inc     _i
+L0026:	inc     _i
 	jne     L0024
 	inc     _i+1
 	jmp     L0024
@@ -14875,6 +14942,232 @@ L0004:	lda     #$01
 .endproc
 
 ; ---------------------------------------------------------------
+; void __near__ MoveEnemies (void)
+; ---------------------------------------------------------------
+
+.segment	"CODE"
+
+.proc	_MoveEnemies: near
+
+.segment	"CODE"
+
+;
+; for (i = 0; i < MAX_ENEMIES; i++)
+;
+	lda     #$00
+	sta     _i
+	sta     _i+1
+L0002:	lda     _i
+	cmp     #$02
+	lda     _i+1
+	sbc     #$00
+	bvc     L0006
+	eor     #$80
+L0006:	bmi     L0014
+;
+; }
+;
+	rts
+;
+; if (enemies[i].isAlive)
+;
+L0014:	lda     _i
+	ldx     _i+1
+	jsr     mulax10
+	clc
+	adc     #<(_enemies)
+	sta     ptr1
+	txa
+	adc     #>(_enemies)
+	sta     ptr1+1
+	ldy     #$09
+	lda     (ptr1),y
+	jeq     L0004
+;
+; if (enemies[i].facingRight)
+;
+	lda     _i
+	ldx     _i+1
+	jsr     mulax10
+	clc
+	adc     #<(_enemies)
+	sta     ptr1
+	txa
+	adc     #>(_enemies)
+	sta     ptr1+1
+	dey
+	lda     (ptr1),y
+	jeq     L0009
+;
+; enemies[i].x += 1;  // Adjust the movement speed as needed
+;
+	lda     _i
+	ldx     _i+1
+	jsr     mulax10
+	clc
+	adc     #<(_enemies)
+	tay
+	txa
+	adc     #>(_enemies)
+	tax
+	tya
+	sta     sreg
+	stx     sreg+1
+	sta     ptr1
+	stx     ptr1+1
+	ldy     #$01
+	lda     (ptr1),y
+	tax
+	dey
+	lda     (ptr1),y
+	clc
+	adc     #$01
+	bcc     L0011
+	inx
+L0011:	sta     (sreg),y
+	iny
+	txa
+	sta     (sreg),y
+;
+; if (enemies[i].x >= enemies[i].right)
+;
+	lda     _i
+	ldx     _i+1
+	jsr     mulax10
+	clc
+	adc     #<(_enemies)
+	sta     ptr1
+	txa
+	adc     #>(_enemies)
+	sta     ptr1+1
+	lda     (ptr1),y
+	tax
+	dey
+	lda     (ptr1),y
+	jsr     pushax
+	lda     _i
+	ldx     _i+1
+	jsr     mulax10
+	clc
+	adc     #<(_enemies)
+	sta     ptr1
+	txa
+	adc     #>(_enemies)
+	sta     ptr1+1
+	ldy     #$05
+	lda     (ptr1),y
+	tax
+	dey
+	lda     (ptr1),y
+	jsr     tosicmp
+	jmi     L0004
+;
+; enemies[i].facingRight = 0;  // Set to move left
+;
+	lda     _i
+	ldx     _i+1
+	jsr     mulax10
+	clc
+	adc     #<(_enemies)
+	sta     ptr1
+	txa
+	adc     #>(_enemies)
+	sta     ptr1+1
+	lda     #$00
+;
+; else
+;
+	jmp     L0013
+;
+; enemies[i].x -= 1;  // Adjust the movement speed as needed
+;
+L0009:	lda     _i
+	ldx     _i+1
+	jsr     mulax10
+	clc
+	adc     #<(_enemies)
+	tay
+	txa
+	adc     #>(_enemies)
+	tax
+	tya
+	sta     sreg
+	stx     sreg+1
+	sta     ptr1
+	stx     ptr1+1
+	ldy     #$01
+	lda     (ptr1),y
+	tax
+	dey
+	lda     (ptr1),y
+	sec
+	sbc     #$01
+	bcs     L0012
+	dex
+L0012:	sta     (sreg),y
+	iny
+	txa
+	sta     (sreg),y
+;
+; if (enemies[i].x <= enemies[i].left)
+;
+	lda     _i
+	ldx     _i+1
+	jsr     mulax10
+	clc
+	adc     #<(_enemies)
+	sta     ptr1
+	txa
+	adc     #>(_enemies)
+	sta     ptr1+1
+	lda     (ptr1),y
+	tax
+	dey
+	lda     (ptr1),y
+	jsr     pushax
+	lda     _i
+	ldx     _i+1
+	jsr     mulax10
+	clc
+	adc     #<(_enemies)
+	sta     ptr1
+	txa
+	adc     #>(_enemies)
+	sta     ptr1+1
+	ldy     #$07
+	lda     (ptr1),y
+	tax
+	dey
+	lda     (ptr1),y
+	jsr     tosicmp
+	beq     L0010
+	bpl     L0004
+;
+; enemies[i].facingRight = 1;  // Set to move right
+;
+L0010:	lda     _i
+	ldx     _i+1
+	jsr     mulax10
+	clc
+	adc     #<(_enemies)
+	sta     ptr1
+	txa
+	adc     #>(_enemies)
+	sta     ptr1+1
+	lda     #$01
+L0013:	ldy     #$08
+	sta     (ptr1),y
+;
+; for (i = 0; i < MAX_ENEMIES; i++)
+;
+L0004:	inc     _i
+	jne     L0002
+	inc     _i+1
+	jmp     L0002
+
+.endproc
+
+; ---------------------------------------------------------------
 ; void __near__ main (void)
 ; ---------------------------------------------------------------
 
@@ -14948,6 +15241,10 @@ L0009:	jsr     _UpdateColliderPositions
 ; MovePlayer();
 ;
 	jsr     _MovePlayer
+;
+; MoveEnemies();
+;
+	jsr     _MoveEnemies
 ;
 ; DrawSprites();
 ;

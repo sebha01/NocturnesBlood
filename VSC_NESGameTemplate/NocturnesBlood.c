@@ -172,14 +172,16 @@ typedef struct
 {
 	signed int x;
 	signed int y;
+	signed int right;
+	signed int left;
 	char facingRight;
 	char isAlive;
 } Enemy;
 
 Enemy enemies[MAX_ENEMIES] = 
 {
-	{50, 215, 1, 1},
-	{100, 215, -1, 1}
+	{100, 215, 120, 80, 1, 1},
+	{200, 215, 220, 180, -1, 1}
 };
  
 
@@ -201,6 +203,7 @@ void UpdateColliderPositions(void);
 void DashEnd(void);
 char CheckIfPlatformTile(unsigned char tile);
 void SetPlayerValues(void);
+void MoveEnemies(void);
 
 /*
 ----------------
@@ -236,6 +239,7 @@ void main (void)
 				UpdateColliderPositions();
 				//Movement
 				MovePlayer();
+				MoveEnemies();
 				//Draw sprites
 				DrawSprites();
 				//Update scrolling
@@ -528,7 +532,7 @@ void DrawSprites(void)
 {
 	unsigned char playerAttributes =  player.isDashing ? 0x03 :
 							currentLevel == 3 ? 0X02 : 0x01;
-	unsigned char enemyAttributes = 0x03;
+	unsigned char enemyAttributes;
 
 	if (!player.facingRight)
 	{
@@ -572,15 +576,19 @@ void DrawSprites(void)
 
 	for (i = 0; i < MAX_ENEMIES; i++)
 	{
+		enemyAttributes = 0x03;
 		if (!enemies[i].facingRight)
 		{
 			enemyAttributes |= 0x40;
 		}
 
-		oam_spr((enemies[i].x - (enemies[i].facingRight ? 8 : 0)) - player.scrollX, enemies[i].y - 8, 0xC2, enemyAttributes);
-		oam_spr((enemies[i].x - (enemies[i].facingRight ? 0 : 8)) - player.scrollX, enemies[i].y - 8, 0xC3, enemyAttributes);
-		oam_spr((enemies[i].x - (enemies[i].facingRight ? 8 : 0)) - player.scrollX, enemies[i].y, 0xD2, enemyAttributes);
-    	oam_spr((enemies[i].x - (enemies[i].facingRight ? 0 : 8)) - player.scrollX, enemies[i].y, 0xD3, enemyAttributes);
+		if (enemies[i].x - player.scrollX < 256)
+		{
+			oam_spr((enemies[i].x + (enemies[i].facingRight ? -8 : 0)) - player.scrollX, enemies[i].y - 8, 0xC2, enemyAttributes);
+			oam_spr((enemies[i].x + (enemies[i].facingRight ? 0 : -8)) - player.scrollX, enemies[i].y - 8, 0xC3, enemyAttributes);
+			oam_spr((enemies[i].x + (enemies[i].facingRight ? -8 : 0)) - player.scrollX, enemies[i].y, 0xD2, enemyAttributes);
+    		oam_spr((enemies[i].x + (enemies[i].facingRight ? 0 : -8)) - player.scrollX, enemies[i].y, 0xD3, enemyAttributes);
+		}
 	}
 
 }
@@ -779,4 +787,41 @@ void SetPlayerValues(void)
 	player.dashCooldown = 0;
 	player.hasDashedInAir = 0;
 	player.dashDirection = 0; 
+}
+
+void MoveEnemies(void)
+{
+    // Loop through each enemy
+    for (i = 0; i < MAX_ENEMIES; i++)
+    {
+        // Check if the enemy is alive
+        if (enemies[i].isAlive)
+        {
+            // Move the enemy depending on the direction it's facing
+            if (enemies[i].facingRight)
+            {
+                // Move enemy to the right
+                enemies[i].x += 1;  // Adjust the movement speed as needed
+
+                // Check if the enemy has reached the right patrol boundary
+                if (enemies[i].x >= enemies[i].right)
+                {
+                    // Flip the direction
+                    enemies[i].facingRight = 0;  // Set to move left
+                }
+            }
+            else
+            {
+                // Move enemy to the left
+                enemies[i].x -= 1;  // Adjust the movement speed as needed
+
+                // Check if the enemy has reached the left patrol boundary
+                if (enemies[i].x <= enemies[i].left)
+                {
+                    // Flip the direction
+                    enemies[i].facingRight = 1;  // Set to move right
+                }
+            }
+        }
+    }
 }
