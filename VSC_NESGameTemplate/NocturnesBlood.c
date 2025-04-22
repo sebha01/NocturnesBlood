@@ -83,6 +83,7 @@
 #define START_SCREEN 0
 #define GAME_LOOP 1
 #define END_SCREEN 2
+#define DEATH_SCREEN 3
 //define constants used for player movement
 //Movement
 #define PLAYER_SPEED 2
@@ -131,6 +132,7 @@ const unsigned char text[] = "Nocturnes Blood";
 const unsigned char titlePrompt[] = "Press START";
 const unsigned char endScreenTitle[] = "End Screen";
 const unsigned char endScreenPrompt[] = "To play again";
+const unsigned char deathScreenTitle[] = "YOU ARE DEAD";
 //variable for getting input from controller
 unsigned char inputPad;
 unsigned char movementPad;
@@ -189,6 +191,7 @@ void DashEnd(void);
 char CheckIfPlatformTile(unsigned char tile);
 void SetPlayerValues(void);
 char CheckIfSpikes(unsigned char tile);
+void DrawDeathScreen(void);
 
 /*
 ----------------
@@ -232,6 +235,14 @@ void main (void)
 				CheckIfEnd();
 				break;
 			case END_SCREEN:
+				//Check if player has pressed start
+				if (inputPad & PAD_START)
+				{
+					currentGameState = START_SCREEN;
+					DrawTitleScreen();
+				}
+				break;
+			case DEATH_SCREEN:
 				//Check if player has pressed start
 				if (inputPad & PAD_START)
 				{
@@ -603,7 +614,8 @@ unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY)
 void CheckIfEnd()
 {
 	if (CheckIfGoalTile(currentLevelData[GetTileIndex(player.left + 4, player.bottom)]) ||
-	CheckIfGoalTile(currentLevelData[GetTileIndex(player.right - 4, player.bottom)]))
+	CheckIfGoalTile(currentLevelData[GetTileIndex(player.right - 4, player.bottom)]) || 
+	player.health <= 0)
 	{
 		if (currentLevel == 3)
 		{
@@ -614,7 +626,7 @@ void CheckIfEnd()
 			currentGameState = END_SCREEN;
 			DrawEndScreen();
 		}
-		else
+		else if (currentLevel < 3)
 		{
 			currentLevel++;
 			
@@ -624,6 +636,15 @@ void CheckIfEnd()
 			player.y = 215;
 
 			GameLoop();
+		}
+		else if (player.health <= 0)
+		{
+			player.scrollX = 0;
+			set_scroll_x(player.scrollX);
+			player.x = 30;
+			player.y = 215;
+			currentGameState = DEATH_SCREEN;
+			DrawDeathScreen();
 		}
 	}
 }
@@ -780,7 +801,7 @@ void SetPlayerValues(void)
 	player.dashCooldown = 0;
 	player.hasDashedInAir = 0;
 	player.dashDirection = 0; 
-	player.health = 2;
+	player.health = MAX_HEALTH;
 }
 
 char CheckIfSpikes(unsigned char tile)
@@ -788,4 +809,35 @@ char CheckIfSpikes(unsigned char tile)
 	return tile == 0x8A || tile == 0x8B || tile == 0x9A || tile == 0x9B ||
 		tile == 0xAA || tile == 0xAB || tile == 0xC8 || tile == 0xC9 ||
 		tile == 0xD8 || tile == 0xD9 || tile == 0xEA || tile == 0xEB;
+}
+
+void DrawDeathScreen(void)
+{
+	ppu_off(); // screen off
+	pal_bg(palette); //	load the BG palette
+
+	//Clear all sprite data
+	oam_clear();
+
+	//Set varirables back to their default value
+	currentLevel = 1;
+
+	//Clear the screen
+	vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
+	vram_fill(0x00, 1024);
+
+	//Clear the screen
+	vram_adr(NAMETABLE_B);            // Set VRAM address to start of screen
+	vram_fill(0x00, 1024);
+
+	vram_adr(NTADR_A(8, 8)); // places text at screen position
+	vram_write(endScreenTitle, sizeof(deathScreenTitle) - 1); //write Title to screen
+	//Write prompt to start game
+	vram_adr(NTADR_A(10, 14));
+	vram_write(titlePrompt, sizeof(titlePrompt) - 1);
+
+	vram_adr(NTADR_A(10, 18));
+	vram_write(endScreenPrompt, sizeof(endScreenPrompt) - 1);
+
+	ppu_on_all(); //	turn on screen
 }
