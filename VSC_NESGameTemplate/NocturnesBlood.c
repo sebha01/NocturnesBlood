@@ -99,6 +99,8 @@
 //Scrolling
 #define MAX_SCROLL 256
 #define MIN_SCROLL 0
+//Enemies
+#define MAX_ENEMIES 7
 
 #pragma bss-name(push, "ZEROPAGE")
 
@@ -159,6 +161,16 @@ int i = 0;
 //lowest 1 highest 3
 int currentLevel = 1;
 const unsigned char* currentLevelData;
+
+struct Enemy 
+{
+	signed int x;
+	signed int y;
+	char facingRight;
+	char isAlive;
+};
+
+struct Enemy enemies[MAX_ENEMIES];
 
 
 //function prototypes

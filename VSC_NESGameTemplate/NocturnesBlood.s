@@ -63,6 +63,7 @@
 	.export		_i
 	.export		_currentLevel
 	.export		_currentLevelData
+	.export		_enemies
 	.export		_DrawTitleScreen
 	.export		_GameLoop
 	.export		_MovePlayer
@@ -12474,6 +12475,8 @@ _movementPad:
 	.res	1,$00
 _currentLevelData:
 	.res	2,$00
+_enemies:
+	.res	42,$00
 
 ; ---------------------------------------------------------------
 ; void __near__ DrawTitleScreen (void)
