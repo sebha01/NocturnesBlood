@@ -67,6 +67,7 @@
 	.export		_CheckIfSpikes
 	.export		_DrawDeathScreen
 	.export		_main
+	.export		_damagePlayer
 
 .segment	"DATA"
 
@@ -12706,12 +12707,12 @@ L0003:	lda     #<(_palette)
 ;
 ; else if (!OnGround() && player.coyoteTime > 0) 
 ;
-	jmp     L004A
+	jmp     L004D
 L0002:	jsr     _OnGround
 	tax
-	bne     L004A
+	bne     L004D
 	lda     _player+2
-	beq     L004A
+	beq     L004D
 ;
 ; player.coyoteTime--;
 ;
@@ -12719,8 +12720,8 @@ L0002:	jsr     _OnGround
 ;
 ; if (player.dashCooldown > 0) 
 ;
-L004A:	lda     _player+21
-	beq     L004B
+L004D:	lda     _player+21
+	beq     L004E
 ;
 ; player.dashCooldown--;
 ;
@@ -12728,9 +12729,9 @@ L004A:	lda     _player+21
 ;
 ; if (movementPad & PAD_LEFT)
 ;
-L004B:	lda     _movementPad
+L004E:	lda     _movementPad
 	and     #$02
-	beq     L004C
+	beq     L004F
 ;
 ; if (!CheckIfCollidableTile(currentLevelData[GetTileIndex(player.left, player.y + 1)]))
 ;
@@ -12750,7 +12751,7 @@ L004B:	lda     _movementPad
 	lda     (ptr1),y
 	jsr     _CheckIfCollidableTile
 	tax
-	bne     L004C
+	bne     L004F
 ;
 ; HandleLeftMovement(4, PLAYER_SPEED);
 ;
@@ -12766,9 +12767,9 @@ L004B:	lda     _movementPad
 ;
 ; if (movementPad & PAD_RIGHT)
 ;
-L004C:	lda     _movementPad
+L004F:	lda     _movementPad
 	and     #$01
-	beq     L004D
+	beq     L0050
 ;
 ; if (!CheckIfCollidableTile(currentLevelData[GetTileIndex(player.right, player.y + 1)]))
 ;
@@ -12788,7 +12789,7 @@ L004C:	lda     _movementPad
 	lda     (ptr1),y
 	jsr     _CheckIfCollidableTile
 	tax
-	bne     L004D
+	bne     L0050
 ;
 ; HandleRightMovement(252, PLAYER_SPEED);
 ;
@@ -12804,32 +12805,32 @@ L004C:	lda     _movementPad
 ;
 ; if ((inputPad & PAD_B) && !player.isDashing && !(player.dashCooldown > 0)) 
 ;
-L004D:	lda     _inputPad
+L0050:	lda     _inputPad
 	and     #$40
-	beq     L0054
+	beq     L0057
 	lda     _player+18
 	ora     _player+18+1
-	bne     L0054
+	bne     L0057
 	lda     _player+21
-	bne     L0054
+	bne     L0057
 ;
 ; if (OnGround() || !player.hasDashedInAir)
 ;
 	jsr     _OnGround
 	tax
-	bne     L0051
-	lda     _player+22
 	bne     L0054
+	lda     _player+22
+	bne     L0057
 ;
 ; player.dashDirection = (movementPad & PAD_LEFT ? -1 : movementPad & PAD_RIGHT ? 1 : 0);
 ;
-L0051:	lda     _movementPad
+L0054:	lda     _movementPad
 	and     #$02
-	beq     L0052
+	beq     L0055
 	ldx     #$FF
 	txa
 	jmp     L0019
-L0052:	lda     _movementPad
+L0055:	lda     _movementPad
 	ldx     #$00
 	and     #$01
 	beq     L0019
@@ -12853,7 +12854,7 @@ L0019:	sta     _player+23
 ;
 	jsr     _OnGround
 	tax
-	bne     L0054
+	bne     L0057
 ;
 ; player.hasDashedInAir = 1;
 ;
@@ -12862,12 +12863,12 @@ L0019:	sta     _player+23
 ;
 ; if (inputPad & PAD_A && !player.isDashing) 
 ;
-L0054:	lda     _inputPad
+L0057:	lda     _inputPad
 	and     #$80
-	beq     L0058
+	beq     L005B
 	lda     _player+18
 	ora     _player+18+1
-	bne     L0058
+	bne     L005B
 ;
 ; player.jumpBufferTimer = JUMP_BUFFER_FRAMES;
 ;
@@ -12876,12 +12877,12 @@ L0054:	lda     _inputPad
 ;
 ; if (player.jumpBufferTimer > 0 && !player.isJumping && player.coyoteTime > 0) 
 ;
-L0058:	lda     _player+17
-	beq     L005C
+L005B:	lda     _player+17
+	beq     L005F
 	lda     _player+16
-	bne     L005C
+	bne     L005F
 	lda     _player+2
-	beq     L005C
+	beq     L005F
 ;
 ; player.isJumping = 1;
 ;
@@ -12903,7 +12904,7 @@ L0058:	lda     _player+17
 ; else if (player.jumpBufferTimer > 0) 
 ;
 	jmp     L0024
-L005C:	lda     _player+17
+L005F:	lda     _player+17
 	beq     L0024
 ;
 ; player.jumpBufferTimer--;
@@ -12931,7 +12932,7 @@ L0026:	lda     _i
 	sbc     #$00
 	bvc     L002A
 	eor     #$80
-L002A:	jpl     L005D
+L002A:	jpl     L0060
 ;
 ; int nextX = player.x + player.dashDirection;
 ;
@@ -13048,7 +13049,7 @@ L002F:	jsr     _DashEnd
 ; break;
 ;
 	jsr     incsp4
-	jmp     L005D
+	jmp     L0060
 ;
 ; }
 ;
@@ -13063,8 +13064,8 @@ L0037:	jsr     incsp4
 ;
 ; if (player.dashTimer <= 0) 
 ;
-L005D:	lda     _player+20
-	beq     L005E
+L0060:	lda     _player+20
+	beq     L0061
 ;
 ; }
 ;
@@ -13072,7 +13073,7 @@ L005D:	lda     _player+20
 ;
 ; DashEnd();
 ;
-L005E:	jmp     _DashEnd
+L0061:	jmp     _DashEnd
 ;
 ; if (player.isJumping) 
 ;
@@ -13091,7 +13092,7 @@ L003B:	ldx     _player+14+1
 	cpx     #$80
 	bcc     L003D
 ;
-; if (CheckIfCollidableTile(currentLevelData[GetTileIndex(player.x, player.top)])) 
+; if (CheckIfCollidableTile(currentLevelData[GetTileIndex(player.x, player.top)]) ||
 ;
 	lda     _currentLevelData
 	ldx     _currentLevelData+1
@@ -13107,11 +13108,31 @@ L003B:	ldx     _player+14+1
 	lda     (ptr1),y
 	jsr     _CheckIfCollidableTile
 	tax
+	bne     L003E
+;
+; CheckIfSpikes(currentLevelData[GetTileIndex(player.x, player.top + 4)])) 
+;
+	lda     _currentLevelData
+	ldx     _currentLevelData+1
+	jsr     pushax
+	lda     _player
+	jsr     pusha
+	lda     _player+7
+	clc
+	adc     #$04
+	jsr     _GetTileIndex
+	jsr     tosaddax
+	sta     ptr1
+	stx     ptr1+1
+	ldy     #$00
+	lda     (ptr1),y
+	jsr     _CheckIfSpikes
+	tax
 	beq     L003D
 ;
 ; player.velocityY = 0;
 ;
-	lda     #$00
+L003E:	lda     #$00
 	sta     _player+14
 	sta     _player+14+1
 ;
@@ -13125,9 +13146,9 @@ L003D:	lda     _player+14
 	cmp     #$05
 	lda     _player+14+1
 	sbc     #$00
-	bvs     L003F
+	bvs     L0042
 	eor     #$80
-L003F:	bpl     L003E
+L0042:	bpl     L0041
 ;
 ; player.velocityY = MAX_FALL_SPEED;
 ;
@@ -13138,7 +13159,7 @@ L003F:	bpl     L003E
 ;
 ; player.y += player.velocityY;
 ;
-L003E:	lda     _player+14
+L0041:	lda     _player+14
 	clc
 	adc     _player+1
 	sta     _player+1
@@ -13146,15 +13167,15 @@ L003E:	lda     _player+14
 ; if (player.velocityY >= 0 && OnGround()) 
 ;
 	ldx     _player+14+1
-	bmi     L0040
+	bmi     L0043
 	jsr     _OnGround
 	tax
-	bne     L0046
+	bne     L0049
 	rts
 ;
 ; player.y -= 1;
 ;
-L0044:	dec     _player+1
+L0047:	dec     _player+1
 ;
 ; UpdateColliderPositions();
 ;
@@ -13162,9 +13183,9 @@ L0044:	dec     _player+1
 ;
 ; while (OnGround()) 
 ;
-L0046:	jsr     _OnGround
+L0049:	jsr     _OnGround
 	tax
-	bne     L0044
+	bne     L0047
 ;
 ; player.y += 1;
 ;
@@ -13190,13 +13211,13 @@ L0046:	jsr     _OnGround
 ;
 ; else 
 ;
-L0040:	rts
+L0043:	rts
 ;
 ; if (!OnGround()) 
 ;
 L003A:	jsr     _OnGround
 	tax
-	bne     L0048
+	bne     L004B
 ;
 ; player.isJumping = 1;
 ;
@@ -13205,7 +13226,7 @@ L003A:	jsr     _OnGround
 ;
 ; }
 ;
-L0048:	rts
+L004B:	rts
 
 .endproc
 
@@ -13917,9 +13938,9 @@ L0002:	jsr     pushax
 	lda     (ptr1),y
 	jsr     _CheckIfGoalTile
 	tax
-	bne     L0011
+	bne     L0004
 ;
-; CheckIfGoalTile(currentLevelData[GetTileIndex(player.right - 4, player.bottom)]) || 
+; CheckIfGoalTile(currentLevelData[GetTileIndex(player.right - 4, player.bottom)]))
 ;
 	lda     _currentLevelData
 	ldx     _currentLevelData+1
@@ -13937,22 +13958,16 @@ L0002:	jsr     pushax
 	lda     (ptr1),y
 	jsr     _CheckIfGoalTile
 	tax
-	bne     L0011
-;
-; player.health <= 0)
-;
-	lda     _player+25
-	ora     _player+25+1
-	beq     L0011
+	bne     L0004
 	rts
 ;
 ; if (currentLevel == 3)
 ;
-L0011:	lda     _currentLevel+1
-	bne     L0008
+L0004:	lda     _currentLevel+1
+	bne     L0007
 	lda     _currentLevel
 	cmp     #$03
-	bne     L0008
+	bne     L0007
 ;
 ; player.scrollX = 0;
 ;
@@ -13984,28 +13999,17 @@ L0011:	lda     _currentLevel+1
 ;
 	jmp     _DrawEndScreen
 ;
-; else if (currentLevel < 3)
-;
-L0008:	lda     _currentLevel
-	cmp     #$03
-	lda     _currentLevel+1
-	sbc     #$00
-	bvc     L000C
-	eor     #$80
-L000C:	asl     a
-	lda     #$00
-	tax
-	bcc     L000B
-;
 ; currentLevel++;
 ;
-	inc     _currentLevel
-	bne     L0013
+L0007:	inc     _currentLevel
+	bne     L000A
 	inc     _currentLevel+1
 ;
 ; player.scrollX = 0;
 ;
-L0013:	sta     _player+11
+L000A:	ldx     #$00
+	txa
+	sta     _player+11
 	sta     _player+11+1
 ;
 ; set_scroll_x(player.scrollX);
@@ -14025,45 +14029,6 @@ L0013:	sta     _player+11
 ; GameLoop();
 ;
 	jmp     _GameLoop
-;
-; else if (player.health <= 0)
-;
-L000B:	lda     _player+25
-	ora     _player+25+1
-	bne     L000F
-;
-; player.scrollX = 0;
-;
-	tax
-	sta     _player+11
-	sta     _player+11+1
-;
-; set_scroll_x(player.scrollX);
-;
-	jsr     _set_scroll_x
-;
-; player.x = 30;
-;
-	lda     #$1E
-	sta     _player
-;
-; player.y = 215;
-;
-	lda     #$D7
-	sta     _player+1
-;
-; currentGameState = DEATH_SCREEN;
-;
-	lda     #$03
-	sta     _currentGameState
-;
-; DrawDeathScreen();
-;
-	jmp     _DrawDeathScreen
-;
-; }
-;
-L000F:	rts
 
 .endproc
 
@@ -15192,6 +15157,65 @@ L0011:	lda     _inputPad
 ; break;
 ;
 	jmp     L000E
+
+.endproc
+
+; ---------------------------------------------------------------
+; void __near__ damagePlayer (void)
+; ---------------------------------------------------------------
+
+.segment	"CODE"
+
+.proc	_damagePlayer: near
+
+.segment	"CODE"
+
+;
+; player.health--;
+;
+	lda     _player+25
+	bne     L0002
+	dec     _player+25+1
+L0002:	dec     _player+25
+;
+; if (player.health <= 0)
+;
+	lda     _player+25
+	ora     _player+25+1
+	bne     L0003
+;
+; player.scrollX = 0;
+;
+	tax
+	sta     _player+11
+	sta     _player+11+1
+;
+; set_scroll_x(player.scrollX);
+;
+	jsr     _set_scroll_x
+;
+; player.x = 30;
+;
+	lda     #$1E
+	sta     _player
+;
+; player.y = 215;
+;
+	lda     #$D7
+	sta     _player+1
+;
+; currentGameState = DEATH_SCREEN;
+;
+	lda     #$03
+	sta     _currentGameState
+;
+; DrawDeathScreen();
+;
+	jmp     _DrawDeathScreen
+;
+; }
+;
+L0003:	rts
 
 .endproc
 

@@ -477,7 +477,8 @@ void MovePlayer(void)
 			// Check for head collision and make sure player doesn't jump out the map
 			if (player.velocityY < 0) 
 			{
-				if (CheckIfCollidableTile(currentLevelData[GetTileIndex(player.x, player.top)])) 
+				if (CheckIfCollidableTile(currentLevelData[GetTileIndex(player.x, player.top)]) ||
+				CheckIfSpikes(currentLevelData[GetTileIndex(player.x, player.top + 4)])) 
 				{
 					//Make sure player cannot jump higher and the player doesn't get stuck
 					player.velocityY = 0;
@@ -614,8 +615,7 @@ unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY)
 void CheckIfEnd()
 {
 	if (CheckIfGoalTile(currentLevelData[GetTileIndex(player.left + 4, player.bottom)]) ||
-	CheckIfGoalTile(currentLevelData[GetTileIndex(player.right - 4, player.bottom)]) || 
-	player.health <= 0)
+	CheckIfGoalTile(currentLevelData[GetTileIndex(player.right - 4, player.bottom)]))
 	{
 		if (currentLevel == 3)
 		{
@@ -626,7 +626,7 @@ void CheckIfEnd()
 			currentGameState = END_SCREEN;
 			DrawEndScreen();
 		}
-		else if (currentLevel < 3)
+		else
 		{
 			currentLevel++;
 			
@@ -636,15 +636,6 @@ void CheckIfEnd()
 			player.y = 215;
 
 			GameLoop();
-		}
-		else if (player.health <= 0)
-		{
-			player.scrollX = 0;
-			set_scroll_x(player.scrollX);
-			player.x = 30;
-			player.y = 215;
-			currentGameState = DEATH_SCREEN;
-			DrawDeathScreen();
 		}
 	}
 }
@@ -840,4 +831,20 @@ void DrawDeathScreen(void)
 	vram_write(endScreenPrompt, sizeof(endScreenPrompt) - 1);
 
 	ppu_on_all(); //	turn on screen
+}
+
+void damagePlayer(void)
+{
+	player.health--;
+
+	if (player.health <= 0)
+	{
+		player.scrollX = 0;
+		set_scroll_x(player.scrollX);
+		player.x = 30;
+		player.y = 215;
+		
+		currentGameState = DEATH_SCREEN;
+		DrawDeathScreen();
+	}
 }
