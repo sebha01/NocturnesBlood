@@ -12693,12 +12693,12 @@ L0003:	lda     #<(_palette)
 ; player.coyoteTime = COYOTE_FRAMES;
 ;
 	lda     #$0A
-	sta     _player+4
+	sta     _player+2
 ;
 ; player.hasDashedInAir = 0;
 ;
 	lda     #$00
-	sta     _player+24
+	sta     _player+22
 ;
 ; else if (!OnGround() && player.coyoteTime > 0) 
 ;
@@ -12706,21 +12706,21 @@ L0003:	lda     #<(_palette)
 L0002:	jsr     _OnGround
 	tax
 	bne     L004A
-	lda     _player+4
+	lda     _player+2
 	beq     L004A
 ;
 ; player.coyoteTime--;
 ;
-	dec     _player+4
+	dec     _player+2
 ;
 ; if (player.dashCooldown > 0) 
 ;
-L004A:	lda     _player+23
+L004A:	lda     _player+21
 	beq     L004B
 ;
 ; player.dashCooldown--;
 ;
-	dec     _player+23
+	dec     _player+21
 ;
 ; if (movementPad & PAD_LEFT)
 ;
@@ -12733,7 +12733,7 @@ L004B:	lda     _movementPad
 	lda     _currentLevelData
 	ldx     _currentLevelData+1
 	jsr     pushax
-	lda     _player+5
+	lda     _player+3
 	jsr     pusha
 	lda     _player+1
 	clc
@@ -12758,7 +12758,7 @@ L004B:	lda     _movementPad
 ; player.facingRight = 0;
 ;
 	lda     #$00
-	sta     _player+15
+	sta     _player+13
 ;
 ; if (movementPad & PAD_RIGHT)
 ;
@@ -12771,7 +12771,7 @@ L004C:	lda     _movementPad
 	lda     _currentLevelData
 	ldx     _currentLevelData+1
 	jsr     pushax
-	lda     _player+7
+	lda     _player+5
 	jsr     pusha
 	lda     _player+1
 	clc
@@ -12796,17 +12796,17 @@ L004C:	lda     _movementPad
 ; player.facingRight = 1;
 ;
 	lda     #$01
-	sta     _player+15
+	sta     _player+13
 ;
 ; if ((inputPad & PAD_B) && !player.isDashing && !(player.dashCooldown > 0)) 
 ;
 L004D:	lda     _inputPad
 	and     #$40
 	beq     L0054
-	lda     _player+20
-	ora     _player+20+1
+	lda     _player+18
+	ora     _player+18+1
 	bne     L0054
-	lda     _player+23
+	lda     _player+21
 	bne     L0054
 ;
 ; if (OnGround() || !player.hasDashedInAir)
@@ -12814,7 +12814,7 @@ L004D:	lda     _inputPad
 	jsr     _OnGround
 	tax
 	bne     L0051
-	lda     _player+24
+	lda     _player+22
 	bne     L0054
 ;
 ; player.dashDirection = (movementPad & PAD_LEFT ? -1 : movementPad & PAD_RIGHT ? 1 : 0);
@@ -12830,20 +12830,20 @@ L0052:	lda     _movementPad
 	and     #$01
 	beq     L0019
 	lda     #$01
-L0019:	sta     _player+25
-	stx     _player+25+1
+L0019:	sta     _player+23
+	stx     _player+23+1
 ;
 ; player.isDashing = 1;
 ;
 	ldx     #$00
 	lda     #$01
-	sta     _player+20
-	stx     _player+20+1
+	sta     _player+18
+	stx     _player+18+1
 ;
 ; player.dashTimer = DASH_DURATION;
 ;
 	lda     #$06
-	sta     _player+22
+	sta     _player+20
 ;
 ; if (!OnGround())
 ;
@@ -12854,67 +12854,67 @@ L0019:	sta     _player+25
 ; player.hasDashedInAir = 1;
 ;
 	lda     #$01
-	sta     _player+24
+	sta     _player+22
 ;
 ; if (inputPad & PAD_A && !player.isDashing) 
 ;
 L0054:	lda     _inputPad
 	and     #$80
 	beq     L0058
-	lda     _player+20
-	ora     _player+20+1
+	lda     _player+18
+	ora     _player+18+1
 	bne     L0058
 ;
 ; player.jumpBufferTimer = JUMP_BUFFER_FRAMES;
 ;
 	lda     #$06
-	sta     _player+19
+	sta     _player+17
 ;
 ; if (player.jumpBufferTimer > 0 && !player.isJumping && player.coyoteTime > 0) 
 ;
-L0058:	lda     _player+19
+L0058:	lda     _player+17
 	beq     L005C
-	lda     _player+18
+	lda     _player+16
 	bne     L005C
-	lda     _player+4
+	lda     _player+2
 	beq     L005C
 ;
 ; player.isJumping = 1;
 ;
 	lda     #$01
-	sta     _player+18
+	sta     _player+16
 ;
 ; player.velocityY = JUMP_VELOCITY;
 ;
 	ldx     #$FF
 	lda     #$F6
-	sta     _player+16
-	stx     _player+16+1
+	sta     _player+14
+	stx     _player+14+1
 ;
 ; player.jumpBufferTimer = 0;
 ;
 	lda     #$00
-	sta     _player+19
+	sta     _player+17
 ;
 ; else if (player.jumpBufferTimer > 0) 
 ;
 	jmp     L0024
-L005C:	lda     _player+19
+L005C:	lda     _player+17
 	beq     L0024
 ;
 ; player.jumpBufferTimer--;
 ;
-	dec     _player+19
+	dec     _player+17
 ;
 ; if (player.isDashing) 
 ;
-L0024:	lda     _player+20
-	ora     _player+20+1
+L0024:	lda     _player+18
+	ora     _player+18+1
 	jeq     L0025
 ;
 ; player.dashTimer--;
 ;
-	dec     _player+22
+	dec     _player+20
 ;
 ; for (i = 0; i < DASH_SPEED; i++) 
 ;
@@ -12933,10 +12933,10 @@ L002A:	jpl     L005D
 ;
 	lda     _player
 	clc
-	adc     _player+25
+	adc     _player+23
 	pha
 	lda     #$00
-	adc     _player+25+1
+	adc     _player+23+1
 	tax
 	pla
 	jsr     pushax
@@ -12949,14 +12949,14 @@ L002A:	jpl     L005D
 	dey
 	lda     (sp),y
 	clc
-	adc     _player+13
+	adc     _player+11
 	sta     ptr1
 	txa
-	adc     _player+13+1
+	adc     _player+11+1
 	sta     ptr1+1
-	lda     _player+25+1
+	lda     _player+23+1
 	bne     L002D
-	lda     _player+25
+	lda     _player+23
 	cmp     #$01
 	bne     L002D
 	ldx     #$00
@@ -12996,9 +12996,9 @@ L002E:	clc
 ;
 ; if (player.dashDirection == 1) 
 ;
-	lda     _player+25+1
+	lda     _player+23+1
 	bne     L0031
-	lda     _player+25
+	lda     _player+23
 	cmp     #$01
 	bne     L0031
 ;
@@ -13012,10 +13012,10 @@ L002E:	clc
 ; else if (player.dashDirection == -1)
 ;
 	jmp     L0037
-L0031:	lda     _player+25+1
+L0031:	lda     _player+23+1
 	cmp     #$FF
 	bne     L0034
-	lda     _player+25
+	lda     _player+23
 	cmp     #$FF
 	bne     L0034
 ;
@@ -13059,7 +13059,7 @@ L0037:	jsr     incsp4
 ;
 ; if (player.dashTimer <= 0) 
 ;
-L005D:	lda     _player+22
+L005D:	lda     _player+20
 	beq     L005E
 ;
 ; }
@@ -13072,18 +13072,18 @@ L005E:	jmp     _DashEnd
 ;
 ; if (player.isJumping) 
 ;
-L0025:	lda     _player+18
+L0025:	lda     _player+16
 	jeq     L003A
 ;
 ; player.velocityY += GRAVITY;
 ;
-	inc     _player+16
+	inc     _player+14
 	bne     L003B
-	inc     _player+16+1
+	inc     _player+14+1
 ;
 ; if (player.velocityY < 0) 
 ;
-L003B:	ldx     _player+16+1
+L003B:	ldx     _player+14+1
 	cpx     #$80
 	bcc     L003D
 ;
@@ -13094,7 +13094,7 @@ L003B:	ldx     _player+16+1
 	jsr     pushax
 	lda     _player
 	jsr     pusha
-	lda     _player+9
+	lda     _player+7
 	jsr     _GetTileIndex
 	jsr     tosaddax
 	sta     ptr1
@@ -13108,8 +13108,8 @@ L003B:	ldx     _player+16+1
 ; player.velocityY = 0;
 ;
 	lda     #$00
-	sta     _player+16
-	sta     _player+16+1
+	sta     _player+14
+	sta     _player+14+1
 ;
 ; player.y += 1;
 ;
@@ -13117,9 +13117,9 @@ L003B:	ldx     _player+16+1
 ;
 ; if (player.velocityY > MAX_FALL_SPEED)
 ;
-L003D:	lda     _player+16
+L003D:	lda     _player+14
 	cmp     #$05
-	lda     _player+16+1
+	lda     _player+14+1
 	sbc     #$00
 	bvs     L003F
 	eor     #$80
@@ -13129,19 +13129,19 @@ L003F:	bpl     L003E
 ;
 	ldx     #$00
 	lda     #$04
-	sta     _player+16
-	stx     _player+16+1
+	sta     _player+14
+	stx     _player+14+1
 ;
 ; player.y += player.velocityY;
 ;
-L003E:	lda     _player+16
+L003E:	lda     _player+14
 	clc
 	adc     _player+1
 	sta     _player+1
 ;
 ; if (player.velocityY >= 0 && OnGround()) 
 ;
-	ldx     _player+16+1
+	ldx     _player+14+1
 	bmi     L0040
 	jsr     _OnGround
 	tax
@@ -13173,16 +13173,16 @@ L0046:	jsr     _OnGround
 ; player.velocityY = 0;
 ;
 	lda     #$00
-	sta     _player+16
-	sta     _player+16+1
+	sta     _player+14
+	sta     _player+14+1
 ;
 ; player.isJumping = 0;
 ;
-	sta     _player+18
+	sta     _player+16
 ;
 ; player.hasDashedInAir = 0;
 ;
-	sta     _player+24
+	sta     _player+22
 ;
 ; else 
 ;
@@ -13197,7 +13197,7 @@ L003A:	jsr     _OnGround
 ; player.isJumping = 1;
 ;
 	lda     #$01
-	sta     _player+18
+	sta     _player+16
 ;
 ; }
 ;
@@ -13216,29 +13216,43 @@ L0048:	rts
 .segment	"CODE"
 
 ;
+; unsigned int offset = 20;
+;
+	lda     #$14
+	jsr     pusha0
+;
+; unsigned int origin = 20;
+;
+	jsr     pusha0
+;
+; unsigned char healthBarAttributes = 0x02;
+;
+	lda     #$02
+	jsr     pusha
+;
 ; unsigned char playerAttributes =  player.isDashing ? 0x03 :
 ;
-	lda     _player+20
-	ora     _player+20+1
+	lda     _player+18
+	ora     _player+18+1
 	beq     L0002
 	lda     #$03
-	jmp     L0025
+	jmp     L003B
 ;
 ; currentLevel == 3 ? 0X02 : 0x01;
 ;
 L0002:	lda     _currentLevel+1
-	bne     L0005
+	bne     L003A
 	lda     _currentLevel
 	cmp     #$03
-	bne     L0005
+	bne     L003A
 	lda     #$02
-	jmp     L0025
-L0005:	lda     #$01
-L0025:	jsr     pusha
+	jmp     L003B
+L003A:	lda     #$01
+L003B:	jsr     pusha
 ;
 ; if (!player.facingRight)
 ;
-	lda     _player+15
+	lda     _player+13
 	bne     L0007
 ;
 ; playerAttributes |= 0x40;
@@ -13258,21 +13272,21 @@ L0007:	jsr     _oam_clear
 ;
 ; if (player.isDashing)
 ;
-	lda     _player+20
-	ora     _player+20+1
+	lda     _player+18
+	ora     _player+18+1
 	jeq     L0008
 ;
 ; oam_spr((player.facingRight ? player.left : player.x), player.top, 0x88, playerAttributes);
 ;
 	jsr     decsp3
-	lda     _player+15
+	lda     _player+13
 	beq     L0009
-	lda     _player+5
+	lda     _player+3
 	jmp     L000A
 L0009:	lda     _player
 L000A:	ldy     #$02
 	sta     (sp),y
-	lda     _player+9
+	lda     _player+7
 	dey
 	sta     (sp),y
 	lda     #$88
@@ -13285,14 +13299,14 @@ L000A:	ldy     #$02
 ; oam_spr((player.facingRight ? player.x : player.left), player.top, 0x89, playerAttributes);
 ;
 	jsr     decsp3
-	lda     _player+15
+	lda     _player+13
 	beq     L000B
 	lda     _player
-	jmp     L0026
-L000B:	lda     _player+5
-L0026:	ldy     #$02
+	jmp     L003C
+L000B:	lda     _player+3
+L003C:	ldy     #$02
 	sta     (sp),y
-	lda     _player+9
+	lda     _player+7
 	dey
 	sta     (sp),y
 	lda     #$89
@@ -13305,9 +13319,9 @@ L0026:	ldy     #$02
 ; oam_spr((player.facingRight ? player.left : player.x), player.y, 0x98, playerAttributes);
 ;
 	jsr     decsp3
-	lda     _player+15
+	lda     _player+13
 	beq     L000D
-	lda     _player+5
+	lda     _player+3
 	jmp     L000E
 L000D:	lda     _player
 L000E:	ldy     #$02
@@ -13325,12 +13339,12 @@ L000E:	ldy     #$02
 ; oam_spr((player.facingRight ? player.x : player.left), player.y, 0x99, playerAttributes);
 ;
 	jsr     decsp3
-	lda     _player+15
+	lda     _player+13
 	beq     L000F
 	lda     _player
-	jmp     L0027
-L000F:	lda     _player+5
-L0027:	ldy     #$02
+	jmp     L003D
+L000F:	lda     _player+3
+L003D:	ldy     #$02
 	sta     (sp),y
 	lda     _player+1
 	dey
@@ -13339,21 +13353,21 @@ L0027:	ldy     #$02
 ;
 ; else if (player.isJumping)
 ;
-	jmp     L002F
-L0008:	lda     _player+18
+	jmp     L004A
+L0008:	lda     _player+16
 	jeq     L0012
 ;
 ; oam_spr((player.facingRight ? player.left : player.x), player.top, 0x0A, playerAttributes);
 ;
 	jsr     decsp3
-	lda     _player+15
+	lda     _player+13
 	beq     L0013
-	lda     _player+5
+	lda     _player+3
 	jmp     L0014
 L0013:	lda     _player
 L0014:	ldy     #$02
 	sta     (sp),y
-	lda     _player+9
+	lda     _player+7
 	dey
 	sta     (sp),y
 	lda     #$0A
@@ -13366,14 +13380,14 @@ L0014:	ldy     #$02
 ; oam_spr((player.facingRight ? player.x : player.left), player.top, 0x0B, playerAttributes);
 ;
 	jsr     decsp3
-	lda     _player+15
+	lda     _player+13
 	beq     L0015
 	lda     _player
-	jmp     L0028
-L0015:	lda     _player+5
-L0028:	ldy     #$02
+	jmp     L003E
+L0015:	lda     _player+3
+L003E:	ldy     #$02
 	sta     (sp),y
-	lda     _player+9
+	lda     _player+7
 	dey
 	sta     (sp),y
 	lda     #$0B
@@ -13386,9 +13400,9 @@ L0028:	ldy     #$02
 ; oam_spr((player.facingRight ? player.left : player.x), player.y, 0x1A, playerAttributes);
 ;
 	jsr     decsp3
-	lda     _player+15
+	lda     _player+13
 	beq     L0017
-	lda     _player+5
+	lda     _player+3
 	jmp     L0018
 L0017:	lda     _player
 L0018:	ldy     #$02
@@ -13406,12 +13420,12 @@ L0018:	ldy     #$02
 ; oam_spr((player.facingRight ? player.x : player.left), player.y, 0x1B, playerAttributes);
 ;
 	jsr     decsp3
-	lda     _player+15
+	lda     _player+13
 	beq     L0019
 	lda     _player
-	jmp     L0029
-L0019:	lda     _player+5
-L0029:	ldy     #$02
+	jmp     L003F
+L0019:	lda     _player+3
+L003F:	ldy     #$02
 	sta     (sp),y
 	lda     _player+1
 	dey
@@ -13420,19 +13434,19 @@ L0029:	ldy     #$02
 ;
 ; else
 ;
-	jmp     L002F
+	jmp     L004A
 ;
 ; oam_spr((player.facingRight ? player.left : player.x), player.top, 0x08, playerAttributes);
 ;
 L0012:	jsr     decsp3
-	lda     _player+15
+	lda     _player+13
 	beq     L001C
-	lda     _player+5
+	lda     _player+3
 	jmp     L001D
 L001C:	lda     _player
 L001D:	ldy     #$02
 	sta     (sp),y
-	lda     _player+9
+	lda     _player+7
 	dey
 	sta     (sp),y
 	lda     #$08
@@ -13445,14 +13459,14 @@ L001D:	ldy     #$02
 ; oam_spr((player.facingRight ? player.x : player.left), player.top, 0x09, playerAttributes);
 ;
 	jsr     decsp3
-	lda     _player+15
+	lda     _player+13
 	beq     L001E
 	lda     _player
-	jmp     L002A
-L001E:	lda     _player+5
-L002A:	ldy     #$02
+	jmp     L0040
+L001E:	lda     _player+3
+L0040:	ldy     #$02
 	sta     (sp),y
-	lda     _player+9
+	lda     _player+7
 	dey
 	sta     (sp),y
 	lda     #$09
@@ -13465,9 +13479,9 @@ L002A:	ldy     #$02
 ; oam_spr((player.facingRight ? player.left : player.x), player.y, 0x18, playerAttributes);
 ;
 	jsr     decsp3
-	lda     _player+15
+	lda     _player+13
 	beq     L0020
-	lda     _player+5
+	lda     _player+3
 	jmp     L0021
 L0020:	lda     _player
 L0021:	ldy     #$02
@@ -13485,26 +13499,319 @@ L0021:	ldy     #$02
 ; oam_spr((player.facingRight ? player.x : player.left), player.y, 0x19, playerAttributes);
 ;
 	jsr     decsp3
-	lda     _player+15
+	lda     _player+13
 	beq     L0022
 	lda     _player
-	jmp     L002B
-L0022:	lda     _player+5
-L002B:	ldy     #$02
+	jmp     L0041
+L0022:	lda     _player+3
+L0041:	ldy     #$02
 	sta     (sp),y
 	lda     _player+1
 	dey
 	sta     (sp),y
 	lda     #$19
-L002F:	dey
+L004A:	dey
 	sta     (sp),y
 	ldy     #$03
 	lda     (sp),y
 	jsr     _oam_spr
 ;
+; for (i = 0; i < MAX_HEALTH; i++)
+;
+	lda     #$00
+	sta     _i
+	sta     _i+1
+L0024:	lda     _i
+	cmp     #$04
+	lda     _i+1
+	sbc     #$00
+	bvc     L0028
+	eor     #$80
+L0028:	jpl     L0025
+;
+; healthBarAttributes = currentLevel == 1 ? 0x01 : 
+;
+	lda     _currentLevel+1
+	bne     L002B
+	lda     _currentLevel
+	cmp     #$01
+	beq     L0043
+;
+; currentLevel == 2 ? 0x03 : 0x02;
+;
+L002B:	lda     _currentLevel+1
+	bne     L0042
+	lda     _currentLevel
+	cmp     #$02
+	bne     L0042
+	lda     #$03
+	jmp     L0043
+L0042:	lda     #$02
+L0043:	ldy     #$01
+	sta     (sp),y
+;
+; if (i <= player.health - 1)
+;
+	lda     _i
+	ldx     _i+1
+	jsr     pushax
+	lda     _player+25
+	ldx     _player+25+1
+	sec
+	sbc     #$01
+	bcs     L0031
+	dex
+L0031:	jsr     tosicmp
+	beq     L0039
+	jcs     L0030
+;
+; oam_spr(origin + (i * offset), 20, 0x0E, healthBarAttributes);
+;
+L0039:	jsr     decsp3
+	ldy     #$08
+	jsr     pushwysp
+	lda     _i
+	ldx     _i+1
+	jsr     pushax
+	ldy     #$0C
+	lda     (sp),y
+	tax
+	dey
+	lda     (sp),y
+	jsr     tosumulax
+	jsr     tosaddax
+	ldy     #$02
+	sta     (sp),y
+	lda     #$14
+	dey
+	sta     (sp),y
+	lda     #$0E
+	dey
+	sta     (sp),y
+	ldy     #$04
+	lda     (sp),y
+	jsr     _oam_spr
+;
+; oam_spr(origin + (i * offset), 28, 0x1E, healthBarAttributes);
+;
+	jsr     decsp3
+	ldy     #$08
+	jsr     pushwysp
+	lda     _i
+	ldx     _i+1
+	jsr     pushax
+	ldy     #$0C
+	lda     (sp),y
+	tax
+	dey
+	lda     (sp),y
+	jsr     tosumulax
+	jsr     tosaddax
+	ldy     #$02
+	sta     (sp),y
+	lda     #$1C
+	dey
+	sta     (sp),y
+	lda     #$1E
+	dey
+	sta     (sp),y
+	ldy     #$04
+	lda     (sp),y
+	jsr     _oam_spr
+;
+; healthBarAttributes |= 0x40;
+;
+	ldy     #$01
+	lda     (sp),y
+	ora     #$40
+	sta     (sp),y
+;
+; oam_spr(origin + (i * offset) + 8, 20, 0x0E, healthBarAttributes);
+;
+	jsr     decsp3
+	ldy     #$08
+	jsr     pushwysp
+	lda     _i
+	ldx     _i+1
+	jsr     pushax
+	ldy     #$0C
+	lda     (sp),y
+	tax
+	dey
+	lda     (sp),y
+	jsr     tosumulax
+	jsr     tosaddax
+	clc
+	adc     #$08
+	ldy     #$02
+	sta     (sp),y
+	lda     #$14
+	dey
+	sta     (sp),y
+	lda     #$0E
+	dey
+	sta     (sp),y
+	ldy     #$04
+	lda     (sp),y
+	jsr     _oam_spr
+;
+; oam_spr(origin + (i * offset) + 8, 28, 0x1E, healthBarAttributes);
+;
+	jsr     decsp3
+	ldy     #$08
+	jsr     pushwysp
+	lda     _i
+	ldx     _i+1
+	jsr     pushax
+	ldy     #$0C
+	lda     (sp),y
+	tax
+	dey
+	lda     (sp),y
+	jsr     tosumulax
+	jsr     tosaddax
+	clc
+	adc     #$08
+	ldy     #$02
+	sta     (sp),y
+	lda     #$1C
+	dey
+	sta     (sp),y
+	lda     #$1E
+;
+; else
+;
+	jmp     L004B
+;
+; oam_spr(origin + (i * offset), 20, 0x0F, healthBarAttributes);
+;
+L0030:	jsr     decsp3
+	ldy     #$08
+	jsr     pushwysp
+	lda     _i
+	ldx     _i+1
+	jsr     pushax
+	ldy     #$0C
+	lda     (sp),y
+	tax
+	dey
+	lda     (sp),y
+	jsr     tosumulax
+	jsr     tosaddax
+	ldy     #$02
+	sta     (sp),y
+	lda     #$14
+	dey
+	sta     (sp),y
+	lda     #$0F
+	dey
+	sta     (sp),y
+	ldy     #$04
+	lda     (sp),y
+	jsr     _oam_spr
+;
+; oam_spr(origin + (i * offset), 28, 0x1F, healthBarAttributes);
+;
+	jsr     decsp3
+	ldy     #$08
+	jsr     pushwysp
+	lda     _i
+	ldx     _i+1
+	jsr     pushax
+	ldy     #$0C
+	lda     (sp),y
+	tax
+	dey
+	lda     (sp),y
+	jsr     tosumulax
+	jsr     tosaddax
+	ldy     #$02
+	sta     (sp),y
+	lda     #$1C
+	dey
+	sta     (sp),y
+	lda     #$1F
+	dey
+	sta     (sp),y
+	ldy     #$04
+	lda     (sp),y
+	jsr     _oam_spr
+;
+; healthBarAttributes |= 0x40;
+;
+	ldy     #$01
+	lda     (sp),y
+	ora     #$40
+	sta     (sp),y
+;
+; oam_spr(origin + (i * offset) + 8, 20, 0x0F, healthBarAttributes);
+;
+	jsr     decsp3
+	ldy     #$08
+	jsr     pushwysp
+	lda     _i
+	ldx     _i+1
+	jsr     pushax
+	ldy     #$0C
+	lda     (sp),y
+	tax
+	dey
+	lda     (sp),y
+	jsr     tosumulax
+	jsr     tosaddax
+	clc
+	adc     #$08
+	ldy     #$02
+	sta     (sp),y
+	lda     #$14
+	dey
+	sta     (sp),y
+	lda     #$0F
+	dey
+	sta     (sp),y
+	ldy     #$04
+	lda     (sp),y
+	jsr     _oam_spr
+;
+; oam_spr(origin + (i * offset) + 8, 28, 0x1F, healthBarAttributes);
+;
+	jsr     decsp3
+	ldy     #$08
+	jsr     pushwysp
+	lda     _i
+	ldx     _i+1
+	jsr     pushax
+	ldy     #$0C
+	lda     (sp),y
+	tax
+	dey
+	lda     (sp),y
+	jsr     tosumulax
+	jsr     tosaddax
+	clc
+	adc     #$08
+	ldy     #$02
+	sta     (sp),y
+	lda     #$1C
+	dey
+	sta     (sp),y
+	lda     #$1F
+L004B:	dey
+	sta     (sp),y
+	ldy     #$04
+	lda     (sp),y
+	jsr     _oam_spr
+;
+; for (i = 0; i < MAX_HEALTH; i++)
+;
+	inc     _i
+	jne     L0024
+	inc     _i+1
+	jmp     L0024
+;
 ; }
 ;
-	jmp     incsp1
+L0025:	jmp     incsp6
 
 .endproc
 
@@ -13528,10 +13835,10 @@ L002F:	dey
 	ldy     #$01
 	lda     (sp),y
 	clc
-	adc     _player+13
+	adc     _player+11
 	pha
 	lda     #$00
-	adc     _player+13+1
+	adc     _player+11+1
 	tax
 	pla
 	jsr     shrax3
@@ -13593,11 +13900,11 @@ L0002:	jsr     pushax
 	lda     _currentLevelData
 	ldx     _currentLevelData+1
 	jsr     pushax
-	lda     _player+5
+	lda     _player+3
 	clc
 	adc     #$04
 	jsr     pusha
-	lda     _player+11
+	lda     _player+9
 	jsr     _GetTileIndex
 	jsr     tosaddax
 	sta     ptr1
@@ -13613,11 +13920,11 @@ L0002:	jsr     pushax
 	lda     _currentLevelData
 	ldx     _currentLevelData+1
 	jsr     pushax
-	lda     _player+7
+	lda     _player+5
 	sec
 	sbc     #$04
 	jsr     pusha
-	lda     _player+11
+	lda     _player+9
 	jsr     _GetTileIndex
 	jsr     tosaddax
 	sta     ptr1
@@ -13641,8 +13948,8 @@ L0004:	lda     _currentLevel+1
 ;
 	ldx     #$00
 	txa
-	sta     _player+13
-	sta     _player+13+1
+	sta     _player+11
+	sta     _player+11+1
 ;
 ; set_scroll_x(player.scrollX);
 ;
@@ -13677,8 +13984,8 @@ L0007:	inc     _currentLevel
 ;
 L000A:	ldx     #$00
 	txa
-	sta     _player+13
-	sta     _player+13+1
+	sta     _player+11
+	sta     _player+11+1
 ;
 ; set_scroll_x(player.scrollX);
 ;
@@ -13825,11 +14132,11 @@ L000A:	ldx     #$00
 	lda     _currentLevelData
 	ldx     _currentLevelData+1
 	jsr     pushax
-	lda     _player+7
+	lda     _player+5
 	sec
 	sbc     #$04
 	jsr     pusha
-	lda     _player+11
+	lda     _player+9
 	clc
 	adc     #$01
 	jsr     _GetTileIndex
@@ -13847,11 +14154,11 @@ L000A:	ldx     #$00
 	lda     _currentLevelData
 	ldx     _currentLevelData+1
 	jsr     pushax
-	lda     _player+5
+	lda     _player+3
 	clc
 	adc     #$04
 	jsr     pusha
-	lda     _player+11
+	lda     _player+9
 	clc
 	adc     #$01
 	jsr     _GetTileIndex
@@ -13869,11 +14176,11 @@ L000A:	ldx     #$00
 	lda     _currentLevelData
 	ldx     _currentLevelData+1
 	jsr     pushax
-	lda     _player+7
+	lda     _player+5
 	sec
 	sbc     #$04
 	jsr     pusha
-	lda     _player+11
+	lda     _player+9
 	clc
 	adc     #$01
 	jsr     _GetTileIndex
@@ -13891,11 +14198,11 @@ L000A:	ldx     #$00
 	lda     _currentLevelData
 	ldx     _currentLevelData+1
 	jsr     pushax
-	lda     _player+5
+	lda     _player+3
 	clc
 	adc     #$04
 	jsr     pusha
-	lda     _player+11
+	lda     _player+9
 	clc
 	adc     #$01
 	jsr     _GetTileIndex
@@ -14040,10 +14347,10 @@ L0004:	lda     #$01
 	bcc     L0010
 L000F:	lda     _player
 	clc
-	adc     _player+13
+	adc     _player+11
 	pha
 	lda     #$00
-	adc     _player+13+1
+	adc     _player+11+1
 	tax
 	pla
 	cmp     #$80
@@ -14064,10 +14371,10 @@ L0010:	ldy     #$00
 	jmp     incsp4
 L0011:	lda     _player
 	clc
-	adc     _player+13
+	adc     _player+11
 	pha
 	lda     #$00
-	adc     _player+13+1
+	adc     _player+11+1
 	tax
 	pla
 	cmp     #$80
@@ -14076,10 +14383,10 @@ L0011:	lda     _player
 	bcc     L000D
 	lda     _player
 	clc
-	adc     _player+13
+	adc     _player+11
 	pha
 	lda     #$00
-	adc     _player+13+1
+	adc     _player+11+1
 	tax
 	pla
 	cpx     #$01
@@ -14089,12 +14396,12 @@ L0009:	bcs     L000D
 ;
 ; if (player.scrollX <= bound) 
 ;
-	lda     _player+13
+	lda     _player+11
 	sec
 	ldy     #$02
 	sbc     (sp),y
 	sta     tmp1
-	lda     _player+13+1
+	lda     _player+11+1
 	iny
 	sbc     (sp),y
 	ora     tmp1
@@ -14109,11 +14416,11 @@ L000E:	ldy     #$01
 	dey
 	lda     (sp),y
 	clc
-	adc     _player+13
-	sta     _player+13
+	adc     _player+11
+	sta     _player+11
 	txa
-	adc     _player+13+1
-	sta     _player+13+1
+	adc     _player+11+1
+	sta     _player+11+1
 ;
 ; else 
 ;
@@ -14123,8 +14430,8 @@ L000E:	ldy     #$01
 ;
 L000C:	ldx     #$01
 	lda     #$00
-	sta     _player+13
-	stx     _player+13+1
+	sta     _player+11
+	stx     _player+11+1
 ;
 ; }
 ;
@@ -14155,10 +14462,10 @@ L000D:	jmp     incsp4
 	bcc     L0010
 L000F:	lda     _player
 	clc
-	adc     _player+13
+	adc     _player+11
 	pha
 	lda     #$00
-	adc     _player+13+1
+	adc     _player+11+1
 	tax
 	pla
 	cmp     #$81
@@ -14168,8 +14475,8 @@ L000F:	lda     _player
 ;
 ; (player.scrollX == MIN_SCROLL))
 ;
-	lda     _player+13
-	ora     _player+13+1
+	lda     _player+11
+	ora     _player+11+1
 	bne     L0011
 ;
 ; player.x -= amountToDecrement;
@@ -14186,10 +14493,10 @@ L0010:	ldy     #$00
 	jmp     incsp4
 L0011:	lda     _player
 	clc
-	adc     _player+13
+	adc     _player+11
 	pha
 	lda     #$00
-	adc     _player+13+1
+	adc     _player+11+1
 	tax
 	pla
 	cmp     #$81
@@ -14198,10 +14505,10 @@ L0011:	lda     _player
 	bcc     L000E
 	lda     _player
 	clc
-	adc     _player+13
+	adc     _player+11
 	pha
 	lda     #$00
-	adc     _player+13+1
+	adc     _player+11+1
 	tax
 	pla
 	cpx     #$01
@@ -14211,10 +14518,10 @@ L000A:	bcs     L000E
 ;
 ; if (player.scrollX >= bound) 
 ;
-	lda     _player+13
+	lda     _player+11
 	ldy     #$02
 	cmp     (sp),y
-	lda     _player+13+1
+	lda     _player+11+1
 	iny
 	sbc     (sp),y
 	lda     #$00
@@ -14229,11 +14536,11 @@ L000A:	bcs     L000E
 	lda     (sp),y
 	eor     #$FF
 	sec
-	adc     _player+13
-	sta     _player+13
+	adc     _player+11
+	sta     _player+11
 	txa
 	eor     #$FF
-	adc     _player+13+1
+	adc     _player+11+1
 ;
 ; else 
 ;
@@ -14241,8 +14548,8 @@ L000A:	bcs     L000E
 ;
 ; player.scrollX = MIN_SCROLL;
 ;
-L0015:	sta     _player+13
-L0016:	sta     _player+13+1
+L0015:	sta     _player+11
+L0016:	sta     _player+11+1
 ;
 ; }
 ;
@@ -14308,8 +14615,8 @@ L0004:	lda     #$01
 	sbc     #$08
 	bcs     L0002
 	dex
-L0002:	sta     _player+5
-	stx     _player+5+1
+L0002:	sta     _player+3
+	stx     _player+3+1
 ;
 ; player.right = player.x + 8;
 ;
@@ -14319,8 +14626,8 @@ L0002:	sta     _player+5
 	adc     #$08
 	bcc     L0003
 	inx
-L0003:	sta     _player+7
-	stx     _player+7+1
+L0003:	sta     _player+5
+	stx     _player+5+1
 ;
 ; player.top = player.y - 8;
 ;
@@ -14330,8 +14637,8 @@ L0003:	sta     _player+7
 	sbc     #$08
 	bcs     L0004
 	dex
-L0004:	sta     _player+9
-	stx     _player+9+1
+L0004:	sta     _player+7
+	stx     _player+7+1
 ;
 ; player.bottom = player.y + 8;
 ;
@@ -14341,8 +14648,8 @@ L0004:	sta     _player+9
 	adc     #$08
 	bcc     L0005
 	inx
-L0005:	sta     _player+11
-	stx     _player+11+1
+L0005:	sta     _player+9
+	stx     _player+9+1
 ;
 ; }
 ;
@@ -14363,20 +14670,20 @@ L0005:	sta     _player+11
 ;
 ; if (player.isDashing)
 ;
-	lda     _player+20
-	ora     _player+20+1
+	lda     _player+18
+	ora     _player+18+1
 	beq     L0002
 ;
 ; player.isDashing = 0;
 ;
 	lda     #$00
-	sta     _player+20
-	sta     _player+20+1
+	sta     _player+18
+	sta     _player+18+1
 ;
 ; player.dashCooldown = DASH_COOLDOWN;
 ;
 	lda     #$14
-	sta     _player+23
+	sta     _player+21
 ;
 ; }
 ;
@@ -14444,85 +14751,83 @@ L0004:	lda     #$01
 	lda     #$D7
 	sta     _player+1
 ;
-; player.height = 8;
-;
-	lda     #$08
-	sta     _player+2
-;
-; player.width = 8;
-;
-	sta     _player+3
-;
 ; player.coyoteTime = 0;
 ;
 	lda     #$00
-	sta     _player+4
+	sta     _player+2
 ;
 ; player.left = 0;
+;
+	tax
+	sta     _player+3
+	sta     _player+3+1
+;
+; player.right = 0;
 ;
 	sta     _player+5
 	sta     _player+5+1
 ;
-; player.right = 0;
+; player.top = 0;
 ;
 	sta     _player+7
 	sta     _player+7+1
 ;
-; player.top = 0;
+; player.bottom = 0;
 ;
 	sta     _player+9
 	sta     _player+9+1
 ;
-; player.bottom = 0;
+; player.scrollX = 0;
 ;
 	sta     _player+11
 	sta     _player+11+1
 ;
-; player.scrollX = 0;
-;
-	sta     _player+13
-	sta     _player+13+1
-;
 ; player.facingRight = 1;
 ;
 	lda     #$01
-	sta     _player+15
+	sta     _player+13
 ;
 ; player.velocityY = 0;
 ;
-	lda     #$00
-	sta     _player+16
-	sta     _player+16+1
+	txa
+	sta     _player+14
+	sta     _player+14+1
 ;
 ; player.isJumping = 0;
 ;
-	sta     _player+18
+	sta     _player+16
 ;
 ; player.jumpBufferTimer = 0; 
 ;
-	sta     _player+19
+	sta     _player+17
 ;
 ; player.isDashing = 0;
 ;
-	sta     _player+20
-	sta     _player+20+1
+	sta     _player+18
+	sta     _player+18+1
 ;
 ; player.dashTimer = 0;
 ;
-	sta     _player+22
+	sta     _player+20
 ;
 ; player.dashCooldown = 0;
 ;
-	sta     _player+23
+	sta     _player+21
 ;
 ; player.hasDashedInAir = 0;
 ;
-	sta     _player+24
+	sta     _player+22
 ;
 ; player.dashDirection = 0; 
 ;
+	sta     _player+23
+	sta     _player+23+1
+;
+; player.health = 2;
+;
+	lda     #$02
 	sta     _player+25
-	sta     _player+25+1
+	stx     _player+25+1
 ;
 ; }
 ;
@@ -14672,8 +14977,8 @@ L0009:	jsr     _UpdateColliderPositions
 ;
 ; scroll(player.scrollX, 0);
 ;
-	lda     _player+13
-	ldx     _player+13+1
+	lda     _player+11
+	ldx     _player+11+1
 	jsr     pushax
 	ldx     #$00
 	txa

@@ -101,6 +101,7 @@
 #define MIN_SCROLL 0
 //Enemies
 #define MAX_ENEMIES 2
+#define MAX_HEALTH 4
 
 #pragma bss-name(push, "ZEROPAGE")
 
@@ -164,6 +165,7 @@ typedef struct
 	char hasDashedInAir;
 	// -1 = left, 1 = right
 	signed int dashDirection; 
+	unsigned int health;
 } Player;
 
 Player player;
@@ -512,6 +514,9 @@ void MovePlayer(void)
 
 void DrawPlayer(void)
 {
+	unsigned int offset = 20;
+	unsigned int origin = 20;
+	unsigned char healthBarAttributes = 0x02;
 	unsigned char playerAttributes =  player.isDashing ? 0x03 :
 							currentLevel == 3 ? 0X02 : 0x01;
 
@@ -550,6 +555,34 @@ void DrawPlayer(void)
 		oam_spr((player.facingRight ? player.x : player.left), player.top, 0x09, playerAttributes);
 		oam_spr((player.facingRight ? player.left : player.x), player.y, 0x18, playerAttributes);
     	oam_spr((player.facingRight ? player.x : player.left), player.y, 0x19, playerAttributes);
+	}
+
+
+	//DRAW HEALTH BAR
+	for (i = 0; i < MAX_HEALTH; i++)
+	{
+		healthBarAttributes = currentLevel == 1 ? 0x01 : 
+							currentLevel == 2 ? 0x03 : 0x02;
+
+		if (i <= player.health - 1)
+		{
+			//Draw a full heart starting at the origin adding offset * i
+			oam_spr(origin + (i * offset), 20, 0x0E, healthBarAttributes);
+			oam_spr(origin + (i * offset), 28, 0x1E, healthBarAttributes);
+			//flip the sprite
+			healthBarAttributes |= 0x40;
+			oam_spr(origin + (i * offset) + 8, 20, 0x0E, healthBarAttributes);
+			oam_spr(origin + (i * offset) + 8, 28, 0x1E, healthBarAttributes);
+		}
+		else
+		{
+			oam_spr(origin + (i * offset), 20, 0x0F, healthBarAttributes);
+			oam_spr(origin + (i * offset), 28, 0x1F, healthBarAttributes);
+			//flip the sprite
+			healthBarAttributes |= 0x40;
+			oam_spr(origin + (i * offset) + 8, 20, 0x0F, healthBarAttributes);
+			oam_spr(origin + (i * offset) + 8, 28, 0x1F, healthBarAttributes);
+		}
 	}
 }
 
@@ -732,8 +765,6 @@ void SetPlayerValues(void)
 {
 	player.x = 30;
 	player.y = 215;
-	player.height = 8;
-	player.width = 8;
 	player.coyoteTime = 0;
 	player.left = 0;
 	player.right = 0;
@@ -749,6 +780,7 @@ void SetPlayerValues(void)
 	player.dashCooldown = 0;
 	player.hasDashedInAir = 0;
 	player.dashDirection = 0; 
+	player.health = 2;
 }
 
 char CheckIfSpikes(unsigned char tile)
