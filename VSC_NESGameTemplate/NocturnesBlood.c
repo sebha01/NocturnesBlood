@@ -144,8 +144,6 @@ typedef struct
 	//variables
 	unsigned char x;
 	unsigned char y;
-	unsigned char height;
-	unsigned char width;
 	char coyoteTime;
 	signed int left;
 	signed int right;
