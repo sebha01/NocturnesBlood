@@ -142,8 +142,10 @@ const unsigned char* currentLevelData;
 typedef struct
 {
 	//variables
-	signed int x;
-	signed int y;
+	unsigned char x;
+	unsigned char y;
+	unsigned char height;
+	unsigned char width;
 	char coyoteTime;
 	signed int left;
 	signed int right;
@@ -170,20 +172,24 @@ Player player;
 
 typedef struct 
 {
-	signed int x;
-	signed int y;
-	signed int right;
-	signed int left;
+	unsigned char x;
+	unsigned char y;
+	unsigned char height;
+	unsigned char width;
+	unsigned char right;
+	unsigned char left;
 	char facingRight;
 	char isAlive;
 } Enemy;
 
 Enemy enemies[MAX_ENEMIES] = 
 {
-	{100, 215, 120, 80, 1, 1},
-	{200, 215, 220, 180, -1, 1}
+	{100, 215, 16, 16, 120, 80, 1, 1},
+	{200, 215, 16, 16, 220, 180, -1, 1}
 };
  
+
+unsigned char enemyTouchingPlayer = 0;
 
 //function prototypes
 void DrawTitleScreen(void);
@@ -204,6 +210,7 @@ void DashEnd(void);
 char CheckIfPlatformTile(unsigned char tile);
 void SetPlayerValues(void);
 void MoveEnemies(void);
+void CheckForEnemColl(void);
 
 /*
 ----------------
@@ -246,6 +253,8 @@ void main (void)
 				scroll(player.scrollX, 0);
 				//Check if player has reached end goal
 				CheckIfEnd();
+
+				CheckForEnemColl();
 				break;
 			case END_SCREEN:
 				//Check if player has pressed start
@@ -640,6 +649,12 @@ void DrawEndScreen()
 	ppu_off(); // screen off
 	pal_bg(palette); //	load the BG palette
 
+	enemyTouchingPlayer = 0;
+	player.scrollX = 0;
+	set_scroll_x(player.scrollX);
+	player.x = 30;
+	player.y = 215;
+
 	//Clear all sprite data
 	oam_clear();
 
@@ -772,6 +787,8 @@ void SetPlayerValues(void)
 {
 	player.x = 30;
 	player.y = 215;
+	player.height = 16;
+	player.width = 16;
 	player.coyoteTime = 0;
 	player.left = 0;
 	player.right = 0;
@@ -801,7 +818,7 @@ void MoveEnemies(void)
             if (enemies[i].facingRight)
             {
                 // Move enemy to the right
-                enemies[i].x += 1;  // Adjust the movement speed as needed
+                enemies[i].x += 1; 
 
                 // Check if the enemy has reached the right patrol boundary
                 if (enemies[i].x >= enemies[i].right)
@@ -813,7 +830,7 @@ void MoveEnemies(void)
             else
             {
                 // Move enemy to the left
-                enemies[i].x -= 1;  // Adjust the movement speed as needed
+                enemies[i].x -= 1;
 
                 // Check if the enemy has reached the left patrol boundary
                 if (enemies[i].x <= enemies[i].left)
@@ -824,4 +841,18 @@ void MoveEnemies(void)
             }
         }
     }
+}
+
+void CheckForEnemColl(void)
+{
+	for (i = 0; i < MAX_ENEMIES; i++)
+	{
+		enemyTouchingPlayer = check_collision(&player, &enemies[i]);
+
+		if (enemyTouchingPlayer)
+		{
+			currentGameState = END_SCREEN;
+			DrawEndScreen();
+		}
+	}
 }

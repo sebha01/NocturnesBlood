@@ -24,6 +24,7 @@
 	.import		_vram_fill
 	.import		_vram_write
 	.import		_get_pad_new
+	.import		_check_collision
 	.import		_set_scroll_x
 	.export		_Level1Data
 	.export		_Level2Data
@@ -48,6 +49,7 @@
 	.export		_currentLevelData
 	.export		_player
 	.export		_enemies
+	.export		_enemyTouchingPlayer
 	.export		_DrawTitleScreen
 	.export		_GameLoop
 	.export		_MovePlayer
@@ -65,6 +67,7 @@
 	.export		_CheckIfPlatformTile
 	.export		_SetPlayerValues
 	.export		_MoveEnemies
+	.export		_CheckForEnemColl
 	.export		_main
 
 .segment	"DATA"
@@ -76,18 +79,24 @@ _i:
 _currentLevel:
 	.word	$0001
 _enemies:
-	.word	$0064
-	.word	$00d7
-	.word	$0078
-	.word	$0050
+	.byte	$64
+	.byte	$d7
+	.byte	$10
+	.byte	$10
+	.byte	$78
+	.byte	$50
 	.byte	$01
 	.byte	$01
-	.word	$00c8
-	.word	$00d7
-	.word	$00dc
-	.word	$00b4
+	.byte	$c8
+	.byte	$d7
+	.byte	$10
+	.byte	$10
+	.byte	$dc
+	.byte	$b4
 	.byte	$ff
 	.byte	$01
+_enemyTouchingPlayer:
+	.byte	$00
 
 .segment	"RODATA"
 
@@ -12716,12 +12725,12 @@ L0003:	lda     #<(_palette)
 ;
 ; else if (!OnGround() && player.coyoteTime > 0) 
 ;
-	jmp     L004D
+	jmp     L004A
 L0002:	jsr     _OnGround
 	tax
-	bne     L004D
+	bne     L004A
 	lda     _player+4
-	beq     L004D
+	beq     L004A
 ;
 ; player.coyoteTime--;
 ;
@@ -12729,8 +12738,8 @@ L0002:	jsr     _OnGround
 ;
 ; if (player.dashCooldown > 0) 
 ;
-L004D:	lda     _player+23
-	beq     L004E
+L004A:	lda     _player+23
+	beq     L004B
 ;
 ; player.dashCooldown--;
 ;
@@ -12738,9 +12747,9 @@ L004D:	lda     _player+23
 ;
 ; if (movementPad & PAD_LEFT)
 ;
-L004E:	lda     _movementPad
+L004B:	lda     _movementPad
 	and     #$02
-	beq     L004F
+	beq     L004C
 ;
 ; if (!CheckIfCollidableTile(currentLevelData[GetTileIndex(player.left, player.y + 1)]))
 ;
@@ -12749,7 +12758,7 @@ L004E:	lda     _movementPad
 	jsr     pushax
 	lda     _player+5
 	jsr     pusha
-	lda     _player+2
+	lda     _player+1
 	clc
 	adc     #$01
 	jsr     _GetTileIndex
@@ -12760,7 +12769,7 @@ L004E:	lda     _movementPad
 	lda     (ptr1),y
 	jsr     _CheckIfCollidableTile
 	tax
-	bne     L004F
+	bne     L004C
 ;
 ; HandleLeftMovement(4, PLAYER_SPEED);
 ;
@@ -12776,9 +12785,9 @@ L004E:	lda     _movementPad
 ;
 ; if (movementPad & PAD_RIGHT)
 ;
-L004F:	lda     _movementPad
+L004C:	lda     _movementPad
 	and     #$01
-	beq     L0050
+	beq     L004D
 ;
 ; if (!CheckIfCollidableTile(currentLevelData[GetTileIndex(player.right, player.y + 1)]))
 ;
@@ -12787,7 +12796,7 @@ L004F:	lda     _movementPad
 	jsr     pushax
 	lda     _player+7
 	jsr     pusha
-	lda     _player+2
+	lda     _player+1
 	clc
 	adc     #$01
 	jsr     _GetTileIndex
@@ -12798,7 +12807,7 @@ L004F:	lda     _movementPad
 	lda     (ptr1),y
 	jsr     _CheckIfCollidableTile
 	tax
-	bne     L0050
+	bne     L004D
 ;
 ; HandleRightMovement(252, PLAYER_SPEED);
 ;
@@ -12814,32 +12823,32 @@ L004F:	lda     _movementPad
 ;
 ; if ((inputPad & PAD_B) && !player.isDashing && !(player.dashCooldown > 0)) 
 ;
-L0050:	lda     _inputPad
+L004D:	lda     _inputPad
 	and     #$40
-	beq     L0057
+	beq     L0054
 	lda     _player+20
 	ora     _player+20+1
-	bne     L0057
+	bne     L0054
 	lda     _player+23
-	bne     L0057
+	bne     L0054
 ;
 ; if (OnGround() || !player.hasDashedInAir)
 ;
 	jsr     _OnGround
 	tax
-	bne     L0054
+	bne     L0051
 	lda     _player+24
-	bne     L0057
+	bne     L0054
 ;
 ; player.dashDirection = (movementPad & PAD_LEFT ? -1 : movementPad & PAD_RIGHT ? 1 : 0);
 ;
-L0054:	lda     _movementPad
+L0051:	lda     _movementPad
 	and     #$02
-	beq     L0055
+	beq     L0052
 	ldx     #$FF
 	txa
 	jmp     L0019
-L0055:	lda     _movementPad
+L0052:	lda     _movementPad
 	ldx     #$00
 	and     #$01
 	beq     L0019
@@ -12863,7 +12872,7 @@ L0019:	sta     _player+25
 ;
 	jsr     _OnGround
 	tax
-	bne     L0057
+	bne     L0054
 ;
 ; player.hasDashedInAir = 1;
 ;
@@ -12872,12 +12881,12 @@ L0019:	sta     _player+25
 ;
 ; if (inputPad & PAD_A && !player.isDashing) 
 ;
-L0057:	lda     _inputPad
+L0054:	lda     _inputPad
 	and     #$80
-	beq     L005B
+	beq     L0058
 	lda     _player+20
 	ora     _player+20+1
-	bne     L005B
+	bne     L0058
 ;
 ; player.jumpBufferTimer = JUMP_BUFFER_FRAMES;
 ;
@@ -12886,12 +12895,12 @@ L0057:	lda     _inputPad
 ;
 ; if (player.jumpBufferTimer > 0 && !player.isJumping && player.coyoteTime > 0) 
 ;
-L005B:	lda     _player+19
-	beq     L005F
+L0058:	lda     _player+19
+	beq     L005C
 	lda     _player+18
-	bne     L005F
+	bne     L005C
 	lda     _player+4
-	beq     L005F
+	beq     L005C
 ;
 ; player.isJumping = 1;
 ;
@@ -12913,7 +12922,7 @@ L005B:	lda     _player+19
 ; else if (player.jumpBufferTimer > 0) 
 ;
 	jmp     L0024
-L005F:	lda     _player+19
+L005C:	lda     _player+19
 	beq     L0024
 ;
 ; player.jumpBufferTimer--;
@@ -12941,7 +12950,7 @@ L0026:	lda     _i
 	sbc     #$00
 	bvc     L002A
 	eor     #$80
-L002A:	jpl     L0060
+L002A:	jpl     L005D
 ;
 ; int nextX = player.x + player.dashDirection;
 ;
@@ -12949,7 +12958,7 @@ L002A:	jpl     L0060
 	clc
 	adc     _player+25
 	pha
-	lda     _player+1
+	lda     #$00
 	adc     _player+25+1
 	tax
 	pla
@@ -12995,7 +13004,7 @@ L002E:	clc
 	ldy     #$02
 	lda     (sp),y
 	jsr     pusha
-	lda     _player+2
+	lda     _player+1
 	clc
 	adc     #$01
 	jsr     _GetTileIndex
@@ -13058,7 +13067,7 @@ L002F:	jsr     _DashEnd
 ; break;
 ;
 	jsr     incsp4
-	jmp     L0060
+	jmp     L005D
 ;
 ; }
 ;
@@ -13073,8 +13082,8 @@ L0037:	jsr     incsp4
 ;
 ; if (player.dashTimer <= 0) 
 ;
-L0060:	lda     _player+22
-	beq     L0061
+L005D:	lda     _player+22
+	beq     L005E
 ;
 ; }
 ;
@@ -13082,7 +13091,7 @@ L0060:	lda     _player+22
 ;
 ; DashEnd();
 ;
-L0061:	jmp     _DashEnd
+L005E:	jmp     _DashEnd
 ;
 ; if (player.isJumping) 
 ;
@@ -13127,9 +13136,7 @@ L003B:	ldx     _player+16+1
 ;
 ; player.y += 1;
 ;
-	inc     _player+2
-	bne     L003D
-	inc     _player+2+1
+	inc     _player+1
 ;
 ; if (player.velocityY > MAX_FALL_SPEED)
 ;
@@ -13137,9 +13144,9 @@ L003D:	lda     _player+16
 	cmp     #$05
 	lda     _player+16+1
 	sbc     #$00
-	bvs     L0040
+	bvs     L003F
 	eor     #$80
-L0040:	bpl     L003F
+L003F:	bpl     L003E
 ;
 ; player.velocityY = MAX_FALL_SPEED;
 ;
@@ -13150,30 +13157,23 @@ L0040:	bpl     L003F
 ;
 ; player.y += player.velocityY;
 ;
-L003F:	lda     _player+16
+L003E:	lda     _player+16
 	clc
-	adc     _player+2
-	sta     _player+2
-	lda     _player+16+1
-	adc     _player+2+1
-	sta     _player+2+1
+	adc     _player+1
+	sta     _player+1
 ;
 ; if (player.velocityY >= 0 && OnGround()) 
 ;
 	ldx     _player+16+1
-	bmi     L0041
+	bmi     L0040
 	jsr     _OnGround
 	tax
-	bne     L0047
+	bne     L0046
 	rts
 ;
 ; player.y -= 1;
 ;
-L0045:	ldx     _player+2
-	bne     L0048
-	dec     _player+2+1
-L0048:	dex
-	stx     _player+2
+L0044:	dec     _player+1
 ;
 ; UpdateColliderPositions();
 ;
@@ -13181,19 +13181,17 @@ L0048:	dex
 ;
 ; while (OnGround()) 
 ;
-L0047:	jsr     _OnGround
+L0046:	jsr     _OnGround
 	tax
-	bne     L0045
+	bne     L0044
 ;
 ; player.y += 1;
 ;
-	inc     _player+2
-	bne     L0049
-	inc     _player+2+1
+	inc     _player+1
 ;
 ; UpdateColliderPositions();
 ;
-L0049:	jsr     _UpdateColliderPositions
+	jsr     _UpdateColliderPositions
 ;
 ; player.velocityY = 0;
 ;
@@ -13211,13 +13209,13 @@ L0049:	jsr     _UpdateColliderPositions
 ;
 ; else 
 ;
-L0041:	rts
+L0040:	rts
 ;
 ; if (!OnGround()) 
 ;
 L003A:	jsr     _OnGround
 	tax
-	bne     L004B
+	bne     L0048
 ;
 ; player.isJumping = 1;
 ;
@@ -13226,7 +13224,7 @@ L003A:	jsr     _OnGround
 ;
 ; }
 ;
-L004B:	rts
+L0048:	rts
 
 .endproc
 
@@ -13247,7 +13245,7 @@ L004B:	rts
 	ora     _player+20+1
 	beq     L0002
 	lda     #$03
-	jmp     L0037
+	jmp     L003B
 ;
 ; currentLevel == 3 ? 0X02 : 0x01;
 ;
@@ -13257,9 +13255,9 @@ L0002:	lda     _currentLevel+1
 	cmp     #$03
 	bne     L0005
 	lda     #$02
-	jmp     L0037
+	jmp     L003B
 L0005:	lda     #$01
-L0037:	jsr     pusha
+L003B:	jsr     pusha
 ;
 ; if (!player.facingRight)
 ;
@@ -13314,9 +13312,9 @@ L000A:	ldy     #$02
 	lda     _player+15
 	beq     L000B
 	lda     _player
-	jmp     L000C
+	jmp     L003C
 L000B:	lda     _player+5
-L000C:	ldy     #$02
+L003C:	ldy     #$02
 	sta     (sp),y
 	lda     _player+9
 	dey
@@ -13338,7 +13336,7 @@ L000C:	ldy     #$02
 L000D:	lda     _player
 L000E:	ldy     #$02
 	sta     (sp),y
-	lda     _player+2
+	lda     _player+1
 	dey
 	sta     (sp),y
 	lda     #$98
@@ -13354,18 +13352,18 @@ L000E:	ldy     #$02
 	lda     _player+15
 	beq     L000F
 	lda     _player
-	jmp     L0010
+	jmp     L003D
 L000F:	lda     _player+5
-L0010:	ldy     #$02
+L003D:	ldy     #$02
 	sta     (sp),y
-	lda     _player+2
+	lda     _player+1
 	dey
 	sta     (sp),y
 	lda     #$99
 ;
 ; else if (player.isJumping)
 ;
-	jmp     L003D
+	jmp     L0047
 L0008:	lda     _player+18
 	jeq     L0012
 ;
@@ -13395,9 +13393,9 @@ L0014:	ldy     #$02
 	lda     _player+15
 	beq     L0015
 	lda     _player
-	jmp     L0016
+	jmp     L003E
 L0015:	lda     _player+5
-L0016:	ldy     #$02
+L003E:	ldy     #$02
 	sta     (sp),y
 	lda     _player+9
 	dey
@@ -13419,7 +13417,7 @@ L0016:	ldy     #$02
 L0017:	lda     _player
 L0018:	ldy     #$02
 	sta     (sp),y
-	lda     _player+2
+	lda     _player+1
 	dey
 	sta     (sp),y
 	lda     #$1A
@@ -13435,18 +13433,18 @@ L0018:	ldy     #$02
 	lda     _player+15
 	beq     L0019
 	lda     _player
-	jmp     L001A
+	jmp     L003F
 L0019:	lda     _player+5
-L001A:	ldy     #$02
+L003F:	ldy     #$02
 	sta     (sp),y
-	lda     _player+2
+	lda     _player+1
 	dey
 	sta     (sp),y
 	lda     #$1B
 ;
 ; else
 ;
-	jmp     L003D
+	jmp     L0047
 ;
 ; oam_spr((player.facingRight ? player.left : player.x), player.top, 0x08, playerAttributes);
 ;
@@ -13474,9 +13472,9 @@ L001D:	ldy     #$02
 	lda     _player+15
 	beq     L001E
 	lda     _player
-	jmp     L001F
+	jmp     L0040
 L001E:	lda     _player+5
-L001F:	ldy     #$02
+L0040:	ldy     #$02
 	sta     (sp),y
 	lda     _player+9
 	dey
@@ -13498,7 +13496,7 @@ L001F:	ldy     #$02
 L0020:	lda     _player
 L0021:	ldy     #$02
 	sta     (sp),y
-	lda     _player+2
+	lda     _player+1
 	dey
 	sta     (sp),y
 	lda     #$18
@@ -13514,15 +13512,15 @@ L0021:	ldy     #$02
 	lda     _player+15
 	beq     L0022
 	lda     _player
-	jmp     L0023
+	jmp     L0041
 L0022:	lda     _player+5
-L0023:	ldy     #$02
+L0041:	ldy     #$02
 	sta     (sp),y
-	lda     _player+2
+	lda     _player+1
 	dey
 	sta     (sp),y
 	lda     #$19
-L003D:	dey
+L0047:	dey
 	sta     (sp),y
 	ldy     #$04
 	lda     (sp),y
@@ -13551,14 +13549,14 @@ L0028:	jpl     L0025
 ;
 	lda     _i
 	ldx     _i+1
-	jsr     mulax10
+	jsr     aslax3
 	clc
 	adc     #<(_enemies)
 	sta     ptr1
 	txa
 	adc     #>(_enemies)
 	sta     ptr1+1
-	ldy     #$08
+	ldy     #$06
 	lda     (ptr1),y
 	bne     L002A
 ;
@@ -13573,21 +13571,17 @@ L0028:	jpl     L0025
 ;
 L002A:	lda     _i
 	ldx     _i+1
-	jsr     mulax10
-	clc
-	adc     #<(_enemies)
+	jsr     aslax3
 	sta     ptr1
 	txa
+	clc
 	adc     #>(_enemies)
 	sta     ptr1+1
-	ldy     #$01
-	lda     (ptr1),y
-	tax
-	dey
+	ldy     #<(_enemies)
 	lda     (ptr1),y
 	sec
 	sbc     _player+13
-	txa
+	lda     #$00
 	sbc     _player+13+1
 	tax
 	cpx     #$01
@@ -13598,30 +13592,25 @@ L002A:	lda     _i
 	jsr     decsp3
 	lda     _i
 	ldx     _i+1
-	jsr     mulax10
-	clc
-	adc     #<(_enemies)
+	jsr     aslax3
 	sta     ptr1
 	txa
+	clc
 	adc     #>(_enemies)
 	sta     ptr1+1
-	iny
-	lda     (ptr1),y
-	tax
-	dey
+	ldy     #<(_enemies)
 	lda     (ptr1),y
 	sta     sreg
-	stx     sreg+1
 	lda     _i
 	ldx     _i+1
-	jsr     mulax10
+	jsr     aslax3
 	clc
 	adc     #<(_enemies)
 	sta     ptr1
 	txa
 	adc     #>(_enemies)
 	sta     ptr1+1
-	ldy     #$08
+	ldy     #$06
 	ldx     #$00
 	lda     (ptr1),y
 	beq     L002D
@@ -13629,12 +13618,9 @@ L002A:	lda     _i
 	lda     #$F8
 L002D:	clc
 	adc     sreg
-	pha
-	txa
-	adc     sreg+1
-	tax
-	pla
-	sec
+	bcc     L0036
+	inx
+L0036:	sec
 	sbc     _player+13
 	pha
 	txa
@@ -13644,17 +13630,17 @@ L002D:	clc
 	sta     (sp),y
 	lda     _i
 	ldx     _i+1
-	jsr     mulax10
+	jsr     aslax3
 	clc
 	adc     #<(_enemies)
 	sta     ptr1
 	txa
 	adc     #>(_enemies)
 	sta     ptr1+1
+	dey
 	lda     (ptr1),y
 	sec
 	sbc     #$08
-	dey
 	sta     (sp),y
 	lda     #$C2
 	dey
@@ -13668,30 +13654,25 @@ L002D:	clc
 	jsr     decsp3
 	lda     _i
 	ldx     _i+1
-	jsr     mulax10
-	clc
-	adc     #<(_enemies)
+	jsr     aslax3
 	sta     ptr1
 	txa
+	clc
 	adc     #>(_enemies)
 	sta     ptr1+1
-	ldy     #$01
-	lda     (ptr1),y
-	tax
-	dey
+	ldy     #<(_enemies)
 	lda     (ptr1),y
 	sta     sreg
-	stx     sreg+1
 	lda     _i
 	ldx     _i+1
-	jsr     mulax10
+	jsr     aslax3
 	clc
 	adc     #<(_enemies)
 	sta     ptr1
 	txa
 	adc     #>(_enemies)
 	sta     ptr1+1
-	ldy     #$08
+	ldy     #$06
 	lda     (ptr1),y
 	beq     L002F
 	ldx     #$00
@@ -13701,12 +13682,9 @@ L002F:	ldx     #$FF
 	lda     #$F8
 L0030:	clc
 	adc     sreg
-	pha
-	txa
-	adc     sreg+1
-	tax
-	pla
-	sec
+	bcc     L0037
+	inx
+L0037:	sec
 	sbc     _player+13
 	pha
 	txa
@@ -13716,17 +13694,17 @@ L0030:	clc
 	sta     (sp),y
 	lda     _i
 	ldx     _i+1
-	jsr     mulax10
+	jsr     aslax3
 	clc
 	adc     #<(_enemies)
 	sta     ptr1
 	txa
 	adc     #>(_enemies)
 	sta     ptr1+1
+	dey
 	lda     (ptr1),y
 	sec
 	sbc     #$08
-	dey
 	sta     (sp),y
 	lda     #$C3
 	dey
@@ -13740,30 +13718,25 @@ L0030:	clc
 	jsr     decsp3
 	lda     _i
 	ldx     _i+1
-	jsr     mulax10
-	clc
-	adc     #<(_enemies)
+	jsr     aslax3
 	sta     ptr1
 	txa
+	clc
 	adc     #>(_enemies)
 	sta     ptr1+1
-	ldy     #$01
-	lda     (ptr1),y
-	tax
-	dey
+	ldy     #<(_enemies)
 	lda     (ptr1),y
 	sta     sreg
-	stx     sreg+1
 	lda     _i
 	ldx     _i+1
-	jsr     mulax10
+	jsr     aslax3
 	clc
 	adc     #<(_enemies)
 	sta     ptr1
 	txa
 	adc     #>(_enemies)
 	sta     ptr1+1
-	ldy     #$08
+	ldy     #$06
 	ldx     #$00
 	lda     (ptr1),y
 	beq     L0033
@@ -13771,12 +13744,9 @@ L0030:	clc
 	lda     #$F8
 L0033:	clc
 	adc     sreg
-	pha
-	txa
-	adc     sreg+1
-	tax
-	pla
-	sec
+	bcc     L0038
+	inx
+L0038:	sec
 	sbc     _player+13
 	pha
 	txa
@@ -13786,15 +13756,15 @@ L0033:	clc
 	sta     (sp),y
 	lda     _i
 	ldx     _i+1
-	jsr     mulax10
+	jsr     aslax3
 	clc
 	adc     #<(_enemies)
 	sta     ptr1
 	txa
 	adc     #>(_enemies)
 	sta     ptr1+1
-	lda     (ptr1),y
 	dey
+	lda     (ptr1),y
 	sta     (sp),y
 	lda     #$D2
 	dey
@@ -13808,30 +13778,25 @@ L0033:	clc
 	jsr     decsp3
 	lda     _i
 	ldx     _i+1
-	jsr     mulax10
-	clc
-	adc     #<(_enemies)
+	jsr     aslax3
 	sta     ptr1
 	txa
+	clc
 	adc     #>(_enemies)
 	sta     ptr1+1
-	ldy     #$01
-	lda     (ptr1),y
-	tax
-	dey
+	ldy     #<(_enemies)
 	lda     (ptr1),y
 	sta     sreg
-	stx     sreg+1
 	lda     _i
 	ldx     _i+1
-	jsr     mulax10
+	jsr     aslax3
 	clc
 	adc     #<(_enemies)
 	sta     ptr1
 	txa
 	adc     #>(_enemies)
 	sta     ptr1+1
-	ldy     #$08
+	ldy     #$06
 	lda     (ptr1),y
 	beq     L0034
 	ldx     #$00
@@ -13841,12 +13806,9 @@ L0034:	ldx     #$FF
 	lda     #$F8
 L0035:	clc
 	adc     sreg
-	pha
-	txa
-	adc     sreg+1
-	tax
-	pla
-	sec
+	bcc     L0039
+	inx
+L0039:	sec
 	sbc     _player+13
 	pha
 	txa
@@ -13856,15 +13818,15 @@ L0035:	clc
 	sta     (sp),y
 	lda     _i
 	ldx     _i+1
-	jsr     mulax10
+	jsr     aslax3
 	clc
 	adc     #<(_enemies)
 	sta     ptr1
 	txa
 	adc     #>(_enemies)
 	sta     ptr1+1
-	lda     (ptr1),y
 	dey
+	lda     (ptr1),y
 	sta     (sp),y
 	lda     #$D3
 	dey
@@ -14028,16 +13990,13 @@ L0004:	lda     _currentLevel+1
 ;
 ; player.x = 30;
 ;
-	ldx     #$00
 	lda     #$1E
 	sta     _player
-	stx     _player+1
 ;
 ; player.y = 215;
 ;
 	lda     #$D7
-	sta     _player+2
-	stx     _player+2+1
+	sta     _player+1
 ;
 ; currentGameState = END_SCREEN;
 ;
@@ -14067,16 +14026,13 @@ L000A:	ldx     #$00
 ;
 ; player.x = 30;
 ;
-	ldx     #$00
 	lda     #$1E
 	sta     _player
-	stx     _player+1
 ;
 ; player.y = 215;
 ;
 	lda     #$D7
-	sta     _player+2
-	stx     _player+2+1
+	sta     _player+1
 ;
 ; GameLoop();
 ;
@@ -14104,6 +14060,31 @@ L000A:	ldx     #$00
 	lda     #<(_palette)
 	ldx     #>(_palette)
 	jsr     _pal_bg
+;
+; enemyTouchingPlayer = 0;
+;
+	lda     #$00
+	sta     _enemyTouchingPlayer
+;
+; player.scrollX = 0;
+;
+	tax
+	sta     _player+13
+	sta     _player+13+1
+;
+; set_scroll_x(player.scrollX);
+;
+	jsr     _set_scroll_x
+;
+; player.x = 30;
+;
+	lda     #$1E
+	sta     _player
+;
+; player.y = 215;
+;
+	lda     #$D7
+	sta     _player+1
 ;
 ; oam_clear();
 ;
@@ -14419,73 +14400,57 @@ L0004:	lda     #$01
 ; if (player.x > 0 && player.x < 128 || (player.x + player.scrollX >= 384))
 ;
 	lda     _player
-	cmp     #$01
-	lda     _player+1
-	sbc     #$00
-	bvs     L0003
-	eor     #$80
-L0003:	bpl     L0004
-	lda     _player
+	beq     L000F
 	cmp     #$80
-	lda     _player+1
-	sbc     #$00
-	bvc     L0005
-	eor     #$80
-L0005:	bmi     L0011
-L0004:	lda     _player
+	bcc     L0010
+L000F:	lda     _player
 	clc
 	adc     _player+13
 	pha
-	lda     _player+1
+	lda     #$00
 	adc     _player+13+1
 	tax
 	pla
 	cmp     #$80
 	txa
 	sbc     #$01
-	bcc     L0002
+	bcc     L0011
 ;
 ; player.x += amountToIncrement;
 ;
-L0011:	ldy     #$01
-	lda     (sp),y
-	tax
-	dey
+L0010:	ldy     #$00
 	lda     (sp),y
 	clc
 	adc     _player
 	sta     _player
-	txa
-	adc     _player+1
-	sta     _player+1
 ;
 ; else if ((player.x + player.scrollX) >= 128 && (player.x + player.scrollX) < 384)
 ;
 	jmp     incsp4
-L0002:	lda     _player
+L0011:	lda     _player
 	clc
 	adc     _player+13
 	pha
-	lda     _player+1
+	lda     #$00
 	adc     _player+13+1
 	tax
 	pla
 	cmp     #$80
 	txa
 	sbc     #$00
-	bcc     L000F
+	bcc     L000D
 	lda     _player
 	clc
 	adc     _player+13
 	pha
-	lda     _player+1
+	lda     #$00
 	adc     _player+13+1
 	tax
 	pla
 	cpx     #$01
-	bne     L000B
+	bne     L0009
 	cmp     #$80
-L000B:	bcs     L000F
+L0009:	bcs     L000D
 ;
 ; if (player.scrollX <= bound) 
 ;
@@ -14498,12 +14463,12 @@ L000B:	bcs     L000F
 	iny
 	sbc     (sp),y
 	ora     tmp1
-	beq     L0010
-	bcs     L000E
+	beq     L000E
+	bcs     L000C
 ;
 ; player.scrollX += amountToIncrement;
 ;
-L0010:	ldy     #$01
+L000E:	ldy     #$01
 	lda     (sp),y
 	tax
 	dey
@@ -14521,14 +14486,14 @@ L0010:	ldy     #$01
 ;
 ; player.scrollX = MAX_SCROLL;
 ;
-L000E:	ldx     #$01
+L000C:	ldx     #$01
 	lda     #$00
 	sta     _player+13
 	stx     _player+13+1
 ;
 ; }
 ;
-L000F:	jmp     incsp4
+L000D:	jmp     incsp4
 
 .endproc
 
@@ -14550,81 +14515,64 @@ L000F:	jmp     incsp4
 ; if (player.x > 0 && player.x < 128 || (player.x + player.scrollX > 384) || 
 ;
 	lda     _player
-	cmp     #$01
-	lda     _player+1
-	sbc     #$00
-	bvs     L0003
-	eor     #$80
-L0003:	bpl     L0004
-	lda     _player
+	beq     L000F
 	cmp     #$80
-	lda     _player+1
-	sbc     #$00
-	bvc     L0005
-	eor     #$80
-L0005:	bmi     L0011
-L0004:	lda     _player
+	bcc     L0010
+L000F:	lda     _player
 	clc
 	adc     _player+13
 	pha
-	lda     _player+1
+	lda     #$00
 	adc     _player+13+1
 	tax
 	pla
 	cmp     #$81
 	txa
 	sbc     #$01
-	bcs     L0011
+	bcs     L0010
 ;
 ; (player.scrollX == MIN_SCROLL))
 ;
 	lda     _player+13
 	ora     _player+13+1
-	bne     L0002
+	bne     L0011
 ;
 ; player.x -= amountToDecrement;
 ;
-L0011:	ldy     #$01
-	lda     (sp),y
-	tax
-	dey
+L0010:	ldy     #$00
 	lda     (sp),y
 	eor     #$FF
 	sec
 	adc     _player
 	sta     _player
-	txa
-	eor     #$FF
-	adc     _player+1
-	sta     _player+1
 ;
 ; else if ((player.x + player.scrollX) > 128 && (player.x + player.scrollX) <= 384)
 ;
 	jmp     incsp4
-L0002:	lda     _player
+L0011:	lda     _player
 	clc
 	adc     _player+13
 	pha
-	lda     _player+1
+	lda     #$00
 	adc     _player+13+1
 	tax
 	pla
 	cmp     #$81
 	txa
 	sbc     #$00
-	bcc     L0010
+	bcc     L000E
 	lda     _player
 	clc
 	adc     _player+13
 	pha
-	lda     _player+1
+	lda     #$00
 	adc     _player+13+1
 	tax
 	pla
 	cpx     #$01
-	bne     L000C
+	bne     L000A
 	cmp     #$81
-L000C:	bcs     L0010
+L000A:	bcs     L000E
 ;
 ; if (player.scrollX >= bound) 
 ;
@@ -14663,7 +14611,7 @@ L0016:	sta     _player+13+1
 ;
 ; }
 ;
-L0010:	jmp     incsp4
+L000E:	jmp     incsp4
 
 .endproc
 
@@ -14719,8 +14667,8 @@ L0004:	lda     #$01
 ;
 ; player.left = player.x - 8;
 ;
+	ldx     #$00
 	lda     _player
-	ldx     _player+1
 	sec
 	sbc     #$08
 	bcs     L0002
@@ -14730,8 +14678,8 @@ L0002:	sta     _player+5
 ;
 ; player.right = player.x + 8;
 ;
+	ldx     #$00
 	lda     _player
-	ldx     _player+1
 	clc
 	adc     #$08
 	bcc     L0003
@@ -14741,8 +14689,8 @@ L0003:	sta     _player+7
 ;
 ; player.top = player.y - 8;
 ;
-	lda     _player+2
-	ldx     _player+2+1
+	ldx     #$00
+	lda     _player+1
 	sec
 	sbc     #$08
 	bcs     L0004
@@ -14752,8 +14700,8 @@ L0004:	sta     _player+9
 ;
 ; player.bottom = player.y + 8;
 ;
-	lda     _player+2
-	ldx     _player+2+1
+	ldx     #$00
+	lda     _player+1
 	clc
 	adc     #$08
 	bcc     L0005
@@ -14853,20 +14801,26 @@ L0004:	lda     #$01
 ;
 ; player.x = 30;
 ;
-	ldx     #$00
 	lda     #$1E
 	sta     _player
-	stx     _player+1
 ;
 ; player.y = 215;
 ;
 	lda     #$D7
+	sta     _player+1
+;
+; player.height = 16;
+;
+	lda     #$10
 	sta     _player+2
-	stx     _player+2+1
+;
+; player.width = 16;
+;
+	sta     _player+3
 ;
 ; player.coyoteTime = 0;
 ;
-	txa
+	lda     #$00
 	sta     _player+4
 ;
 ; player.left = 0;
@@ -14901,7 +14855,7 @@ L0004:	lda     #$01
 ;
 ; player.velocityY = 0;
 ;
-	txa
+	lda     #$00
 	sta     _player+16
 	sta     _player+16+1
 ;
@@ -14963,7 +14917,7 @@ L0002:	lda     _i
 	sbc     #$00
 	bvc     L0006
 	eor     #$80
-L0006:	bmi     L0014
+L0006:	bmi     L0010
 ;
 ; }
 ;
@@ -14971,16 +14925,16 @@ L0006:	bmi     L0014
 ;
 ; if (enemies[i].isAlive)
 ;
-L0014:	lda     _i
+L0010:	lda     _i
 	ldx     _i+1
-	jsr     mulax10
+	jsr     aslax3
 	clc
 	adc     #<(_enemies)
 	sta     ptr1
 	txa
 	adc     #>(_enemies)
 	sta     ptr1+1
-	ldy     #$09
+	ldy     #$07
 	lda     (ptr1),y
 	jeq     L0004
 ;
@@ -14988,7 +14942,7 @@ L0014:	lda     _i
 ;
 	lda     _i
 	ldx     _i+1
-	jsr     mulax10
+	jsr     aslax3
 	clc
 	adc     #<(_enemies)
 	sta     ptr1
@@ -14997,76 +14951,58 @@ L0014:	lda     _i
 	sta     ptr1+1
 	dey
 	lda     (ptr1),y
-	jeq     L0009
+	beq     L0009
 ;
-; enemies[i].x += 1;  // Adjust the movement speed as needed
+; enemies[i].x += 1; 
 ;
 	lda     _i
 	ldx     _i+1
-	jsr     mulax10
+	jsr     aslax3
 	clc
 	adc     #<(_enemies)
-	tay
+	sta     ptr1
 	txa
 	adc     #>(_enemies)
-	tax
-	tya
-	sta     sreg
-	stx     sreg+1
-	sta     ptr1
-	stx     ptr1+1
-	ldy     #$01
-	lda     (ptr1),y
-	tax
-	dey
+	sta     ptr1+1
+	ldy     #$00
 	lda     (ptr1),y
 	clc
 	adc     #$01
-	bcc     L0011
-	inx
-L0011:	sta     (sreg),y
-	iny
-	txa
-	sta     (sreg),y
+	sta     (ptr1),y
 ;
 ; if (enemies[i].x >= enemies[i].right)
 ;
 	lda     _i
 	ldx     _i+1
-	jsr     mulax10
-	clc
-	adc     #<(_enemies)
+	jsr     aslax3
 	sta     ptr1
 	txa
+	clc
 	adc     #>(_enemies)
 	sta     ptr1+1
+	ldy     #<(_enemies)
 	lda     (ptr1),y
-	tax
-	dey
-	lda     (ptr1),y
-	jsr     pushax
+	sta     sreg
 	lda     _i
 	ldx     _i+1
-	jsr     mulax10
+	jsr     aslax3
 	clc
 	adc     #<(_enemies)
 	sta     ptr1
 	txa
 	adc     #>(_enemies)
 	sta     ptr1+1
-	ldy     #$05
+	ldy     #$04
 	lda     (ptr1),y
-	tax
-	dey
-	lda     (ptr1),y
-	jsr     tosicmp
-	jmi     L0004
+	cmp     sreg
+	beq     L000E
+	jcs     L0004
 ;
 ; enemies[i].facingRight = 0;  // Set to move left
 ;
-	lda     _i
+L000E:	lda     _i
 	ldx     _i+1
-	jsr     mulax10
+	jsr     aslax3
 	clc
 	adc     #<(_enemies)
 	sta     ptr1
@@ -15077,77 +15013,57 @@ L0011:	sta     (sreg),y
 ;
 ; else
 ;
-	jmp     L0013
+	jmp     L000F
 ;
-; enemies[i].x -= 1;  // Adjust the movement speed as needed
+; enemies[i].x -= 1;
 ;
 L0009:	lda     _i
 	ldx     _i+1
-	jsr     mulax10
+	jsr     aslax3
 	clc
 	adc     #<(_enemies)
-	tay
+	sta     ptr1
 	txa
 	adc     #>(_enemies)
-	tax
-	tya
-	sta     sreg
-	stx     sreg+1
-	sta     ptr1
-	stx     ptr1+1
-	ldy     #$01
-	lda     (ptr1),y
-	tax
-	dey
+	sta     ptr1+1
+	ldy     #$00
 	lda     (ptr1),y
 	sec
 	sbc     #$01
-	bcs     L0012
-	dex
-L0012:	sta     (sreg),y
-	iny
-	txa
-	sta     (sreg),y
+	sta     (ptr1),y
 ;
 ; if (enemies[i].x <= enemies[i].left)
 ;
 	lda     _i
 	ldx     _i+1
-	jsr     mulax10
-	clc
-	adc     #<(_enemies)
+	jsr     aslax3
 	sta     ptr1
 	txa
+	clc
 	adc     #>(_enemies)
 	sta     ptr1+1
+	ldy     #<(_enemies)
 	lda     (ptr1),y
-	tax
-	dey
-	lda     (ptr1),y
-	jsr     pushax
+	sta     sreg
 	lda     _i
 	ldx     _i+1
-	jsr     mulax10
+	jsr     aslax3
 	clc
 	adc     #<(_enemies)
 	sta     ptr1
 	txa
 	adc     #>(_enemies)
 	sta     ptr1+1
-	ldy     #$07
+	ldy     #$05
 	lda     (ptr1),y
-	tax
-	dey
-	lda     (ptr1),y
-	jsr     tosicmp
-	beq     L0010
-	bpl     L0004
+	cmp     sreg
+	bcc     L0004
 ;
 ; enemies[i].facingRight = 1;  // Set to move right
 ;
-L0010:	lda     _i
+	lda     _i
 	ldx     _i+1
-	jsr     mulax10
+	jsr     aslax3
 	clc
 	adc     #<(_enemies)
 	sta     ptr1
@@ -15155,7 +15071,7 @@ L0010:	lda     _i
 	adc     #>(_enemies)
 	sta     ptr1+1
 	lda     #$01
-L0013:	ldy     #$08
+L000F:	ldy     #$06
 	sta     (ptr1),y
 ;
 ; for (i = 0; i < MAX_ENEMIES; i++)
@@ -15164,6 +15080,75 @@ L0004:	inc     _i
 	jne     L0002
 	inc     _i+1
 	jmp     L0002
+
+.endproc
+
+; ---------------------------------------------------------------
+; void __near__ CheckForEnemColl (void)
+; ---------------------------------------------------------------
+
+.segment	"CODE"
+
+.proc	_CheckForEnemColl: near
+
+.segment	"CODE"
+
+;
+; for (i = 0; i < MAX_ENEMIES; i++)
+;
+	lda     #$00
+	sta     _i
+	sta     _i+1
+L0002:	lda     _i
+	cmp     #$02
+	lda     _i+1
+	sbc     #$00
+	bvc     L0006
+	eor     #$80
+L0006:	bpl     L0003
+;
+; enemyTouchingPlayer = check_collision(&player, &enemies[i]);
+;
+	lda     #<(_player)
+	ldx     #>(_player)
+	jsr     pushax
+	lda     _i
+	ldx     _i+1
+	jsr     aslax3
+	clc
+	adc     #<(_enemies)
+	tay
+	txa
+	adc     #>(_enemies)
+	tax
+	tya
+	jsr     _check_collision
+	sta     _enemyTouchingPlayer
+;
+; if (enemyTouchingPlayer)
+;
+	lda     _enemyTouchingPlayer
+	beq     L0004
+;
+; currentGameState = END_SCREEN;
+;
+	lda     #$02
+	sta     _currentGameState
+;
+; DrawEndScreen();
+;
+	jsr     _DrawEndScreen
+;
+; for (i = 0; i < MAX_ENEMIES; i++)
+;
+L0004:	inc     _i
+	bne     L0002
+	inc     _i+1
+	jmp     L0002
+;
+; }
+;
+L0003:	rts
 
 .endproc
 
@@ -15262,6 +15247,10 @@ L0009:	jsr     _UpdateColliderPositions
 ; CheckIfEnd();
 ;
 	jsr     _CheckIfEnd
+;
+; CheckForEnemColl();
+;
+	jsr     _CheckForEnemColl
 ;
 ; break;
 ;
