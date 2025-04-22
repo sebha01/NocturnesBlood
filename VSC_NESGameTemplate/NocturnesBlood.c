@@ -188,6 +188,7 @@ void UpdateColliderPositions(void);
 void DashEnd(void);
 char CheckIfPlatformTile(unsigned char tile);
 void SetPlayerValues(void);
+char CheckIfSpikes(unsigned char tile);
 
 /*
 ----------------
@@ -750,4 +751,11 @@ void SetPlayerValues(void)
 	player.dashCooldown = 0;
 	player.hasDashedInAir = 0;
 	player.dashDirection = 0; 
+}
+
+char CheckIfSpikes(unsigned char tile)
+{
+	return tile == 0x8A || tile == 0x8B || tile == 0x9A || tile == 0x9B ||
+		tile == 0xAA || tile == 0xAB || tile == 0xC8 || tile == 0xC9 ||
+		tile == 0xD8 || tile == 0xD9 || tile == 0xEA || tile == 0xEB;
 }

@@ -63,6 +63,7 @@
 	.export		_DashEnd
 	.export		_CheckIfPlatformTile
 	.export		_SetPlayerValues
+	.export		_CheckIfSpikes
 	.export		_main
 
 .segment	"DATA"
@@ -14526,6 +14527,67 @@ L0004:	lda     #$01
 ; }
 ;
 	rts
+
+.endproc
+
+; ---------------------------------------------------------------
+; char __near__ CheckIfSpikes (unsigned char tile)
+; ---------------------------------------------------------------
+
+.segment	"CODE"
+
+.proc	_CheckIfSpikes: near
+
+.segment	"CODE"
+
+;
+; {
+;
+	jsr     pusha
+;
+; return tile == 0x8A || tile == 0x8B || tile == 0x9A || tile == 0x9B ||
+;
+	ldy     #$00
+	lda     (sp),y
+	cmp     #$8A
+	beq     L0004
+	cmp     #$8B
+	beq     L0004
+	cmp     #$9A
+	beq     L0004
+	cmp     #$9B
+	beq     L0004
+;
+; tile == 0xAA || tile == 0xAB || tile == 0xC8 || tile == 0xC9 ||
+;
+	cmp     #$AA
+	beq     L0004
+	cmp     #$AB
+	beq     L0004
+	cmp     #$C8
+	beq     L0004
+	cmp     #$C9
+	beq     L0004
+;
+; tile == 0xD8 || tile == 0xD9 || tile == 0xEA || tile == 0xEB;
+;
+	cmp     #$D8
+	beq     L0004
+	cmp     #$D9
+	beq     L0004
+	cmp     #$EA
+	beq     L0004
+	cmp     #$EB
+	beq     L0004
+	ldx     #$00
+	txa
+	jmp     incsp1
+L0004:	lda     #$01
+	ldx     #$00
+;
+; }
+;
+	jmp     incsp1
 
 .endproc
 
