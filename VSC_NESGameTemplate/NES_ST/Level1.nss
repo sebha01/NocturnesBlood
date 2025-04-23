@@ -47,8 +47,8 @@ BtnPPuMaskB=0
 BtnPPuMaskLinked=1
 VarTileViewTagBuf=0
 VarBgPalCur=1
-VarPalActive=0
-VarTileActive=130
+VarPalActive=2
+VarTileActive=178
 VarBankActive=0
 VarPPUMask=0
 VarPPUMaskSet0=0
@@ -68,16 +68,16 @@ VarNameViewX=0
 VarNameViewY=-1
 VarNameViewX2=0
 VarNameViewY2=-1
-VarNameSelectionL=8
-VarNameSelectionR=10
-VarNameSelectionT=14
-VarNameSelectionB=16
+VarNameSelectionL=28
+VarNameSelectionR=30
+VarNameSelectionT=28
+VarNameSelectionB=30
 VarNameCopyW=2
 VarNameCopyH=2
 VarCHRSelectionL=2
 VarCHRSelectionR=3
-VarCHRSelectionT=8
-VarCHRSelectionB=9
+VarCHRSelectionT=11
+VarCHRSelectionB=12
 VarCHRCopyW=2
 VarCHRCopyH=1
 VarCHRCopyRect=1
@@ -153,7 +153,7 @@ RadioAutoexport_UseSubDir_NEXXT=0
 CheckAutoexport_MetatileAsBMP=0
 
 
-VarCHRSelected=00[82]0100[7d]
+VarCHRSelected=00[b2]0100[4d]
 
 
 Palette=0f2d3d300f0c21320f0516270f0b1a290f1c21320f1122330f1223340f1324350f1324360f1526370f1627370f1928380f1829380f1b2a390f1b2b3c0f1c2c3b
@@ -171,22 +171,22 @@ CHRUndo=00[10]ff[8]00[10]ff[18]fe4300ff0094d290ffbc00[3]4307477fc200ff00294b09ff
 CHRCopy=bd2e2a0a604a1200423500206a4a1200bd74545004d6920042ac000454d69200070810[3]11[2]0b00070f[5]07e0100804[2]e8f0[2]00e0f0f8[2]30a0[2]00070810[3]11[2]00[2]070f[5]00e0100804[2]e8f000[2]e0f0f8[2]30a0070810[3]11[2]0b00070f[5]07e0100804[2]e8f0[2]00e0f0f8[2]30a0[2]3b7fbf9f[2]7f442207387b73610c381cf0[2]e8[2]f8e48448a0e010d0c078[2]30070f1f[2]130b0e0600060d[3]0501[2]f0e0[3]c0[2]4020e000c0[2]0080[2]c01b7fbf[2]7f[2]442207185f573b1c381cf0f8e4[2]f8e4c448a0e018f8c0187830070f1f[2]130b0e0600060d[3]0501[2]f0e0[3]c0[2]4020e000c0[2]0080[2]c000[3f00]
 
 
-NameTable=a2a3a6a7a6a7a6a7a6a7a6a7a6a7a6a7a6a7a6a7a6a7a6a7a6a7a6a7a6a7a2a3b2b391[a]80[2]91[10]b2b38283a2a3b2b3a2a3b2b3b2b380[2]a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b382839293b2b3a2a3b2b3a2a3a2a380[2]b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a392938283a2a3b2b3a2a3b2b3b2b380[2]a2a3b2b3a2a3b2b3a2a3b2b30405b2b382839293b2b3a2a3b2b3a2a3a2a380[2]b2b3a2a3b2b3a2a3b2b3a2a31415a2a392938283a2a3b2b3a2a3b2b3b2b380[2]a2a3b2b3a2a3b2b3a2a384858485848582839293b2b3a2a3b2b3a2a3a2a380[2]b2b3a2a3b2b3a2a3b2b394959495949592938283a2a3b2b3a2a3b2b3b2b380[2]a2a3b2b38485b2b3a2a3b2b3a2a3b2b382839293b2b3a2a3b2b3a2a3a2a380[2]b2b3a2a39495a2a3b2b3a2a3b2b3a2a392938283a2a3b2b3a2a3b2b3b2b380[2]a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b382839293b2b3a2a3b2b3a2a3a2a380[2]b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a392938283a2a3b2b3a0a18283a2a380[2]a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b382839293b2b3a2a3b0b19293b2b390[2]b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a392938283a2a3b2b3a2a38283a2a3b2b3a2a3b2b38485b2b3a2a3b2b3a2a3b2b382839293b2b3a2a3b2b39293b2b3a2a3b2b3a2a39495a2a3b2b3a2a3b2b3a2a392938283a2a3b2b3a2a38283a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b382839293b2b3a2a3b2b39293b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3929382838485b2b3a2a38283a2a3b2b3a2a3b2b3a2a3b2b38485b2b3a2a3b2b3828392939495a2a3b2b39293b2b3a2a3b2b3a2a3b2b3a2a39495a2a3b2b3a2a392938283a2a3b2b3a2a38283a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b382839293b2b3a2a3b2b39293b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a392938283a2a3b2b384858283a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3848582839293b2b3a2a394959293b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3949592938283a2a3b2b3a2a38283a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b382839293b2b3a2a3b2b39293b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a392938283a2a3b2b3a2a38283a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b382839293b2b3a2a3b2b39293b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a39293a2a3a0a1a0a1a0a18283a2a3b2b3a2a3b2b3a2a3a0a1a0a1a0a1a0a1a0a1a2a3b2b3b0b1b0b1b0b19293b2b3a2a3b2b3a2a3b2b3b0b1b0b1b0b1b0b1b0b1b2b3
+NameTable=a2a3a6a7a6a7a6a7a6a7a6a7a6a7a6a7a6a7a6a7a6a7a6a7a6a7a6a7a6a7a2a3b2b391[a]80[2]91[10]b2b38283a2a3b2b3a2a3b2b3b2b380[2]a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b382839293b2b3a2a3b2b3a2a3a2a380[2]b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a392938283a2a3b2b3a2a3b2b3b2b380[2]a2a3b2b3a2a3b2b3a2a3b2b30405b2b382839293b2b3a2a3b2b3a2a3a2a380[2]b2b3a2a3b2b3a2a3b2b3a2a31415a2a392938283a2a3b2b3a2a3b2b3b2b380[2]a2a3b2b3a2a3b2b3a2a384858485848582839293b2b3a2a3b2b3a2a3a2a380[2]b2b3a2a3b2b3a2a3b2b394959495949592938283a2a3b2b3a2a3b2b3b2b380[2]a2a3b2b38485b2b3a2a3b2b3a2a3b2b382839293b2b3a2a3b2b3a2a3a2a380[2]b2b3a2a39495a2a3b2b3a2a3b2b3a2a392938283a2a3b2b3a2a3b2b3b2b380[2]a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b382839293b2b3a2a3b2b3a2a3a2a380[2]b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a392938283a2a3b2b3a0a18283a2a380[2]a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b382839293b2b3a2a3b0b19293b2b390[2]b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a392938283a2a3b2b3a2a38283a2a3b2b3a2a3b2b38485b2b3a2a3b2b3a2a3b2b382839293b2b3a2a3b2b39293b2b3a2a3b2b3a2a39495a2a3b2b3a2a3b2b3a2a392938283a2a3b2b3a2a38283a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b382839293b2b3a2a3b2b39293b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3929382838485b2b3a2a38283a2a3b2b3a2a3b2b3a2a3b2b38485b2b3a2a3b2b3828392939495a2a3b2b39293b2b3a2a3b2b3a2a3b2b3a2a39495a2a3b2b3a2a392938283a2a3b2b3a2a38283a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b382839293b2b3a2a3b2b39293b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a392938283a2a3b2b384858283a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3848582839293b2b3a2a394959293b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3949592938283a2a3b2b3a2a38283a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b382839293b2b3a2a3b2b39293b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a392938283a2a3b2b3a2a38283a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b382839293b2b3a2a3b2b39293b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a39293a2a3a0a1a0a1a0a18283a2a3b2b3a2a3b2b3a2a3b2b3a0a1a0a1a2a3b2b3a2a3b2b3b0b1b0b1b0b19293b2b3a2a3b2b3a2a3b2b3a2a3b0b1b0b1b2b3a2a3b2b3
 
 
-NameCopy=84859495b2a2b3a3b2a2b3a3b2a2b3a3b2a2b3a3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3b2b3b2b3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b300[230]
+NameCopy=a0a1b0b1b2a2b3a3b2a2b3a3b2a2b3a3b2a2b3a3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3b2b3b2b3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3a2a3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b3b2b300[230]
 
 
-NameUndo=a2a3a6a7a6a7a6a7a6a7a6a7a6a7a6a7a6a7a6a7a6a7a6a7a6a7a6a7a6a7a2a3b2b391[a]80[2]91[10]b2b38283a2a3b2b3a2a3b2b3b2b380[2]a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b382839293b2b3a2a3b2b3a2a3a2a380[2]b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a392938283a2a3b2b3a2a3b2b3b2b380[2]a2a3b2b3a2a3b2b3a2a3b2b30405b2b382839293b2b3a2a3b2b3a2a3a2a380[2]b2b3a2a3b2b3a2a3b2b3a2a31415a2a392938283a2a3b2b3a2a3b2b3b2b380[2]a2a3b2b3a2a3b2b3a2a384858485848582839293b2b3a2a3b2b3a2a3a2a380[2]b2b3a2a3b2b3a2a3b2b394959495949592938283a2a3b2b3a2a3b2b3b2b380[2]a2a3b2b38485b2b3a2a3b2b3a2a3b2b382839293b2b3a2a3b2b3a2a3a2a380[2]b2b3a2a39495a2a3b2b3a2a3b2b3a2a392938283a2a3b2b3a2a3b2b3b2b380[2]a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b382839293b2b3a2a3b2b3a2a3a2a380[2]b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a392938283a2a3b2b3a0a18283a2a380[2]a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b382839293b2b3a2a3b0b19293b2b390[2]b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a392938283a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b38485b2b3a2a3b2b3a2a3b2b382839293b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a39495a2a3b2b3a2a3b2b3a2a392938283a2a3b2b3a2a38283a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b382839293b2b3a2a3b2b39293b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3929382838485b2b3a2a38283a2a3b2b3a2a3b2b3a2a3b2b38485b2b3a2a3b2b3828392939495a2a3b2b39293b2b3a2a3b2b3a2a3b2b3a2a39495a2a3b2b3a2a392938283a2a3b2b3a2a38283a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b382839293b2b3a2a3b2b39293b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a392938283a2a3b2b384858283a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3848582839293b2b3a2a394959293b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3949592938283a2a3b2b3a2a38283a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b382839293b2b3a2a3b2b39293b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a392938283a2a3b2b3a2a38283a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b382839293b2b3a2a3b2b39293b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a39293a2a3a0a1a0a1a0a18283a2a3b2b3a2a3b2b3a2a3a0a1a0a1a0a1a0a1a0a1a2a3b2b3b0b1b0b1b0b19293b2b3a2a3b2b3a2a3b2b3b0b1b0b1b0b1b0b1b0b1b2b3
+NameUndo=a2a3a6a7a6a7a6a7a6a7a6a7a6a7a6a7a6a7a6a7a6a7a6a7a6a7a6a7a6a7a2a3b2b391[a]80[2]91[10]b2b38283a2a3b2b3a2a3b2b3b2b380[2]a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b382839293b2b3a2a3b2b3a2a3a2a380[2]b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a392938283a2a3b2b3a2a3b2b3b2b380[2]a2a3b2b3a2a3b2b3a2a3b2b30405b2b382839293b2b3a2a3b2b3a2a3a2a380[2]b2b3a2a3b2b3a2a3b2b3a2a31415a2a392938283a2a3b2b3a2a3b2b3b2b380[2]a2a3b2b3a2a3b2b3a2a384858485848582839293b2b3a2a3b2b3a2a3a2a380[2]b2b3a2a3b2b3a2a3b2b394959495949592938283a2a3b2b3a2a3b2b3b2b380[2]a2a3b2b38485b2b3a2a3b2b3a2a3b2b382839293b2b3a2a3b2b3a2a3a2a380[2]b2b3a2a39495a2a3b2b3a2a3b2b3a2a392938283a2a3b2b3a2a3b2b3b2b380[2]a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b382839293b2b3a2a3b2b3a2a3a2a380[2]b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a392938283a2a3b2b3a0a18283a2a380[2]a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b382839293b2b3a2a3b0b19293b2b390[2]b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a392938283a2a3b2b3a2a38283a2a3b2b3a2a3b2b38485b2b3a2a3b2b3a2a3b2b382839293b2b3a2a3b2b39293b2b3a2a3b2b3a2a39495a2a3b2b3a2a3b2b3a2a392938283a2a3b2b3a2a38283a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b382839293b2b3a2a3b2b39293b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3929382838485b2b3a2a38283a2a3b2b3a2a3b2b3a2a3b2b38485b2b3a2a3b2b3828392939495a2a3b2b39293b2b3a2a3b2b3a2a3b2b3a2a39495a2a3b2b3a2a392938283a2a3b2b3a2a38283a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b382839293b2b3a2a3b2b39293b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a392938283a2a3b2b384858283a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3848582839293b2b3a2a394959293b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3949592938283a2a3b2b3a2a38283a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b382839293b2b3a2a3b2b39293b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a392938283a2a3b2b3a2a38283a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b382839293b2b3a2a3b2b39293b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a3b2b3a2a39293a2a3a0a1a0a1a0a18283a2a3b2b3a2a3b2b3a2a3b2b3a0a1a0a1a2a300[2]a2a3b2b3b0b1b0b1b0b19293b2b3a2a3b2b3a2a3b2b3a2a3b0b1b0b1b2b300[2]b2b3
 
 
-AttrTable=80a0[2]80a0[3]2088aa[2]88aa[2]02[2]88aa[2]88a2aa[2]2288a288a82aaa[2]2208aa88aa[2]2aaa22882a88aa[4]0288aa88aa[4]2200[2]080a[2]00[3]
+AttrTable=80a0[2]80a0[3]2088aa[2]88aa[2]02[2]88aa[2]88a2aa[2]2288a288a82aaa[2]2208aa88aa[2]2aaa22882a88aa[4]0288aa88aa[4]2200[2]080a[2]020802
 
 
-AttrCopy=2000[3]0a[3]022202[7]2202[f]0002[f]0002[f]
+AttrCopy=0200[3]0a[3]022202[7]2202[f]0002[f]0002[f]
 
 
-AttrUndo=80a0[2]80a0[3]2088aa[2]88aa[2]02[2]88aa[2]88a2aa[2]2288a2a8[2]2aaa[2]2208aa88aa[2]2aaa22882a88aa[4]0288aa88aa[4]2200[2]080a[2]00[3]
+AttrUndo=80a0[2]80a0[3]2088aa[2]88aa[2]02[2]88aa[2]88a2aa[2]2288a288a82aaa[2]2208aa88aa[2]2aaa22882a88aa[4]0288aa88aa[4]2200[2]080a[2]020800
 
 
 MetaSprites=ff[10000]
@@ -324,14 +324,14 @@ MetatileSet_8x8_props=00[2000]
 MetatileSet_8x8_propsUndo=00[2000]
 
 
-MetatileSetLabels_2x2=Unlabeled,Unlabeled,Unlabeled,Unlabeled
-MetatileSetLabels_2x2Undo=Unlabeled,Unlabeled,Unlabeled,Unlabeled
+MetatileSetLabels_2x2=Unlabeled,Unlabeled,Unlabeled,Unlabeled
+MetatileSetLabels_2x2Undo=Unlabeled,Unlabeled,Unlabeled,Unlabeled
 
-MetatileSetLabels_4x4=Unlabeled,Unlabeled,Unlabeled,Unlabeled
-MetatileSetLabels_4x4Undo=Unlabeled,Unlabeled,Unlabeled,Unlabeled
+MetatileSetLabels_4x4=Unlabeled,Unlabeled,Unlabeled,Unlabeled
+MetatileSetLabels_4x4Undo=Unlabeled,Unlabeled,Unlabeled,Unlabeled
 
-MetatileSetLabels_8x8=Unlabeled,Unlabeled
-MetatileSetLabels_8x8Undo=Unlabeled,Unlabeled
+MetatileSetLabels_8x8=Unlabeled,Unlabeled
+MetatileSetLabels_8x8Undo=Unlabeled,Unlabeled
 
 CHRBankLabels=Unlabeled,Unlabeled,Unlabeled,Unlabeled
 
@@ -496,18 +496,18 @@ Checkpoint_MetatileSet_8x8_props=00[2000]
 Checkpoint_MetatileSet_8x8_propsUndo=00[2000]
 
 
-Checkpoint_MetatileSetLabels_2x2=Unlabeled,Unlabeled,Unlabeled,Unlabeled
-Checkpoint_MetatileSetLabels_2x2Undo=Unlabeled,Unlabeled,Unlabeled,Unlabeled
+Checkpoint_MetatileSetLabels_2x2=Unlabeled,Unlabeled,Unlabeled,Unlabeled
+Checkpoint_MetatileSetLabels_2x2Undo=Unlabeled,Unlabeled,Unlabeled,Unlabeled
 
-Checkpoint_MetatileSetLabels_4x4=Unlabeled,Unlabeled,Unlabeled,Unlabeled
-Checkpoint_MetatileSetLabels_4x4Undo=Unlabeled,Unlabeled,Unlabeled,Unlabeled
+Checkpoint_MetatileSetLabels_4x4=Unlabeled,Unlabeled,Unlabeled,Unlabeled
+Checkpoint_MetatileSetLabels_4x4Undo=Unlabeled,Unlabeled,Unlabeled,Unlabeled
 
-Checkpoint_MetatileSetLabels_8x8=Unlabeled,Unlabeled
-Checkpoint_MetatileSetLabels_8x8Undo=Unlabeled,Unlabeled
+Checkpoint_MetatileSetLabels_8x8=Unlabeled,Unlabeled
+Checkpoint_MetatileSetLabels_8x8Undo=Unlabeled,Unlabeled
 
-Checkpoint_CHRBankLabels=Unlabeled,Unlabeled,Unlabeled,Unlabeled
+Checkpoint_CHRBankLabels=Unlabeled,Unlabeled,Unlabeled,Unlabeled
 
-Checkpoint_CHRBankLabelsUndo=Unlabeled,Unlabeled,Unlabeled,Unlabeled
+Checkpoint_CHRBankLabelsUndo=Unlabeled,Unlabeled,Unlabeled,Unlabeled
 
 
 Checkpoint_32_NTSC_MsprDuration=00000006[100]

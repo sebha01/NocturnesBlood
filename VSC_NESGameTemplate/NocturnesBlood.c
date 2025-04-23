@@ -93,7 +93,7 @@
 #define DASH_DURATION 6
 #define DASH_COOLDOWN 30
 //Health
-#define MAX_HEALTH 3
+#define MAX_HEALTH 4
 #define LEVEL_COOLDOWN = 90
 
 #pragma bss-name(push, "ZEROPAGE")
@@ -283,6 +283,11 @@ void GameLoop(void)
 			currentLevelData = Level3A;
 			break;
 	}
+
+	vram_adr(NAMETABLE_A);
+	vram_write(0x00, 1024);
+
+	delay(60);
 
 	vram_adr(NAMETABLE_A);
 	vram_write(currentLevelData, 1024);
@@ -668,7 +673,9 @@ void DashEnd(void)
 char CheckIfPlatformTile(unsigned char tile) 
 {
 	//Stores all of the tiles that are collidable and is used to calculate collisions
-    return tile == 0x84 || tile == 0x85 || tile == 0x94 || tile == 0x95;
+    return tile == 0x84 || tile == 0x85 || tile == 0x94 || tile == 0x95 ||
+			tile == 0xE4 || tile == 0xE5 || tile == 0xE6 || tile == 0xF4 ||
+			tile == 0xF5 || tile == 0xF6;
 }
 
 void SetPlayerValues(void)

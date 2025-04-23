@@ -987,16 +987,16 @@ _Level1A:
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
+	.byte	$b2
+	.byte	$b3
 	.byte	$a0
 	.byte	$a1
 	.byte	$a0
 	.byte	$a1
-	.byte	$a0
-	.byte	$a1
-	.byte	$a0
-	.byte	$a1
-	.byte	$a0
-	.byte	$a1
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -1019,16 +1019,16 @@ _Level1A:
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
+	.byte	$a2
+	.byte	$a3
 	.byte	$b0
 	.byte	$b1
 	.byte	$b0
 	.byte	$b1
-	.byte	$b0
-	.byte	$b1
-	.byte	$b0
-	.byte	$b1
-	.byte	$b0
-	.byte	$b1
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
 	.byte	$b2
 	.byte	$b3
 	.byte	$80
@@ -1092,9 +1092,9 @@ _Level1A:
 	.byte	$08
 	.byte	$0a
 	.byte	$0a
-	.byte	$00
-	.byte	$00
-	.byte	$00
+	.byte	$02
+	.byte	$08
+	.byte	$02
 _Level2A:
 	.byte	$a8
 	.byte	$a9
@@ -1253,7 +1253,7 @@ _Level2A:
 	.byte	$00
 	.byte	$00
 	.byte	$00
-	.byte	$00
+	.byte	$8a
 	.byte	$a4
 	.byte	$a5
 	.byte	$b8
@@ -1278,6 +1278,262 @@ _Level2A:
 	.byte	$00
 	.byte	$00
 	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$9a
+	.byte	$b4
+	.byte	$b5
+	.byte	$a8
+	.byte	$a9
+	.byte	$8b
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$8a
+	.byte	$a4
+	.byte	$a5
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$8a
+	.byte	$a4
+	.byte	$a5
+	.byte	$b8
+	.byte	$b9
+	.byte	$9b
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$9a
+	.byte	$b4
+	.byte	$b5
+	.byte	$8b
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$9a
+	.byte	$b4
+	.byte	$b5
+	.byte	$a8
+	.byte	$a9
+	.byte	$8b
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$8a
+	.byte	$a4
+	.byte	$a5
+	.byte	$9b
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$8a
+	.byte	$10
+	.byte	$11
+	.byte	$8b
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$a4
+	.byte	$a5
+	.byte	$b8
+	.byte	$b9
+	.byte	$9b
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$9a
+	.byte	$b4
+	.byte	$b5
+	.byte	$8b
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$9a
+	.byte	$b6
+	.byte	$b7
+	.byte	$9b
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$b4
+	.byte	$b5
+	.byte	$a8
+	.byte	$a9
+	.byte	$8b
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$8a
+	.byte	$a4
+	.byte	$a5
+	.byte	$9b
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$aa
+	.byte	$ab
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$e4
+	.byte	$e5
+	.byte	$a4
+	.byte	$a5
+	.byte	$b8
+	.byte	$b9
+	.byte	$9b
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$9a
+	.byte	$b4
+	.byte	$b5
+	.byte	$8b
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$f4
+	.byte	$f5
+	.byte	$b4
+	.byte	$b5
+	.byte	$a8
+	.byte	$a9
+	.byte	$8b
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$a4
+	.byte	$a5
+	.byte	$9b
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$a4
+	.byte	$a5
+	.byte	$b8
+	.byte	$b9
+	.byte	$9b
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$b4
+	.byte	$b5
+	.byte	$8b
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$d8
+	.byte	$d9
 	.byte	$00
 	.byte	$00
 	.byte	$00
@@ -1302,16 +1558,16 @@ _Level2A:
 	.byte	$00
 	.byte	$a4
 	.byte	$a5
+	.byte	$9b
 	.byte	$00
 	.byte	$00
 	.byte	$00
 	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
+	.byte	$8a
+	.byte	$10
+	.byte	$11
+	.byte	$e5
+	.byte	$e6
 	.byte	$00
 	.byte	$00
 	.byte	$00
@@ -1334,336 +1590,16 @@ _Level2A:
 	.byte	$00
 	.byte	$b4
 	.byte	$b5
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$b4
-	.byte	$b5
-	.byte	$a8
-	.byte	$a9
 	.byte	$8b
 	.byte	$00
 	.byte	$00
 	.byte	$00
 	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$a4
-	.byte	$a5
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$a4
-	.byte	$a5
-	.byte	$b8
-	.byte	$b9
-	.byte	$9b
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$b4
-	.byte	$b5
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$b4
-	.byte	$b5
-	.byte	$a8
-	.byte	$a9
-	.byte	$8b
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$a4
-	.byte	$a5
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$a4
-	.byte	$a5
-	.byte	$b8
-	.byte	$b9
-	.byte	$9b
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$b4
-	.byte	$b5
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$b4
-	.byte	$b5
-	.byte	$a8
-	.byte	$a9
-	.byte	$8b
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$a4
-	.byte	$a5
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$a4
-	.byte	$a5
-	.byte	$b8
-	.byte	$b9
-	.byte	$9b
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$b4
-	.byte	$b5
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$b4
-	.byte	$b5
-	.byte	$a8
-	.byte	$a9
-	.byte	$8b
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$a4
-	.byte	$a5
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$a4
-	.byte	$a5
-	.byte	$b8
-	.byte	$b9
-	.byte	$9b
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$b4
-	.byte	$b5
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$b4
-	.byte	$b5
-	.byte	$a8
-	.byte	$a9
-	.byte	$8b
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$a4
-	.byte	$a5
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$a4
-	.byte	$a5
-	.byte	$b8
-	.byte	$b9
-	.byte	$9b
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$b4
-	.byte	$b5
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
+	.byte	$9a
+	.byte	$b6
+	.byte	$b7
+	.byte	$f5
+	.byte	$f6
 	.byte	$00
 	.byte	$00
 	.byte	$00
@@ -1686,6 +1622,14 @@ _Level2A:
 	.byte	$05
 	.byte	$a4
 	.byte	$a5
+	.byte	$9b
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$8a
+	.byte	$10
+	.byte	$11
 	.byte	$00
 	.byte	$00
 	.byte	$00
@@ -1694,14 +1638,6 @@ _Level2A:
 	.byte	$00
 	.byte	$00
 	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$e4
-	.byte	$e5
-	.byte	$e5
 	.byte	$a4
 	.byte	$a5
 	.byte	$b8
@@ -1723,6 +1659,9 @@ _Level2A:
 	.byte	$00
 	.byte	$00
 	.byte	$00
+	.byte	$9a
+	.byte	$b6
+	.byte	$b7
 	.byte	$00
 	.byte	$00
 	.byte	$00
@@ -1731,9 +1670,6 @@ _Level2A:
 	.byte	$00
 	.byte	$00
 	.byte	$00
-	.byte	$f4
-	.byte	$f5
-	.byte	$f5
 	.byte	$b4
 	.byte	$b5
 	.byte	$a8
@@ -1802,6 +1738,11 @@ _Level2A:
 	.byte	$b5
 	.byte	$a8
 	.byte	$a9
+	.byte	$8b
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
 	.byte	$00
 	.byte	$00
 	.byte	$00
@@ -1824,18 +1765,18 @@ _Level2A:
 	.byte	$00
 	.byte	$e4
 	.byte	$e5
-	.byte	$e6
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
+	.byte	$e5
 	.byte	$a4
 	.byte	$a5
 	.byte	$b8
 	.byte	$b9
+	.byte	$9b
 	.byte	$00
 	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$db
 	.byte	$00
 	.byte	$00
 	.byte	$00
@@ -1856,12 +1797,7 @@ _Level2A:
 	.byte	$00
 	.byte	$f4
 	.byte	$f5
-	.byte	$f6
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
+	.byte	$f5
 	.byte	$b4
 	.byte	$b5
 	.byte	$a8
@@ -1893,7 +1829,7 @@ _Level2A:
 	.byte	$00
 	.byte	$00
 	.byte	$00
-	.byte	$00
+	.byte	$8a
 	.byte	$a4
 	.byte	$a5
 	.byte	$b8
@@ -1925,13 +1861,75 @@ _Level2A:
 	.byte	$00
 	.byte	$00
 	.byte	$00
-	.byte	$00
+	.byte	$9a
 	.byte	$b4
 	.byte	$b5
 	.byte	$a8
 	.byte	$a9
 	.byte	$00
 	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$e4
+	.byte	$e5
+	.byte	$e6
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$8a
+	.byte	$a4
+	.byte	$a5
+	.byte	$b8
+	.byte	$b9
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$f4
+	.byte	$f5
+	.byte	$f6
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$9a
+	.byte	$b4
+	.byte	$b5
+	.byte	$a8
+	.byte	$a9
 	.byte	$00
 	.byte	$00
 	.byte	$00
@@ -1958,12 +1956,12 @@ _Level2A:
 	.byte	$00
 	.byte	$00
 	.byte	$00
+	.byte	$00
+	.byte	$8a
 	.byte	$a4
 	.byte	$a5
 	.byte	$b8
 	.byte	$b9
-	.byte	$00
-	.byte	$00
 	.byte	$00
 	.byte	$00
 	.byte	$00
@@ -1990,6 +1988,8 @@ _Level2A:
 	.byte	$00
 	.byte	$00
 	.byte	$00
+	.byte	$00
+	.byte	$9a
 	.byte	$b4
 	.byte	$b5
 	.byte	$a8
@@ -2021,7 +2021,7 @@ _Level2A:
 	.byte	$ca
 	.byte	$ca
 	.byte	$ca
-	.byte	$cb
+	.byte	$8a
 	.byte	$a4
 	.byte	$a5
 	.byte	$b8
@@ -2053,7 +2053,7 @@ _Level2A:
 	.byte	$da
 	.byte	$da
 	.byte	$da
-	.byte	$db
+	.byte	$9a
 	.byte	$b4
 	.byte	$b5
 	.byte	$55
@@ -2066,52 +2066,52 @@ _Level2A:
 	.byte	$75
 	.byte	$55
 	.byte	$ff
-	.byte	$ff
-	.byte	$df
-	.byte	$ff
-	.byte	$ff
-	.byte	$ff
-	.byte	$77
-	.byte	$55
-	.byte	$ff
-	.byte	$ff
-	.byte	$dd
-	.byte	$ff
-	.byte	$ff
-	.byte	$ff
-	.byte	$77
-	.byte	$55
-	.byte	$ff
-	.byte	$ff
-	.byte	$dd
-	.byte	$ff
-	.byte	$ff
-	.byte	$ff
-	.byte	$77
-	.byte	$55
-	.byte	$ff
 	.byte	$7f
-	.byte	$dd
+	.byte	$5f
 	.byte	$ff
 	.byte	$ff
+	.byte	$ff
+	.byte	$55
+	.byte	$55
+	.byte	$ff
+	.byte	$77
+	.byte	$55
+	.byte	$f7
+	.byte	$d5
+	.byte	$ff
+	.byte	$57
+	.byte	$55
+	.byte	$ff
+	.byte	$ff
+	.byte	$55
 	.byte	$7f
+	.byte	$5d
+	.byte	$ff
+	.byte	$77
+	.byte	$55
+	.byte	$ff
+	.byte	$57
+	.byte	$d5
+	.byte	$f7
+	.byte	$fd
+	.byte	$ff
 	.byte	$57
 	.byte	$d5
 	.byte	$f5
-	.byte	$f5
+	.byte	$fd
 	.byte	$fd
 	.byte	$ff
-	.byte	$7f
-	.byte	$df
-	.byte	$77
+	.byte	$ff
+	.byte	$f7
+	.byte	$55
 	.byte	$dd
 	.byte	$ff
 	.byte	$ff
-	.byte	$7f
-	.byte	$df
+	.byte	$5f
 	.byte	$ff
-	.byte	$ff
-	.byte	$77
+	.byte	$f7
+	.byte	$fd
+	.byte	$55
 	.byte	$05
 	.byte	$05
 	.byte	$05
@@ -3337,6 +3337,23 @@ L0003:	ldx     #$20
 	lda     #$00
 	jsr     _vram_adr
 ;
+; vram_write(0x00, 1024);
+;
+	jsr     push0
+	ldx     #$04
+	jsr     _vram_write
+;
+; delay(60);
+;
+	lda     #$3C
+	jsr     _delay
+;
+; vram_adr(NAMETABLE_A);
+;
+	ldx     #$20
+	lda     #$00
+	jsr     _vram_adr
+;
 ; vram_write(currentLevelData, 1024);
 ;
 	lda     _currentLevelData
@@ -3349,7 +3366,7 @@ L0003:	ldx     #$20
 ; player.health = MAX_HEALTH;
 ;
 	ldx     #$00
-	lda     #$03
+	lda     #$04
 	sta     _player+23
 	stx     _player+23+1
 ;
@@ -4227,7 +4244,7 @@ L004B:	dey
 	sta     _i
 	sta     _i+1
 L0025:	lda     _i
-	cmp     #$03
+	cmp     #$04
 	lda     _i+1
 	sbc     #$00
 	bvc     L0029
@@ -5127,7 +5144,7 @@ L0002:	rts
 ;
 	jsr     pusha
 ;
-; return tile == 0x84 || tile == 0x85 || tile == 0x94 || tile == 0x95;
+; return tile == 0x84 || tile == 0x85 || tile == 0x94 || tile == 0x95 ||
 ;
 	ldy     #$00
 	lda     (sp),y
@@ -5138,6 +5155,24 @@ L0002:	rts
 	cmp     #$94
 	beq     L0004
 	cmp     #$95
+	beq     L0004
+;
+; tile == 0xE4 || tile == 0xE5 || tile == 0xE6 || tile == 0xF4 ||
+;
+	cmp     #$E4
+	beq     L0004
+	cmp     #$E5
+	beq     L0004
+	cmp     #$E6
+	beq     L0004
+	cmp     #$F4
+	beq     L0004
+;
+; tile == 0xF5 || tile == 0xF6;
+;
+	cmp     #$F5
+	beq     L0004
+	cmp     #$F6
 	beq     L0004
 	ldx     #$00
 	txa
