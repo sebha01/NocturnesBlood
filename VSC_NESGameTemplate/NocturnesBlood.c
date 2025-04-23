@@ -125,6 +125,7 @@ const unsigned char titlePrompt[] = "Press START";
 const unsigned char endScreenTitle[] = "YOU WON!!!";
 const unsigned char endScreenPrompt[] = "To play again";
 const unsigned char deathScreenTitle[] = "YOU ARE DEAD";
+const unsigned char loadingText[] = "LOADING...";
 //variable for getting input from controller
 unsigned char inputPad;
 unsigned char movementPad;
@@ -270,6 +271,7 @@ void GameLoop(void)
 {
 	//Turn screen off
 	ppu_off(); 
+	oam_clear();
 
 	switch(currentLevel)
 	{
@@ -284,12 +286,17 @@ void GameLoop(void)
 			break;
 	}
 
-	vram_adr(NAMETABLE_A);
-	vram_write(0x00, 1024);
+	//Clear the screen
+	vram_adr(NAMETABLE_A);      
+	vram_fill(0x00, 1024);
+	vram_adr(NTADR_A(8, 8));
+	vram_write(loadingText, sizeof(loadingText) - 1); 
 
+	ppu_on_all();
 	delay(60);
+	ppu_off();
 
-	vram_adr(NAMETABLE_A);
+	vram_adr(NAMETABLE_A);      
 	vram_write(currentLevelData, 1024);
 	
 	player.health = MAX_HEALTH;
@@ -628,10 +635,10 @@ void DrawEndScreen()
 
 char OnGround(void) 
 {
-    return CheckIfCollidableTile(currentLevelData[GetTileIndex(player.right - 6, player.bottom + 1)]) ||
-		   CheckIfCollidableTile(currentLevelData[GetTileIndex(player.left + 6, player.bottom + 1)]) ||
-		   CheckIfPlatformTile(currentLevelData[GetTileIndex(player.right - 6, player.bottom + 1)]) ||
-		   CheckIfPlatformTile(currentLevelData[GetTileIndex(player.left + 6, player.bottom + 1)]);
+    return CheckIfCollidableTile(currentLevelData[GetTileIndex(player.right - 4, player.bottom + 1)]) ||
+		   CheckIfCollidableTile(currentLevelData[GetTileIndex(player.left + 4, player.bottom + 1)]) ||
+		   CheckIfPlatformTile(currentLevelData[GetTileIndex(player.right - 4, player.bottom + 1)]) ||
+		   CheckIfPlatformTile(currentLevelData[GetTileIndex(player.left + 4, player.bottom + 1)]);
 }
 
 char CheckIfCollidableTile(unsigned char tile) 
@@ -729,32 +736,33 @@ void ResetLevel(void)
 {
 	ppu_off(); // screen off
 	pal_bg(palette); //	load the BG palette
-
 	//Clear all sprite data
 	oam_clear();
 
-	player.health -= 1;
+	player.health --;
 
 	if (player.health <= 0)
 	{
 		SetPlayerValues();
 		currentGameState = DEATH_SCREEN;
 		DrawDeathScreen();
+		return;
 	}
-	else
-	{
-		//Clear the screen
-		vram_adr(NAMETABLE_A);      
-		vram_fill(0x00, 1024);
 
-		delay(60);
+	//Clear the screen
+	vram_adr(NAMETABLE_A);      
+	vram_fill(0x00, 1024);
+	vram_adr(NTADR_A(8, 8));
+	vram_write(loadingText, sizeof(loadingText) - 1); 
 
-		vram_adr(NAMETABLE_A);      
-		vram_write(currentLevelData, 1024);
+	ppu_on_all();
+	delay(60);
+	ppu_off();
 
-		SetPlayerValues();
+	vram_adr(NAMETABLE_A);      
+	vram_write(currentLevelData, 1024);
 
-	}
+	SetPlayerValues();
 
 	ppu_on_all(); //	turn on screen
 }
