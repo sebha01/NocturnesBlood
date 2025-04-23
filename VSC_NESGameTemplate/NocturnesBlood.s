@@ -4825,9 +4825,27 @@ L000A:	jmp     _GameLoop
 .segment	"CODE"
 
 ;
+; if (player.bottom + 1 >= 240) return 0;
+;
+	lda     _player+9
+	ldx     _player+9+1
+	clc
+	adc     #$01
+	bcc     L0003
+	inx
+L0003:	cmp     #$F0
+	txa
+	sbc     #$00
+	bvs     L0004
+	eor     #$80
+L0004:	bpl     L0002
+	ldx     #$00
+	txa
+	rts
+;
 ; return CheckIfCollidableTile(currentLevelData[GetTileIndex(player.right - 4, player.bottom + 1)]) ||
 ;
-	lda     _currentLevelData
+L0002:	lda     _currentLevelData
 	ldx     _currentLevelData+1
 	jsr     pushax
 	lda     _player+5
@@ -4845,7 +4863,7 @@ L000A:	jmp     _GameLoop
 	lda     (ptr1),y
 	jsr     _CheckIfCollidableTile
 	tax
-	jne     L0004
+	jne     L0007
 ;
 ; CheckIfCollidableTile(currentLevelData[GetTileIndex(player.left + 4, player.bottom + 1)]) ||
 ;
@@ -4867,7 +4885,7 @@ L000A:	jmp     _GameLoop
 	lda     (ptr1),y
 	jsr     _CheckIfCollidableTile
 	tax
-	bne     L0004
+	bne     L0007
 ;
 ; CheckIfPlatformTile(currentLevelData[GetTileIndex(player.right - 4, player.bottom + 1)]) ||
 ;
@@ -4889,7 +4907,7 @@ L000A:	jmp     _GameLoop
 	lda     (ptr1),y
 	jsr     _CheckIfPlatformTile
 	tax
-	bne     L0004
+	bne     L0007
 ;
 ; CheckIfPlatformTile(currentLevelData[GetTileIndex(player.left + 4, player.bottom + 1)]);
 ;
@@ -4911,13 +4929,13 @@ L000A:	jmp     _GameLoop
 	lda     (ptr1),y
 	jsr     _CheckIfPlatformTile
 	tax
-	beq     L000C
-L0004:	lda     #$01
+	beq     L000F
+L0007:	lda     #$01
 	ldx     #$00
 ;
 ; }
 ;
-L000C:	rts
+L000F:	rts
 
 .endproc
 

@@ -635,6 +635,9 @@ void DrawEndScreen()
 
 char OnGround(void) 
 {
+	//Make sure player does not land on top of the bottom of the screen
+	if (player.bottom + 1 >= 240) return 0;
+
     return CheckIfCollidableTile(currentLevelData[GetTileIndex(player.right - 4, player.bottom + 1)]) ||
 		   CheckIfCollidableTile(currentLevelData[GetTileIndex(player.left + 4, player.bottom + 1)]) ||
 		   CheckIfPlatformTile(currentLevelData[GetTileIndex(player.right - 4, player.bottom + 1)]) ||
