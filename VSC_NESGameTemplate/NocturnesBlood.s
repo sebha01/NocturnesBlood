@@ -58,6 +58,7 @@
 	.export		_SetPlayerValues
 	.export		_DrawDeathScreen
 	.export		_ResetLevel
+	.export		_checkIfSpikes
 	.export		_main
 
 .segment	"DATA"
@@ -3982,14 +3983,14 @@ L004B:	rts
 	lda     #$03
 	jmp     L003C
 ;
-; currentLevel == 3 ? 0X02 : 0x01;
+; currentLevel == 3 ? 0x00 : 0x01;
 ;
 L0002:	lda     _currentLevel+1
 	bne     L003B
 	lda     _currentLevel
 	cmp     #$03
 	bne     L003B
-	lda     #$02
+	lda     #$00
 	jmp     L003C
 L003B:	lda     #$01
 L003C:	jsr     pusha
@@ -4749,6 +4750,10 @@ L000A:	jmp     _GameLoop
 	lda     #$01
 	sta     _currentLevel
 	stx     _currentLevel+1
+;
+; SetPlayerValues();
+;
+	jsr     _SetPlayerValues
 ;
 ; vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
 ;
@@ -5552,6 +5557,67 @@ L0003:	ldx     #$20
 ; ppu_on_all(); // turn on screen
 ;
 	jmp     _ppu_on_all
+
+.endproc
+
+; ---------------------------------------------------------------
+; char __near__ checkIfSpikes (unsigned char tile)
+; ---------------------------------------------------------------
+
+.segment	"CODE"
+
+.proc	_checkIfSpikes: near
+
+.segment	"CODE"
+
+;
+; {
+;
+	jsr     pusha
+;
+; return tile == 0x8A || tile == 0x8B || tile == 0x8C || tile == 0x8D ||
+;
+	ldy     #$00
+	lda     (sp),y
+	cmp     #$8A
+	beq     L0004
+	cmp     #$8B
+	beq     L0004
+	cmp     #$8C
+	beq     L0004
+	cmp     #$8D
+	beq     L0004
+;
+; tile == 0x9A || tile == 0x9B || tile == 0xAA || tile == 0xAB ||
+;
+	cmp     #$9A
+	beq     L0004
+	cmp     #$9B
+	beq     L0004
+	cmp     #$AA
+	beq     L0004
+	cmp     #$AB
+	beq     L0004
+;
+; tile == 0xC8 || tile == 0xC9 || tile == 0xD8 || tile == 0xD9;
+;
+	cmp     #$C8
+	beq     L0004
+	cmp     #$C9
+	beq     L0004
+	cmp     #$D8
+	beq     L0004
+	cmp     #$D9
+	beq     L0004
+	ldx     #$00
+	txa
+	jmp     incsp1
+L0004:	lda     #$01
+	ldx     #$00
+;
+; }
+;
+	jmp     incsp1
 
 .endproc
 

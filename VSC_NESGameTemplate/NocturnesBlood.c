@@ -179,6 +179,7 @@ char CheckIfPlatformTile(unsigned char tile);
 void SetPlayerValues(void);
 void DrawDeathScreen(void);
 void ResetLevel(void);
+char checkIfSpikes(unsigned char tile);
 
 /*
 ----------------
@@ -499,7 +500,7 @@ void DrawPlayer(void)
 	unsigned int origin = 20;
 	unsigned char healthBarAttributes = 0x02;
 	unsigned char playerAttributes =  player.isDashing ? 0x03 :
-							currentLevel == 3 ? 0X02 : 0x01;
+							currentLevel == 3 ? 0x00 : 0x01;
 
 	if (!player.facingRight)
 	{
@@ -616,6 +617,7 @@ void DrawEndScreen()
 
 	//Set varirables back to their default value
 	currentLevel = 1;
+	SetPlayerValues();
 
 	//Clear the screen
 	vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
@@ -768,4 +770,11 @@ void ResetLevel(void)
 	SetPlayerValues();
 
 	ppu_on_all(); //	turn on screen
+}
+
+char checkIfSpikes(unsigned char tile)
+{
+	return tile == 0x8A || tile == 0x8B || tile == 0x8C || tile == 0x8D ||
+		tile == 0x9A || tile == 0x9B || tile == 0xAA || tile == 0xAB ||
+		tile == 0xC8 || tile == 0xC9 || tile == 0xD8 || tile == 0xD9;
 }
