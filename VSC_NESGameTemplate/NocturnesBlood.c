@@ -93,7 +93,8 @@
 #define DASH_DURATION 6
 #define DASH_COOLDOWN 30
 //Health
-#define MAX_HEALTH 4
+#define MAX_HEALTH 3
+#define LEVEL_COOLDOWN = 90
 
 #pragma bss-name(push, "ZEROPAGE")
 
@@ -119,9 +120,9 @@ const unsigned char spritePalette[] =
 //Defines which state the game is currently in (START_SCREEN, GAME_LOOP or END_SCREEN)
 unsigned char currentGameState = START_SCREEN;
 //Text
-const unsigned char text[] = "Nocturnes Blood"; 
+const unsigned char text[] = "DEATH HOLES"; 
 const unsigned char titlePrompt[] = "Press START";
-const unsigned char endScreenTitle[] = "End Screen";
+const unsigned char endScreenTitle[] = "YOU WON!!!";
 const unsigned char endScreenPrompt[] = "To play again";
 const unsigned char deathScreenTitle[] = "YOU ARE DEAD";
 //variable for getting input from controller
@@ -635,7 +636,7 @@ char OnGround(void)
 char CheckIfCollidableTile(unsigned char tile) 
 {
 	//Stores all of the tiles that are collidable and is used to calculate collisions
-    return tile == 0x10 || tile == 0x11
+    return tile == 0x10 || tile == 0x11 || tile == 0x12 || tile == 0x13
 		|| tile == 0x80 || tile == 0x81 || tile == 0x82 || tile == 0x83 
 		|| tile == 0x90 || tile == 0x91 || tile == 0x92 || tile == 0x93
 		|| tile == 0xA0 || tile == 0xA1 || tile == 0xA4 || tile == 0xA5 
