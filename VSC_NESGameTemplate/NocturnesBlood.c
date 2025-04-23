@@ -177,7 +177,7 @@ void DashEnd(void);
 char CheckIfPlatformTile(unsigned char tile);
 void SetPlayerValues(void);
 void DrawDeathScreen(void);
-void damagePlayer(void);
+void ResetLevel(void);
 
 /*
 ----------------
@@ -275,23 +275,19 @@ void GameLoop(void)
 	{
 		case 1:
 			currentLevelData = Level1A;
-			// Write the new level data
-			vram_adr(NAMETABLE_A);   // Set VRAM address to the top-left of the screen
-			vram_write(Level1A, 1024);
 			break;
 		case 2:
 			currentLevelData = Level2A;
-			// Write the new level data
-			vram_adr(NAMETABLE_A);
-			vram_write(Level2A, 1024);
 			break;
 		case 3:
 			currentLevelData = Level3A;
-			// Write the new level data
-			vram_adr(NAMETABLE_A);
-			vram_write(Level3A, 1024);
 			break;
 	}
+
+	vram_adr(NAMETABLE_A);
+	vram_write(currentLevelData, 1024);
+	
+	player.health = MAX_HEALTH;
 
 	//Load palette
 	pal_bg(palette);
@@ -481,7 +477,7 @@ void MovePlayer(void)
 
 	if (player.bottom > 240) 
 	{
-    	damagePlayer();
+		ResetLevel();
 	}
 }
 
@@ -627,10 +623,10 @@ void DrawEndScreen()
 
 char OnGround(void) 
 {
-    return CheckIfCollidableTile(currentLevelData[GetTileIndex(player.right - 4, player.bottom + 1)]) ||
-		   CheckIfCollidableTile(currentLevelData[GetTileIndex(player.left + 4, player.bottom + 1)]) ||
-		   CheckIfPlatformTile(currentLevelData[GetTileIndex(player.right - 4, player.bottom + 1)]) ||
-		   CheckIfPlatformTile(currentLevelData[GetTileIndex(player.left + 4, player.bottom + 1)]);
+    return CheckIfCollidableTile(currentLevelData[GetTileIndex(player.right - 6, player.bottom + 1)]) ||
+		   CheckIfCollidableTile(currentLevelData[GetTileIndex(player.left + 6, player.bottom + 1)]) ||
+		   CheckIfPlatformTile(currentLevelData[GetTileIndex(player.right - 6, player.bottom + 1)]) ||
+		   CheckIfPlatformTile(currentLevelData[GetTileIndex(player.left + 6, player.bottom + 1)]);
 }
 
 char CheckIfCollidableTile(unsigned char tile) 
@@ -693,7 +689,6 @@ void SetPlayerValues(void)
 	player.dashCooldown = 0;
 	player.hasDashedInAir = 0;
 	player.dashDirection = 0; 
-	player.health = MAX_HEALTH;
 }
 
 void DrawDeathScreen(void)
@@ -723,15 +718,36 @@ void DrawDeathScreen(void)
 	ppu_on_all(); //	turn on screen
 }
 
-void damagePlayer(void)
+void ResetLevel(void)
 {
-	player.health--;
+	ppu_off(); // screen off
+	pal_bg(palette); //	load the BG palette
+
+	//Clear all sprite data
+	oam_clear();
+
+	player.health -= 1;
 
 	if (player.health <= 0)
 	{
 		SetPlayerValues();
-		
 		currentGameState = DEATH_SCREEN;
 		DrawDeathScreen();
 	}
+	else
+	{
+		//Clear the screen
+		vram_adr(NAMETABLE_A);      
+		vram_fill(0x00, 1024);
+
+		delay(60);
+
+		vram_adr(NAMETABLE_A);      
+		vram_write(currentLevelData, 1024);
+
+		SetPlayerValues();
+
+	}
+
+	ppu_on_all(); //	turn on screen
 }

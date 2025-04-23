@@ -22,6 +22,7 @@
 	.import		_vram_adr
 	.import		_vram_fill
 	.import		_vram_write
+	.import		_delay
 	.import		_get_pad_new
 	.export		_Level1A
 	.export		_Level2A
@@ -55,7 +56,7 @@
 	.export		_CheckIfPlatformTile
 	.export		_SetPlayerValues
 	.export		_DrawDeathScreen
-	.export		_damagePlayer
+	.export		_ResetLevel
 	.export		_main
 
 .segment	"DATA"
@@ -460,72 +461,72 @@ _Level1A:
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$80
-	.byte	$80
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$82
-	.byte	$83
-	.byte	$92
-	.byte	$93
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$90
-	.byte	$90
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$92
-	.byte	$93
-	.byte	$82
-	.byte	$83
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
 	.byte	$a0
 	.byte	$a1
+	.byte	$82
+	.byte	$83
+	.byte	$a2
+	.byte	$a3
+	.byte	$80
+	.byte	$80
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$82
+	.byte	$83
+	.byte	$92
+	.byte	$93
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b0
+	.byte	$b1
+	.byte	$92
+	.byte	$93
+	.byte	$b2
+	.byte	$b3
+	.byte	$90
+	.byte	$90
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$92
+	.byte	$93
+	.byte	$82
+	.byte	$83
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
 	.byte	$82
 	.byte	$83
 	.byte	$a2
@@ -556,8 +557,8 @@ _Level1A:
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
-	.byte	$b0
-	.byte	$b1
+	.byte	$b2
+	.byte	$b3
 	.byte	$92
 	.byte	$93
 	.byte	$b2
@@ -1055,8 +1056,8 @@ _Level1A:
 	.byte	$aa
 	.byte	$22
 	.byte	$88
-	.byte	$2a
-	.byte	$8a
+	.byte	$a2
+	.byte	$88
 	.byte	$a8
 	.byte	$2a
 	.byte	$aa
@@ -3308,70 +3309,53 @@ _player:
 L0004:	lda     #>(_Level1A)
 	sta     _currentLevelData+1
 	lda     #<(_Level1A)
-	sta     _currentLevelData
-;
-; vram_adr(NAMETABLE_A);   // Set VRAM address to the top-left of the screen
-;
-	ldx     #$20
-	lda     #$00
-	jsr     _vram_adr
-;
-; vram_write(Level1A, 1024);
-;
-	lda     #<(_Level1A)
-	ldx     #>(_Level1A)
 ;
 ; break;
 ;
-	jmp     L000A
+	jmp     L0007
 ;
 ; currentLevelData = Level2A;
 ;
 L0005:	lda     #>(_Level2A)
 	sta     _currentLevelData+1
 	lda     #<(_Level2A)
-	sta     _currentLevelData
-;
-; vram_adr(NAMETABLE_A);
-;
-	ldx     #$20
-	lda     #$00
-	jsr     _vram_adr
-;
-; vram_write(Level2A, 1024);
-;
-	lda     #<(_Level2A)
-	ldx     #>(_Level2A)
 ;
 ; break;
 ;
-	jmp     L000A
+	jmp     L0007
 ;
 ; currentLevelData = Level3A;
 ;
 L0006:	lda     #>(_Level3A)
 	sta     _currentLevelData+1
 	lda     #<(_Level3A)
-	sta     _currentLevelData
+L0007:	sta     _currentLevelData
 ;
 ; vram_adr(NAMETABLE_A);
 ;
-	ldx     #$20
+L0003:	ldx     #$20
 	lda     #$00
 	jsr     _vram_adr
 ;
-; vram_write(Level3A, 1024);
+; vram_write(currentLevelData, 1024);
 ;
-	lda     #<(_Level3A)
-	ldx     #>(_Level3A)
-L000A:	jsr     pushax
+	lda     _currentLevelData
+	ldx     _currentLevelData+1
+	jsr     pushax
 	ldx     #$04
 	lda     #$00
 	jsr     _vram_write
 ;
+; player.health = MAX_HEALTH;
+;
+	ldx     #$00
+	lda     #$03
+	sta     _player+23
+	stx     _player+23+1
+;
 ; pal_bg(palette);
 ;
-L0003:	lda     #<(_palette)
+	lda     #<(_palette)
 	ldx     #>(_palette)
 	jsr     _pal_bg
 ;
@@ -3907,9 +3891,9 @@ L004A:	lda     _player+9
 	eor     #$80
 L004C:	bpl     L004B
 ;
-; damagePlayer();
+; ResetLevel();
 ;
-	jmp     _damagePlayer
+	jmp     _ResetLevel
 ;
 ; }
 ;
@@ -4793,14 +4777,14 @@ L000A:	jmp     _GameLoop
 .segment	"CODE"
 
 ;
-; return CheckIfCollidableTile(currentLevelData[GetTileIndex(player.right - 4, player.bottom + 1)]) ||
+; return CheckIfCollidableTile(currentLevelData[GetTileIndex(player.right - 6, player.bottom + 1)]) ||
 ;
 	lda     _currentLevelData
 	ldx     _currentLevelData+1
 	jsr     pushax
 	lda     _player+5
 	sec
-	sbc     #$04
+	sbc     #$06
 	jsr     pusha
 	lda     _player+9
 	clc
@@ -4815,14 +4799,14 @@ L000A:	jmp     _GameLoop
 	tax
 	jne     L0004
 ;
-; CheckIfCollidableTile(currentLevelData[GetTileIndex(player.left + 4, player.bottom + 1)]) ||
+; CheckIfCollidableTile(currentLevelData[GetTileIndex(player.left + 6, player.bottom + 1)]) ||
 ;
 	lda     _currentLevelData
 	ldx     _currentLevelData+1
 	jsr     pushax
 	lda     _player+3
 	clc
-	adc     #$04
+	adc     #$06
 	jsr     pusha
 	lda     _player+9
 	clc
@@ -4837,14 +4821,14 @@ L000A:	jmp     _GameLoop
 	tax
 	bne     L0004
 ;
-; CheckIfPlatformTile(currentLevelData[GetTileIndex(player.right - 4, player.bottom + 1)]) ||
+; CheckIfPlatformTile(currentLevelData[GetTileIndex(player.right - 6, player.bottom + 1)]) ||
 ;
 	lda     _currentLevelData
 	ldx     _currentLevelData+1
 	jsr     pushax
 	lda     _player+5
 	sec
-	sbc     #$04
+	sbc     #$06
 	jsr     pusha
 	lda     _player+9
 	clc
@@ -4859,14 +4843,14 @@ L000A:	jmp     _GameLoop
 	tax
 	bne     L0004
 ;
-; CheckIfPlatformTile(currentLevelData[GetTileIndex(player.left + 4, player.bottom + 1)]);
+; CheckIfPlatformTile(currentLevelData[GetTileIndex(player.left + 6, player.bottom + 1)]);
 ;
 	lda     _currentLevelData
 	ldx     _currentLevelData+1
 	jsr     pushax
 	lda     _player+3
 	clc
-	adc     #$04
+	adc     #$06
 	jsr     pusha
 	lda     _player+9
 	clc
@@ -5195,7 +5179,6 @@ L0004:	lda     #$01
 ;
 ; player.left = 0;
 ;
-	tax
 	sta     _player+3
 	sta     _player+3+1
 ;
@@ -5221,7 +5204,7 @@ L0004:	lda     #$01
 ;
 ; player.velocityY = 0;
 ;
-	txa
+	lda     #$00
 	sta     _player+12
 	sta     _player+12+1
 ;
@@ -5254,12 +5237,6 @@ L0004:	lda     #$01
 ;
 	sta     _player+21
 	sta     _player+21+1
-;
-; player.health = MAX_HEALTH;
-;
-	lda     #$03
-	sta     _player+23
-	stx     _player+23+1
 ;
 ; }
 ;
@@ -5364,22 +5341,37 @@ L0004:	lda     #$01
 .endproc
 
 ; ---------------------------------------------------------------
-; void __near__ damagePlayer (void)
+; void __near__ ResetLevel (void)
 ; ---------------------------------------------------------------
 
 .segment	"CODE"
 
-.proc	_damagePlayer: near
+.proc	_ResetLevel: near
 
 .segment	"CODE"
 
 ;
-; player.health--;
+; ppu_off(); // screen off
 ;
-	lda     _player+23
+	jsr     _ppu_off
+;
+; pal_bg(palette); // load the BG palette
+;
+	lda     #<(_palette)
+	ldx     #>(_palette)
+	jsr     _pal_bg
+;
+; oam_clear();
+;
+	jsr     _oam_clear
+;
+; player.health -= 1;
+;
+	ldx     _player+23
 	bne     L0002
 	dec     _player+23+1
-L0002:	dec     _player+23
+L0002:	dex
+	stx     _player+23
 ;
 ; if (player.health <= 0)
 ;
@@ -5398,11 +5390,52 @@ L0002:	dec     _player+23
 ;
 ; DrawDeathScreen();
 ;
-	jmp     _DrawDeathScreen
+	jsr     _DrawDeathScreen
 ;
-; }
+; else
 ;
-L0003:	rts
+	jmp     _ppu_on_all
+;
+; vram_adr(NAMETABLE_A);      
+;
+L0003:	ldx     #$20
+	lda     #$00
+	jsr     _vram_adr
+;
+; vram_fill(0x00, 1024);
+;
+	lda     #$00
+	jsr     pusha
+	ldx     #$04
+	jsr     _vram_fill
+;
+; delay(60);
+;
+	lda     #$3C
+	jsr     _delay
+;
+; vram_adr(NAMETABLE_A);      
+;
+	ldx     #$20
+	lda     #$00
+	jsr     _vram_adr
+;
+; vram_write(currentLevelData, 1024);
+;
+	lda     _currentLevelData
+	ldx     _currentLevelData+1
+	jsr     pushax
+	ldx     #$04
+	lda     #$00
+	jsr     _vram_write
+;
+; SetPlayerValues();
+;
+	jsr     _SetPlayerValues
+;
+; ppu_on_all(); // turn on screen
+;
+	jmp     _ppu_on_all
 
 .endproc
 
