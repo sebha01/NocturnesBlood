@@ -19,12 +19,10 @@
 	.import		_oam_clear
 	.import		_oam_spr
 	.import		_pad_poll
-	.import		_scroll
 	.import		_vram_adr
 	.import		_vram_fill
 	.import		_vram_write
 	.import		_get_pad_new
-	.import		_set_scroll_x
 	.export		_Level1Data
 	.export		_Level2Data
 	.export		_Level3Data
@@ -57,8 +55,7 @@
 	.export		_DrawEndScreen
 	.export		_OnGround
 	.export		_CheckIfCollidableTile
-	.export		_HandleRightMovement
-	.export		_HandleLeftMovement
+	.export		_HandleMovement
 	.export		_CheckIfGoalTile
 	.export		_UpdateColliderPositions
 	.export		_DashEnd
@@ -6258,8 +6255,8 @@ _Level1A:
 	.byte	$a7
 	.byte	$a6
 	.byte	$a7
-	.byte	$a6
-	.byte	$a7
+	.byte	$a2
+	.byte	$a3
 	.byte	$b2
 	.byte	$b3
 	.byte	$91
@@ -6272,6 +6269,8 @@ _Level1A:
 	.byte	$91
 	.byte	$91
 	.byte	$91
+	.byte	$80
+	.byte	$80
 	.byte	$91
 	.byte	$91
 	.byte	$91
@@ -6288,13 +6287,10 @@ _Level1A:
 	.byte	$91
 	.byte	$91
 	.byte	$91
-	.byte	$91
-	.byte	$91
-	.byte	$91
-	.byte	$91
+	.byte	$b2
+	.byte	$b3
 	.byte	$82
 	.byte	$83
-	.byte	$8b
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -6303,107 +6299,10 @@ _Level1A:
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
-	.byte	$a2
-	.byte	$a3
 	.byte	$b2
 	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$92
-	.byte	$93
-	.byte	$9b
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$82
-	.byte	$83
-	.byte	$8b
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$92
-	.byte	$93
-	.byte	$9b
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
+	.byte	$80
+	.byte	$80
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -6422,39 +6321,20 @@ _Level1A:
 	.byte	$b3
 	.byte	$82
 	.byte	$83
-	.byte	$8b
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
 	.byte	$92
 	.byte	$93
-	.byte	$9b
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$a2
+	.byte	$a3
+	.byte	$80
+	.byte	$80
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
@@ -6471,25 +6351,10 @@ _Level1A:
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
+	.byte	$92
+	.byte	$93
 	.byte	$82
 	.byte	$83
-	.byte	$8b
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -6498,28 +6363,10 @@ _Level1A:
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
-	.byte	$a2
-	.byte	$a3
 	.byte	$b2
 	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$92
-	.byte	$93
-	.byte	$9b
-	.byte	$b3
+	.byte	$80
+	.byte	$80
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -6532,65 +6379,26 @@ _Level1A:
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
+	.byte	$04
+	.byte	$05
 	.byte	$b2
 	.byte	$b3
 	.byte	$82
 	.byte	$83
-	.byte	$84
-	.byte	$85
-	.byte	$84
-	.byte	$85
-	.byte	$84
-	.byte	$85
-	.byte	$84
-	.byte	$85
-	.byte	$8b
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
 	.byte	$92
 	.byte	$93
-	.byte	$94
-	.byte	$95
-	.byte	$94
-	.byte	$95
-	.byte	$94
-	.byte	$95
-	.byte	$94
-	.byte	$95
-	.byte	$9b
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$a2
+	.byte	$a3
+	.byte	$80
+	.byte	$80
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
@@ -6603,25 +6411,14 @@ _Level1A:
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
-	.byte	$b2
-	.byte	$b3
+	.byte	$14
+	.byte	$15
 	.byte	$a2
 	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
+	.byte	$92
+	.byte	$93
 	.byte	$82
 	.byte	$83
-	.byte	$8b
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$ea
-	.byte	$ab
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -6630,10 +6427,10 @@ _Level1A:
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
-	.byte	$a2
-	.byte	$a3
 	.byte	$b2
 	.byte	$b3
+	.byte	$80
+	.byte	$80
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -6644,12 +6441,28 @@ _Level1A:
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
+	.byte	$84
+	.byte	$85
+	.byte	$84
+	.byte	$85
+	.byte	$84
+	.byte	$85
+	.byte	$82
+	.byte	$83
 	.byte	$92
 	.byte	$93
-	.byte	$9b
+	.byte	$b2
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$a2
+	.byte	$a3
+	.byte	$80
+	.byte	$80
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
@@ -6660,12 +6473,34 @@ _Level1A:
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
+	.byte	$94
+	.byte	$95
+	.byte	$94
+	.byte	$95
+	.byte	$94
+	.byte	$95
+	.byte	$92
+	.byte	$93
+	.byte	$82
+	.byte	$83
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$b2
+	.byte	$b3
+	.byte	$80
+	.byte	$80
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$84
+	.byte	$85
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
@@ -6678,55 +6513,8 @@ _Level1A:
 	.byte	$b3
 	.byte	$82
 	.byte	$83
-	.byte	$8b
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$8a
-	.byte	$84
-	.byte	$85
-	.byte	$84
-	.byte	$85
-	.byte	$84
-	.byte	$85
-	.byte	$84
-	.byte	$85
-	.byte	$8b
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
 	.byte	$92
 	.byte	$93
-	.byte	$9b
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$9a
-	.byte	$94
-	.byte	$95
-	.byte	$94
-	.byte	$95
-	.byte	$94
-	.byte	$95
-	.byte	$94
-	.byte	$95
-	.byte	$9b
-	.byte	$a2
-	.byte	$a3
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
@@ -6735,29 +6523,30 @@ _Level1A:
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
+	.byte	$a2
+	.byte	$a3
+	.byte	$80
+	.byte	$80
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$94
+	.byte	$95
+	.byte	$a2
+	.byte	$a3
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$92
+	.byte	$93
 	.byte	$82
 	.byte	$83
-	.byte	$8b
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$aa
-	.byte	$ab
-	.byte	$aa
-	.byte	$ab
-	.byte	$aa
-	.byte	$ab
-	.byte	$aa
-	.byte	$ab
-	.byte	$b2
-	.byte	$b3
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -6766,16 +6555,10 @@ _Level1A:
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
-	.byte	$a2
-	.byte	$a3
 	.byte	$b2
 	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$92
-	.byte	$93
-	.byte	$9b
-	.byte	$b3
+	.byte	$80
+	.byte	$80
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -6788,57 +6571,26 @@ _Level1A:
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$d8
-	.byte	$d9
-	.byte	$a2
-	.byte	$a3
-	.byte	$d8
-	.byte	$d9
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
 	.byte	$82
 	.byte	$83
-	.byte	$8b
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$8a
-	.byte	$84
-	.byte	$85
-	.byte	$84
-	.byte	$85
-	.byte	$84
-	.byte	$85
-	.byte	$84
-	.byte	$85
-	.byte	$8b
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
 	.byte	$92
 	.byte	$93
-	.byte	$9b
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$a2
+	.byte	$a3
+	.byte	$80
+	.byte	$80
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
@@ -6855,25 +6607,22 @@ _Level1A:
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
-	.byte	$9a
-	.byte	$94
-	.byte	$95
-	.byte	$94
-	.byte	$95
-	.byte	$94
-	.byte	$95
-	.byte	$94
-	.byte	$95
-	.byte	$9b
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
+	.byte	$92
+	.byte	$93
 	.byte	$82
 	.byte	$83
-	.byte	$8b
+	.byte	$a2
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$80
+	.byte	$80
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -6886,103 +6635,26 @@ _Level1A:
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$aa
-	.byte	$ab
-	.byte	$aa
-	.byte	$ab
-	.byte	$aa
-	.byte	$ab
-	.byte	$aa
-	.byte	$ab
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$92
-	.byte	$93
-	.byte	$9b
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$c8
-	.byte	$c9
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$d8
-	.byte	$d9
-	.byte	$b2
-	.byte	$b3
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
 	.byte	$82
 	.byte	$83
-	.byte	$8b
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$8a
-	.byte	$84
-	.byte	$85
-	.byte	$84
-	.byte	$85
-	.byte	$84
-	.byte	$85
-	.byte	$84
-	.byte	$85
-	.byte	$8b
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
 	.byte	$92
 	.byte	$93
-	.byte	$9b
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
-	.byte	$9a
-	.byte	$94
-	.byte	$95
-	.byte	$94
-	.byte	$95
-	.byte	$94
-	.byte	$95
-	.byte	$94
-	.byte	$95
-	.byte	$9b
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$90
+	.byte	$90
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
@@ -6996,9 +6668,22 @@ _Level1A:
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$92
+	.byte	$93
 	.byte	$82
 	.byte	$83
-	.byte	$8b
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a0
+	.byte	$a1
+	.byte	$82
+	.byte	$83
+	.byte	$a2
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
@@ -7006,18 +6691,40 @@ _Level1A:
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
-	.byte	$aa
-	.byte	$ab
-	.byte	$aa
-	.byte	$ab
-	.byte	$aa
-	.byte	$ab
-	.byte	$aa
-	.byte	$ab
+	.byte	$84
+	.byte	$85
+	.byte	$b2
+	.byte	$b3
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$82
+	.byte	$83
+	.byte	$92
+	.byte	$93
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b0
+	.byte	$b1
+	.byte	$92
+	.byte	$93
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$94
+	.byte	$95
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -7030,16 +6737,16 @@ _Level1A:
 	.byte	$a3
 	.byte	$92
 	.byte	$93
-	.byte	$9b
-	.byte	$b3
+	.byte	$82
+	.byte	$83
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
-	.byte	$b2
-	.byte	$b3
+	.byte	$82
+	.byte	$83
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -7062,39 +6769,16 @@ _Level1A:
 	.byte	$b3
 	.byte	$82
 	.byte	$83
-	.byte	$8b
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
 	.byte	$92
 	.byte	$93
-	.byte	$9b
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$92
+	.byte	$93
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
@@ -7115,6 +6799,50 @@ _Level1A:
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
+	.byte	$92
+	.byte	$93
+	.byte	$82
+	.byte	$83
+	.byte	$84
+	.byte	$85
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$82
+	.byte	$83
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$84
+	.byte	$85
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$82
+	.byte	$83
+	.byte	$92
+	.byte	$93
+	.byte	$94
+	.byte	$95
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$92
+	.byte	$93
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
@@ -7124,6 +6852,293 @@ _Level1A:
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$94
+	.byte	$95
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$92
+	.byte	$93
+	.byte	$82
+	.byte	$83
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$82
+	.byte	$83
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$82
+	.byte	$83
+	.byte	$92
+	.byte	$93
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$92
+	.byte	$93
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$92
+	.byte	$93
+	.byte	$82
+	.byte	$83
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$84
+	.byte	$85
+	.byte	$82
+	.byte	$83
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$84
+	.byte	$85
+	.byte	$82
+	.byte	$83
+	.byte	$92
+	.byte	$93
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$94
+	.byte	$95
+	.byte	$92
+	.byte	$93
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$94
+	.byte	$95
+	.byte	$92
+	.byte	$93
+	.byte	$82
+	.byte	$83
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$82
+	.byte	$83
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$82
+	.byte	$83
+	.byte	$92
+	.byte	$93
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$92
+	.byte	$93
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$92
+	.byte	$93
+	.byte	$82
+	.byte	$83
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$82
+	.byte	$83
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$82
+	.byte	$83
+	.byte	$92
+	.byte	$93
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$92
+	.byte	$93
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$92
+	.byte	$93
+	.byte	$a2
+	.byte	$a3
+	.byte	$a0
+	.byte	$a1
+	.byte	$a0
+	.byte	$a1
+	.byte	$a0
+	.byte	$a1
+	.byte	$82
+	.byte	$83
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
 	.byte	$a2
 	.byte	$a3
 	.byte	$a0
@@ -7136,26 +7151,26 @@ _Level1A:
 	.byte	$a1
 	.byte	$a0
 	.byte	$a1
-	.byte	$a0
-	.byte	$a1
-	.byte	$a0
-	.byte	$a1
-	.byte	$a0
-	.byte	$a1
-	.byte	$a0
-	.byte	$a1
-	.byte	$a0
-	.byte	$a1
-	.byte	$a0
-	.byte	$a1
-	.byte	$a0
-	.byte	$a1
-	.byte	$a0
-	.byte	$a1
-	.byte	$a0
-	.byte	$a1
-	.byte	$a0
-	.byte	$a1
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$b0
+	.byte	$b1
+	.byte	$b0
+	.byte	$b1
+	.byte	$b0
+	.byte	$b1
+	.byte	$92
+	.byte	$93
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
 	.byte	$b2
 	.byte	$b3
 	.byte	$b0
@@ -7168,87 +7183,69 @@ _Level1A:
 	.byte	$b1
 	.byte	$b0
 	.byte	$b1
-	.byte	$b0
-	.byte	$b1
-	.byte	$b0
-	.byte	$b1
-	.byte	$b0
-	.byte	$b1
-	.byte	$b0
-	.byte	$b1
-	.byte	$b0
-	.byte	$b1
-	.byte	$b0
-	.byte	$b1
-	.byte	$b0
-	.byte	$b1
-	.byte	$b0
-	.byte	$b1
-	.byte	$b0
-	.byte	$b1
-	.byte	$b0
-	.byte	$b1
+	.byte	$b2
+	.byte	$b3
+	.byte	$80
+	.byte	$a0
+	.byte	$a0
 	.byte	$80
 	.byte	$a0
 	.byte	$a0
 	.byte	$a0
-	.byte	$a0
-	.byte	$a0
-	.byte	$a0
-	.byte	$a0
+	.byte	$20
 	.byte	$88
 	.byte	$aa
 	.byte	$aa
+	.byte	$88
 	.byte	$aa
 	.byte	$aa
+	.byte	$02
+	.byte	$02
+	.byte	$88
 	.byte	$aa
 	.byte	$aa
+	.byte	$88
+	.byte	$a2
 	.byte	$aa
-	.byte	$08
-	.byte	$0a
+	.byte	$aa
+	.byte	$22
+	.byte	$88
+	.byte	$2a
 	.byte	$8a
+	.byte	$a8
+	.byte	$2a
 	.byte	$aa
 	.byte	$aa
-	.byte	$aa
-	.byte	$aa
-	.byte	$aa
-	.byte	$88
-	.byte	$aa
-	.byte	$0a
-	.byte	$0a
-	.byte	$aa
-	.byte	$aa
-	.byte	$aa
+	.byte	$22
+	.byte	$08
 	.byte	$aa
 	.byte	$88
 	.byte	$aa
-	.byte	$aa
-	.byte	$aa
-	.byte	$aa
-	.byte	$0a
-	.byte	$0a
-	.byte	$aa
-	.byte	$88
 	.byte	$aa
 	.byte	$2a
-	.byte	$0a
-	.byte	$8a
+	.byte	$aa
+	.byte	$22
+	.byte	$88
+	.byte	$2a
+	.byte	$88
 	.byte	$aa
 	.byte	$aa
+	.byte	$aa
+	.byte	$aa
+	.byte	$02
+	.byte	$88
 	.byte	$aa
 	.byte	$88
 	.byte	$aa
 	.byte	$aa
 	.byte	$aa
 	.byte	$aa
-	.byte	$aa
-	.byte	$aa
-	.byte	$aa
+	.byte	$22
 	.byte	$00
 	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
+	.byte	$08
+	.byte	$0a
+	.byte	$0a
 	.byte	$00
 	.byte	$00
 	.byte	$00
@@ -12432,7 +12429,7 @@ _movementPad:
 _currentLevelData:
 	.res	2,$00
 _player:
-	.res	27,$00
+	.res	25,$00
 
 ; ---------------------------------------------------------------
 ; void __near__ DrawTitleScreen (void)
@@ -12458,19 +12455,6 @@ _player:
 ; vram_adr(NAMETABLE_A);
 ;
 	ldx     #$20
-	lda     #$00
-	jsr     _vram_adr
-;
-; vram_fill(0x00, 1024);
-;
-	lda     #$00
-	jsr     pusha
-	ldx     #$04
-	jsr     _vram_fill
-;
-; vram_adr(NAMETABLE_B);
-;
-	ldx     #$24
 	lda     #$00
 	jsr     _vram_adr
 ;
@@ -12540,7 +12524,7 @@ _player:
 ; }
 ;
 	cpx     #$00
-	jne     L0003
+	bne     L0003
 	cmp     #$01
 	beq     L0004
 	cmp     #$02
@@ -12549,11 +12533,11 @@ _player:
 	beq     L0006
 	jmp     L0003
 ;
-; currentLevelData = Level1Data;
+; currentLevelData = Level1A;
 ;
-L0004:	lda     #>(_Level1Data)
+L0004:	lda     #>(_Level1A)
 	sta     _currentLevelData+1
-	lda     #<(_Level1Data)
+	lda     #<(_Level1A)
 	sta     _currentLevelData
 ;
 ; vram_adr(NAMETABLE_A);   // Set VRAM address to the top-left of the screen
@@ -12566,31 +12550,16 @@ L0004:	lda     #>(_Level1Data)
 ;
 	lda     #<(_Level1A)
 	ldx     #>(_Level1A)
-	jsr     pushax
-	ldx     #$04
-	lda     #$00
-	jsr     _vram_write
-;
-; vram_adr(NAMETABLE_B);   // Set VRAM address to the top-left of the screen
-;
-	ldx     #$24
-	lda     #$00
-	jsr     _vram_adr
-;
-; vram_write(Level1B, 1024);
-;
-	lda     #<(_Level1B)
-	ldx     #>(_Level1B)
 ;
 ; break;
 ;
 	jmp     L000A
 ;
-; currentLevelData = Level2Data;
+; currentLevelData = Level2A;
 ;
-L0005:	lda     #>(_Level2Data)
+L0005:	lda     #>(_Level2A)
 	sta     _currentLevelData+1
-	lda     #<(_Level2Data)
+	lda     #<(_Level2A)
 	sta     _currentLevelData
 ;
 ; vram_adr(NAMETABLE_A);
@@ -12603,31 +12572,16 @@ L0005:	lda     #>(_Level2Data)
 ;
 	lda     #<(_Level2A)
 	ldx     #>(_Level2A)
-	jsr     pushax
-	ldx     #$04
-	lda     #$00
-	jsr     _vram_write
-;
-; vram_adr(NAMETABLE_B);
-;
-	ldx     #$24
-	lda     #$00
-	jsr     _vram_adr
-;
-; vram_write(Level2B, 1024);
-;
-	lda     #<(_Level2B)
-	ldx     #>(_Level2B)
 ;
 ; break;
 ;
 	jmp     L000A
 ;
-; currentLevelData = Level3Data;
+; currentLevelData = Level3A;
 ;
-L0006:	lda     #>(_Level3Data)
+L0006:	lda     #>(_Level3A)
 	sta     _currentLevelData+1
-	lda     #<(_Level3Data)
+	lda     #<(_Level3A)
 	sta     _currentLevelData
 ;
 ; vram_adr(NAMETABLE_A);
@@ -12640,21 +12594,6 @@ L0006:	lda     #>(_Level3Data)
 ;
 	lda     #<(_Level3A)
 	ldx     #>(_Level3A)
-	jsr     pushax
-	ldx     #$04
-	lda     #$00
-	jsr     _vram_write
-;
-; vram_adr(NAMETABLE_B);
-;
-	ldx     #$24
-	lda     #$00
-	jsr     _vram_adr
-;
-; vram_write(Level3B, 1024);
-;
-	lda     #<(_Level3B)
-	ldx     #>(_Level3B)
 L000A:	jsr     pushax
 	ldx     #$04
 	lda     #$00
@@ -12703,16 +12642,16 @@ L0003:	lda     #<(_palette)
 ; player.hasDashedInAir = 0;
 ;
 	lda     #$00
-	sta     _player+22
+	sta     _player+20
 ;
 ; else if (!OnGround() && player.coyoteTime > 0) 
 ;
-	jmp     L004A
+	jmp     L0049
 L0002:	jsr     _OnGround
 	tax
-	bne     L004A
+	bne     L0049
 	lda     _player+2
-	beq     L004A
+	beq     L0049
 ;
 ; player.coyoteTime--;
 ;
@@ -12720,18 +12659,18 @@ L0002:	jsr     _OnGround
 ;
 ; if (player.dashCooldown > 0) 
 ;
-L004A:	lda     _player+21
-	beq     L004B
+L0049:	lda     _player+19
+	beq     L004A
 ;
 ; player.dashCooldown--;
 ;
-	dec     _player+21
+	dec     _player+19
 ;
 ; if (movementPad & PAD_LEFT)
 ;
-L004B:	lda     _movementPad
+L004A:	lda     _movementPad
 	and     #$02
-	beq     L004C
+	beq     L004B
 ;
 ; if (!CheckIfCollidableTile(currentLevelData[GetTileIndex(player.left, player.y + 1)]))
 ;
@@ -12751,25 +12690,24 @@ L004B:	lda     _movementPad
 	lda     (ptr1),y
 	jsr     _CheckIfCollidableTile
 	tax
-	bne     L004C
+	bne     L004B
 ;
-; HandleLeftMovement(4, PLAYER_SPEED);
+; HandleMovement(-2);
 ;
-	lda     #$04
-	jsr     pusha0
-	lda     #$02
-	jsr     _HandleLeftMovement
+	dex
+	lda     #$FE
+	jsr     _HandleMovement
 ;
 ; player.facingRight = 0;
 ;
 	lda     #$00
-	sta     _player+13
+	sta     _player+11
 ;
 ; if (movementPad & PAD_RIGHT)
 ;
-L004C:	lda     _movementPad
+L004B:	lda     _movementPad
 	and     #$01
-	beq     L004D
+	beq     L004C
 ;
 ; if (!CheckIfCollidableTile(currentLevelData[GetTileIndex(player.right, player.y + 1)]))
 ;
@@ -12789,137 +12727,135 @@ L004C:	lda     _movementPad
 	lda     (ptr1),y
 	jsr     _CheckIfCollidableTile
 	tax
-	bne     L004D
+	bne     L004C
 ;
-; HandleRightMovement(252, PLAYER_SPEED);
+; HandleMovement(2);
 ;
-	lda     #$FC
-	jsr     pusha0
 	lda     #$02
-	jsr     _HandleRightMovement
+	jsr     _HandleMovement
 ;
 ; player.facingRight = 1;
 ;
 	lda     #$01
-	sta     _player+13
+	sta     _player+11
 ;
 ; if ((inputPad & PAD_B) && !player.isDashing && !(player.dashCooldown > 0)) 
 ;
-L004D:	lda     _inputPad
+L004C:	lda     _inputPad
 	and     #$40
-	beq     L0054
-	lda     _player+18
-	ora     _player+18+1
-	bne     L0054
-	lda     _player+21
-	bne     L0054
+	beq     L0053
+	lda     _player+16
+	ora     _player+16+1
+	bne     L0053
+	lda     _player+19
+	bne     L0053
 ;
 ; if (OnGround() || !player.hasDashedInAir)
 ;
 	jsr     _OnGround
 	tax
-	bne     L0051
-	lda     _player+22
-	bne     L0054
+	bne     L0050
+	lda     _player+20
+	bne     L0053
 ;
 ; player.dashDirection = (movementPad & PAD_LEFT ? -1 : movementPad & PAD_RIGHT ? 1 : 0);
 ;
-L0051:	lda     _movementPad
+L0050:	lda     _movementPad
 	and     #$02
-	beq     L0052
+	beq     L0051
 	ldx     #$FF
 	txa
 	jmp     L0019
-L0052:	lda     _movementPad
+L0051:	lda     _movementPad
 	ldx     #$00
 	and     #$01
 	beq     L0019
 	lda     #$01
-L0019:	sta     _player+23
-	stx     _player+23+1
+L0019:	sta     _player+21
+	stx     _player+21+1
 ;
 ; player.isDashing = 1;
 ;
 	ldx     #$00
 	lda     #$01
-	sta     _player+18
-	stx     _player+18+1
+	sta     _player+16
+	stx     _player+16+1
 ;
 ; player.dashTimer = DASH_DURATION;
 ;
 	lda     #$06
-	sta     _player+20
+	sta     _player+18
 ;
 ; if (!OnGround())
 ;
 	jsr     _OnGround
 	tax
-	bne     L0054
+	bne     L0053
 ;
 ; player.hasDashedInAir = 1;
 ;
 	lda     #$01
-	sta     _player+22
+	sta     _player+20
 ;
 ; if (inputPad & PAD_A && !player.isDashing) 
 ;
-L0054:	lda     _inputPad
+L0053:	lda     _inputPad
 	and     #$80
-	beq     L0058
-	lda     _player+18
-	ora     _player+18+1
-	bne     L0058
+	beq     L0057
+	lda     _player+16
+	ora     _player+16+1
+	bne     L0057
 ;
 ; player.jumpBufferTimer = JUMP_BUFFER_FRAMES;
 ;
 	lda     #$14
-	sta     _player+17
+	sta     _player+15
 ;
 ; if (player.jumpBufferTimer > 0 && !player.isJumping && player.coyoteTime > 0) 
 ;
-L0058:	lda     _player+17
-	beq     L005C
-	lda     _player+16
-	bne     L005C
+L0057:	lda     _player+15
+	beq     L005B
+	lda     _player+14
+	bne     L005B
 	lda     _player+2
-	beq     L005C
+	beq     L005B
 ;
 ; player.isJumping = 1;
 ;
 	lda     #$01
-	sta     _player+16
+	sta     _player+14
 ;
 ; player.velocityY = JUMP_VELOCITY;
 ;
 	ldx     #$FF
 	lda     #$F6
-	sta     _player+14
-	stx     _player+14+1
+	sta     _player+12
+	stx     _player+12+1
 ;
 ; player.jumpBufferTimer = 0;
 ;
 	lda     #$00
-	sta     _player+17
+	sta     _player+15
 ;
 ; else if (player.jumpBufferTimer > 0) 
 ;
 	jmp     L0024
-L005C:	lda     _player+17
+L005B:	lda     _player+15
 	beq     L0024
 ;
 ; player.jumpBufferTimer--;
 ;
-	dec     _player+17
+	dec     _player+15
 ;
 ; if (player.isDashing) 
 ;
-L0024:	lda     _player+18
-	ora     _player+18+1
+L0024:	lda     _player+16
+	ora     _player+16+1
 	jeq     L0025
 ;
 ; player.dashTimer--;
 ;
-	dec     _player+20
+	dec     _player+18
 ;
 ; for (i = 0; i < DASH_SPEED; i++) 
 ;
@@ -12932,53 +12868,21 @@ L0026:	lda     _i
 	sbc     #$00
 	bvc     L002A
 	eor     #$80
-L002A:	jpl     L005D
+L002A:	jpl     L005C
 ;
 ; int nextX = player.x + player.dashDirection;
 ;
 	lda     _player
 	clc
-	adc     _player+23
+	adc     _player+21
 	pha
 	lda     #$00
-	adc     _player+23+1
+	adc     _player+21+1
 	tax
 	pla
 	jsr     pushax
 ;
-; int checkX = nextX + player.scrollX + (player.dashDirection == 1 ? 7 : -7);
-;
-	ldy     #$01
-	lda     (sp),y
-	tax
-	dey
-	lda     (sp),y
-	clc
-	adc     _player+11
-	sta     ptr1
-	txa
-	adc     _player+11+1
-	sta     ptr1+1
-	lda     _player+23+1
-	bne     L002D
-	lda     _player+23
-	cmp     #$01
-	bne     L002D
-	ldx     #$00
-	lda     #$07
-	jmp     L002E
-L002D:	ldx     #$FF
-	lda     #$F9
-L002E:	clc
-	adc     ptr1
-	pha
-	txa
-	adc     ptr1+1
-	tax
-	pla
-	jsr     pushax
-;
-; if (!CheckIfCollidableTile(currentLevelData[GetTileIndex(checkX, player.y + 1)])) 
+; if (!CheckIfCollidableTile(currentLevelData[GetTileIndex(nextX, player.y + 1)])) 
 ;
 	lda     _currentLevelData
 	ldx     _currentLevelData+1
@@ -12997,63 +12901,59 @@ L002E:	clc
 	lda     (ptr1),y
 	jsr     _CheckIfCollidableTile
 	tax
-	bne     L002F
+	bne     L002C
 ;
 ; if (player.dashDirection == 1) 
 ;
-	lda     _player+23+1
-	bne     L0031
-	lda     _player+23
+	lda     _player+21+1
+	bne     L002E
+	lda     _player+21
 	cmp     #$01
-	bne     L0031
+	bne     L002E
 ;
-; HandleRightMovement(255, 1);
+; HandleMovement(1);
 ;
-	lda     #$FF
-	jsr     pusha0
-	lda     #$01
-	jsr     _HandleRightMovement
+	jsr     _HandleMovement
 ;
 ; else if (player.dashDirection == -1)
 ;
-	jmp     L0037
-L0031:	lda     _player+23+1
+	jmp     L0034
+L002E:	lda     _player+21+1
 	cmp     #$FF
-	bne     L0034
-	lda     _player+23
+	bne     L0031
+	lda     _player+21
 	cmp     #$FF
-	bne     L0034
+	bne     L0031
 ;
-; HandleLeftMovement(1, 1);
+; HandleMovement(-1);
 ;
-	lda     #$01
-	jsr     pusha0
-	jsr     _HandleLeftMovement
+	dex
+	jsr     _HandleMovement
 ;
 ; else
 ;
-	jmp     L0037
+	jmp     L0034
 ;
 ; DashEnd();
 ;
-L0034:	jsr     _DashEnd
+L0031:	jsr     _DashEnd
 ;
 ; else 
 ;
-	jmp     L0037
+	jmp     L0034
 ;
 ; DashEnd();
 ;
-L002F:	jsr     _DashEnd
+L002C:	jsr     _DashEnd
 ;
 ; break;
 ;
-	jsr     incsp4
-	jmp     L005D
+	jsr     incsp2
+	jmp     L005C
 ;
 ; }
 ;
-L0037:	jsr     incsp4
+L0034:	jsr     incsp2
 ;
 ; for (i = 0; i < DASH_SPEED; i++) 
 ;
@@ -13064,33 +12964,33 @@ L0037:	jsr     incsp4
 ;
 ; if (player.dashTimer <= 0) 
 ;
-L005D:	lda     _player+20
-	beq     L005E
-;
-; }
-;
-	rts
+L005C:	lda     _player+18
+	jne     L0045
 ;
 ; DashEnd();
 ;
-L005E:	jmp     _DashEnd
+	jsr     _DashEnd
+;
+; else 
+;
+	jmp     L0045
 ;
 ; if (player.isJumping) 
 ;
-L0025:	lda     _player+16
-	jeq     L003A
+L0025:	lda     _player+14
+	jeq     L0037
 ;
 ; player.velocityY += GRAVITY;
 ;
-	inc     _player+14
-	bne     L003B
-	inc     _player+14+1
+	inc     _player+12
+	bne     L0038
+	inc     _player+12+1
 ;
 ; if (player.velocityY < 0) 
 ;
-L003B:	ldx     _player+14+1
+L0038:	ldx     _player+12+1
 	cpx     #$80
-	bcc     L003D
+	bcc     L003A
 ;
 ; if (CheckIfCollidableTile(currentLevelData[GetTileIndex(player.x, player.top)]))
 ;
@@ -13108,13 +13008,13 @@ L003B:	ldx     _player+14+1
 	lda     (ptr1),y
 	jsr     _CheckIfCollidableTile
 	tax
-	beq     L003D
+	beq     L003A
 ;
 ; player.velocityY = 0;
 ;
 	lda     #$00
-	sta     _player+14
-	sta     _player+14+1
+	sta     _player+12
+	sta     _player+12+1
 ;
 ; player.y += 1;
 ;
@@ -13122,40 +13022,40 @@ L003B:	ldx     _player+14+1
 ;
 ; if (player.velocityY > MAX_FALL_SPEED)
 ;
-L003D:	lda     _player+14
+L003A:	lda     _player+12
 	cmp     #$05
-	lda     _player+14+1
+	lda     _player+12+1
 	sbc     #$00
-	bvs     L003F
+	bvs     L003C
 	eor     #$80
-L003F:	bpl     L003E
+L003C:	bpl     L003B
 ;
 ; player.velocityY = MAX_FALL_SPEED;
 ;
 	ldx     #$00
 	lda     #$04
-	sta     _player+14
-	stx     _player+14+1
+	sta     _player+12
+	stx     _player+12+1
 ;
 ; player.y += player.velocityY;
 ;
-L003E:	lda     _player+14
+L003B:	lda     _player+12
 	clc
 	adc     _player+1
 	sta     _player+1
 ;
 ; if (player.velocityY >= 0 && OnGround()) 
 ;
-	ldx     _player+14+1
-	bmi     L0040
+	ldx     _player+12+1
+	bmi     L0045
 	jsr     _OnGround
 	tax
-	bne     L0046
-	rts
+	bne     L0043
+	jmp     L0045
 ;
 ; player.y -= 1;
 ;
-L0044:	dec     _player+1
+L0041:	dec     _player+1
 ;
 ; UpdateColliderPositions();
 ;
@@ -13163,9 +13063,9 @@ L0044:	dec     _player+1
 ;
 ; while (OnGround()) 
 ;
-L0046:	jsr     _OnGround
+L0043:	jsr     _OnGround
 	tax
-	bne     L0044
+	bne     L0041
 ;
 ; player.y += 1;
 ;
@@ -13178,35 +13078,49 @@ L0046:	jsr     _OnGround
 ; player.velocityY = 0;
 ;
 	lda     #$00
-	sta     _player+14
-	sta     _player+14+1
+	sta     _player+12
+	sta     _player+12+1
 ;
 ; player.isJumping = 0;
 ;
-	sta     _player+16
+	sta     _player+14
 ;
 ; player.hasDashedInAir = 0;
 ;
-	sta     _player+22
+	sta     _player+20
 ;
 ; else 
 ;
-L0040:	rts
+	jmp     L0045
 ;
 ; if (!OnGround()) 
 ;
-L003A:	jsr     _OnGround
+L0037:	jsr     _OnGround
 	tax
-	bne     L0048
+	bne     L0045
 ;
 ; player.isJumping = 1;
 ;
 	lda     #$01
-	sta     _player+16
+	sta     _player+14
+;
+; if (player.bottom > 240) 
+;
+L0045:	lda     _player+9
+	cmp     #$F1
+	lda     _player+9+1
+	sbc     #$00
+	bvs     L0047
+	eor     #$80
+L0047:	bpl     L0046
+;
+; damagePlayer();
+;
+	jmp     _damagePlayer
 ;
 ; }
 ;
-L0048:	rts
+L0046:	rts
 
 .endproc
 
@@ -13237,27 +13151,27 @@ L0048:	rts
 ;
 ; unsigned char playerAttributes =  player.isDashing ? 0x03 :
 ;
-	lda     _player+18
-	ora     _player+18+1
+	lda     _player+16
+	ora     _player+16+1
 	beq     L0002
 	lda     #$03
-	jmp     L003B
+	jmp     L003C
 ;
 ; currentLevel == 3 ? 0X02 : 0x01;
 ;
 L0002:	lda     _currentLevel+1
-	bne     L003A
+	bne     L003B
 	lda     _currentLevel
 	cmp     #$03
-	bne     L003A
+	bne     L003B
 	lda     #$02
-	jmp     L003B
-L003A:	lda     #$01
-L003B:	jsr     pusha
+	jmp     L003C
+L003B:	lda     #$01
+L003C:	jsr     pusha
 ;
 ; if (!player.facingRight)
 ;
-	lda     _player+13
+	lda     _player+11
 	bne     L0007
 ;
 ; playerAttributes |= 0x40;
@@ -13271,25 +13185,34 @@ L003B:	jsr     pusha
 ;
 L0007:	jsr     _oam_clear
 ;
+; if (currentGameState != GAME_LOOP)
+;
+	lda     _currentGameState
+	cmp     #$01
+;
+; return;
+;
+	jne     L0026
+;
 ; UpdateColliderPositions();
 ;
 	jsr     _UpdateColliderPositions
 ;
 ; if (player.isDashing)
 ;
-	lda     _player+18
-	ora     _player+18+1
-	jeq     L0008
+	lda     _player+16
+	ora     _player+16+1
+	jeq     L0009
 ;
 ; oam_spr((player.facingRight ? player.left : player.x), player.top, 0x88, playerAttributes);
 ;
 	jsr     decsp3
-	lda     _player+13
-	beq     L0009
+	lda     _player+11
+	beq     L000A
 	lda     _player+3
-	jmp     L000A
-L0009:	lda     _player
-L000A:	ldy     #$02
+	jmp     L000B
+L000A:	lda     _player
+L000B:	ldy     #$02
 	sta     (sp),y
 	lda     _player+7
 	dey
@@ -13304,12 +13227,12 @@ L000A:	ldy     #$02
 ; oam_spr((player.facingRight ? player.x : player.left), player.top, 0x89, playerAttributes);
 ;
 	jsr     decsp3
-	lda     _player+13
-	beq     L000B
+	lda     _player+11
+	beq     L000C
 	lda     _player
-	jmp     L003C
-L000B:	lda     _player+3
-L003C:	ldy     #$02
+	jmp     L003D
+L000C:	lda     _player+3
+L003D:	ldy     #$02
 	sta     (sp),y
 	lda     _player+7
 	dey
@@ -13324,12 +13247,12 @@ L003C:	ldy     #$02
 ; oam_spr((player.facingRight ? player.left : player.x), player.y, 0x98, playerAttributes);
 ;
 	jsr     decsp3
-	lda     _player+13
-	beq     L000D
+	lda     _player+11
+	beq     L000E
 	lda     _player+3
-	jmp     L000E
-L000D:	lda     _player
-L000E:	ldy     #$02
+	jmp     L000F
+L000E:	lda     _player
+L000F:	ldy     #$02
 	sta     (sp),y
 	lda     _player+1
 	dey
@@ -13344,12 +13267,12 @@ L000E:	ldy     #$02
 ; oam_spr((player.facingRight ? player.x : player.left), player.y, 0x99, playerAttributes);
 ;
 	jsr     decsp3
-	lda     _player+13
-	beq     L000F
+	lda     _player+11
+	beq     L0010
 	lda     _player
-	jmp     L003D
-L000F:	lda     _player+3
-L003D:	ldy     #$02
+	jmp     L003E
+L0010:	lda     _player+3
+L003E:	ldy     #$02
 	sta     (sp),y
 	lda     _player+1
 	dey
@@ -13358,19 +13281,19 @@ L003D:	ldy     #$02
 ;
 ; else if (player.isJumping)
 ;
-	jmp     L004A
-L0008:	lda     _player+16
-	jeq     L0012
+	jmp     L004B
+L0009:	lda     _player+14
+	jeq     L0013
 ;
 ; oam_spr((player.facingRight ? player.left : player.x), player.top, 0x0A, playerAttributes);
 ;
 	jsr     decsp3
-	lda     _player+13
-	beq     L0013
+	lda     _player+11
+	beq     L0014
 	lda     _player+3
-	jmp     L0014
-L0013:	lda     _player
-L0014:	ldy     #$02
+	jmp     L0015
+L0014:	lda     _player
+L0015:	ldy     #$02
 	sta     (sp),y
 	lda     _player+7
 	dey
@@ -13385,12 +13308,12 @@ L0014:	ldy     #$02
 ; oam_spr((player.facingRight ? player.x : player.left), player.top, 0x0B, playerAttributes);
 ;
 	jsr     decsp3
-	lda     _player+13
-	beq     L0015
+	lda     _player+11
+	beq     L0016
 	lda     _player
-	jmp     L003E
-L0015:	lda     _player+3
-L003E:	ldy     #$02
+	jmp     L003F
+L0016:	lda     _player+3
+L003F:	ldy     #$02
 	sta     (sp),y
 	lda     _player+7
 	dey
@@ -13405,12 +13328,12 @@ L003E:	ldy     #$02
 ; oam_spr((player.facingRight ? player.left : player.x), player.y, 0x1A, playerAttributes);
 ;
 	jsr     decsp3
-	lda     _player+13
-	beq     L0017
+	lda     _player+11
+	beq     L0018
 	lda     _player+3
-	jmp     L0018
-L0017:	lda     _player
-L0018:	ldy     #$02
+	jmp     L0019
+L0018:	lda     _player
+L0019:	ldy     #$02
 	sta     (sp),y
 	lda     _player+1
 	dey
@@ -13425,12 +13348,12 @@ L0018:	ldy     #$02
 ; oam_spr((player.facingRight ? player.x : player.left), player.y, 0x1B, playerAttributes);
 ;
 	jsr     decsp3
-	lda     _player+13
-	beq     L0019
+	lda     _player+11
+	beq     L001A
 	lda     _player
-	jmp     L003F
-L0019:	lda     _player+3
-L003F:	ldy     #$02
+	jmp     L0040
+L001A:	lda     _player+3
+L0040:	ldy     #$02
 	sta     (sp),y
 	lda     _player+1
 	dey
@@ -13439,17 +13362,17 @@ L003F:	ldy     #$02
 ;
 ; else
 ;
-	jmp     L004A
+	jmp     L004B
 ;
 ; oam_spr((player.facingRight ? player.left : player.x), player.top, 0x08, playerAttributes);
 ;
-L0012:	jsr     decsp3
-	lda     _player+13
-	beq     L001C
+L0013:	jsr     decsp3
+	lda     _player+11
+	beq     L001D
 	lda     _player+3
-	jmp     L001D
-L001C:	lda     _player
-L001D:	ldy     #$02
+	jmp     L001E
+L001D:	lda     _player
+L001E:	ldy     #$02
 	sta     (sp),y
 	lda     _player+7
 	dey
@@ -13464,12 +13387,12 @@ L001D:	ldy     #$02
 ; oam_spr((player.facingRight ? player.x : player.left), player.top, 0x09, playerAttributes);
 ;
 	jsr     decsp3
-	lda     _player+13
-	beq     L001E
+	lda     _player+11
+	beq     L001F
 	lda     _player
-	jmp     L0040
-L001E:	lda     _player+3
-L0040:	ldy     #$02
+	jmp     L0041
+L001F:	lda     _player+3
+L0041:	ldy     #$02
 	sta     (sp),y
 	lda     _player+7
 	dey
@@ -13484,12 +13407,12 @@ L0040:	ldy     #$02
 ; oam_spr((player.facingRight ? player.left : player.x), player.y, 0x18, playerAttributes);
 ;
 	jsr     decsp3
-	lda     _player+13
-	beq     L0020
+	lda     _player+11
+	beq     L0021
 	lda     _player+3
-	jmp     L0021
-L0020:	lda     _player
-L0021:	ldy     #$02
+	jmp     L0022
+L0021:	lda     _player
+L0022:	ldy     #$02
 	sta     (sp),y
 	lda     _player+1
 	dey
@@ -13504,18 +13427,18 @@ L0021:	ldy     #$02
 ; oam_spr((player.facingRight ? player.x : player.left), player.y, 0x19, playerAttributes);
 ;
 	jsr     decsp3
-	lda     _player+13
-	beq     L0022
+	lda     _player+11
+	beq     L0023
 	lda     _player
-	jmp     L0041
-L0022:	lda     _player+3
-L0041:	ldy     #$02
+	jmp     L0042
+L0023:	lda     _player+3
+L0042:	ldy     #$02
 	sta     (sp),y
 	lda     _player+1
 	dey
 	sta     (sp),y
 	lda     #$19
-L004A:	dey
+L004B:	dey
 	sta     (sp),y
 	ldy     #$03
 	lda     (sp),y
@@ -13526,33 +13449,33 @@ L004A:	dey
 	lda     #$00
 	sta     _i
 	sta     _i+1
-L0024:	lda     _i
+L0025:	lda     _i
 	cmp     #$04
 	lda     _i+1
 	sbc     #$00
-	bvc     L0028
+	bvc     L0029
 	eor     #$80
-L0028:	jpl     L0025
+L0029:	jpl     L0026
 ;
 ; healthBarAttributes = currentLevel == 1 ? 0x01 : 
 ;
 	lda     _currentLevel+1
-	bne     L002B
+	bne     L002C
 	lda     _currentLevel
 	cmp     #$01
-	beq     L0043
+	beq     L0044
 ;
 ; currentLevel == 2 ? 0x03 : 0x02;
 ;
-L002B:	lda     _currentLevel+1
-	bne     L0042
+L002C:	lda     _currentLevel+1
+	bne     L0043
 	lda     _currentLevel
 	cmp     #$02
-	bne     L0042
+	bne     L0043
 	lda     #$03
-	jmp     L0043
-L0042:	lda     #$02
-L0043:	ldy     #$01
+	jmp     L0044
+L0043:	lda     #$02
+L0044:	ldy     #$01
 	sta     (sp),y
 ;
 ; if (i <= player.health - 1)
@@ -13560,19 +13483,19 @@ L0043:	ldy     #$01
 	lda     _i
 	ldx     _i+1
 	jsr     pushax
-	lda     _player+25
-	ldx     _player+25+1
+	lda     _player+23
+	ldx     _player+23+1
 	sec
 	sbc     #$01
-	bcs     L0031
+	bcs     L0032
 	dex
-L0031:	jsr     tosicmp
-	beq     L0039
-	jcs     L0030
+L0032:	jsr     tosicmp
+	beq     L003A
+	jcs     L0031
 ;
 ; oam_spr(origin + (i * offset), 20, 0x0E, healthBarAttributes);
 ;
-L0039:	jsr     decsp3
+L003A:	jsr     decsp3
 	ldy     #$08
 	jsr     pushwysp
 	lda     _i
@@ -13686,11 +13609,11 @@ L0039:	jsr     decsp3
 ;
 ; else
 ;
-	jmp     L004B
+	jmp     L004C
 ;
 ; oam_spr(origin + (i * offset), 20, 0x0F, healthBarAttributes);
 ;
-L0030:	jsr     decsp3
+L0031:	jsr     decsp3
 	ldy     #$08
 	jsr     pushwysp
 	lda     _i
@@ -13801,7 +13724,7 @@ L0030:	jsr     decsp3
 	dey
 	sta     (sp),y
 	lda     #$1F
-L004B:	dey
+L004C:	dey
 	sta     (sp),y
 	ldy     #$04
 	lda     (sp),y
@@ -13810,13 +13733,13 @@ L004B:	dey
 ; for (i = 0; i < MAX_HEALTH; i++)
 ;
 	inc     _i
-	jne     L0024
+	jne     L0025
 	inc     _i+1
-	jmp     L0024
+	jmp     L0025
 ;
 ; }
 ;
-L0025:	jmp     incsp6
+L0026:	jmp     incsp6
 
 .endproc
 
@@ -13835,18 +13758,13 @@ L0025:	jmp     incsp6
 ;
 	jsr     pusha
 ;
-; unsigned char tileX = (playerX + player.scrollX) / 8; 
+; unsigned char tileX = playerX / 8; 
 ;
 	ldy     #$01
 	lda     (sp),y
-	clc
-	adc     _player+11
-	pha
-	lda     #$00
-	adc     _player+11+1
-	tax
-	pla
-	jsr     shrax3
+	lsr     a
+	lsr     a
+	lsr     a
 	jsr     pusha
 ;
 ; unsigned char tileY = playerY / 8;
@@ -13858,19 +13776,20 @@ L0025:	jmp     incsp6
 	lsr     a
 	jsr     pusha
 ;
-; unsigned int tileIndex = tileY * 64 + tileX;
+; unsigned int tileIndex = tileY * 32 + tileX;
 ;
 	ldx     #$00
 	lda     (sp,x)
 	jsr     shlax4
-	jsr     shlax2
+	stx     tmp1
+	asl     a
+	rol     tmp1
 	sta     ptr1
-	stx     ptr1+1
 	ldy     #$01
 	lda     (sp),y
 	clc
 	adc     ptr1
-	ldx     ptr1+1
+	ldx     tmp1
 	bcc     L0002
 	inx
 L0002:	jsr     pushax
@@ -13941,34 +13860,17 @@ L0002:	jsr     pushax
 	bne     L0004
 	rts
 ;
+; SetPlayerValues();
+;
+L0004:	jsr     _SetPlayerValues
+;
 ; if (currentLevel == 3)
 ;
-L0004:	lda     _currentLevel+1
+	lda     _currentLevel+1
 	bne     L0007
 	lda     _currentLevel
 	cmp     #$03
 	bne     L0007
-;
-; player.scrollX = 0;
-;
-	ldx     #$00
-	txa
-	sta     _player+11
-	sta     _player+11+1
-;
-; set_scroll_x(player.scrollX);
-;
-	jsr     _set_scroll_x
-;
-; player.x = 30;
-;
-	lda     #$1E
-	sta     _player
-;
-; player.y = 215;
-;
-	lda     #$D7
-	sta     _player+1
 ;
 ; currentGameState = END_SCREEN;
 ;
@@ -13985,30 +13887,9 @@ L0007:	inc     _currentLevel
 	bne     L000A
 	inc     _currentLevel+1
 ;
-; player.scrollX = 0;
-;
-L000A:	ldx     #$00
-	txa
-	sta     _player+11
-	sta     _player+11+1
-;
-; set_scroll_x(player.scrollX);
-;
-	jsr     _set_scroll_x
-;
-; player.x = 30;
-;
-	lda     #$1E
-	sta     _player
-;
-; player.y = 215;
-;
-	lda     #$D7
-	sta     _player+1
-;
 ; GameLoop();
 ;
-	jmp     _GameLoop
+L000A:	jmp     _GameLoop
 
 .endproc
 
@@ -14047,19 +13928,6 @@ L000A:	ldx     #$00
 ; vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
 ;
 	ldx     #$20
-	lda     #$00
-	jsr     _vram_adr
-;
-; vram_fill(0x00, 1024);
-;
-	lda     #$00
-	jsr     pusha
-	ldx     #$04
-	jsr     _vram_fill
-;
-; vram_adr(NAMETABLE_B);            // Set VRAM address to start of screen
-;
-	ldx     #$24
 	lda     #$00
 	jsr     _vram_adr
 ;
@@ -14330,12 +14198,12 @@ L0004:	lda     #$01
 .endproc
 
 ; ---------------------------------------------------------------
-; void __near__ HandleRightMovement (unsigned int bound, unsigned int amountToIncrement)
+; void __near__ HandleMovement (int amountToIncrement)
 ; ---------------------------------------------------------------
 
 .segment	"CODE"
 
-.proc	_HandleRightMovement: near
+.proc	_HandleMovement: near
 
 .segment	"CODE"
 
@@ -14343,222 +14211,18 @@ L0004:	lda     #$01
 ; {
 ;
 	jsr     pushax
-;
-; if (player.x > 0 && player.x < 128 || (player.x + player.scrollX >= 384))
-;
-	lda     _player
-	beq     L000F
-	cmp     #$80
-	bcc     L0010
-L000F:	lda     _player
-	clc
-	adc     _player+11
-	pha
-	lda     #$00
-	adc     _player+11+1
-	tax
-	pla
-	cmp     #$80
-	txa
-	sbc     #$01
-	bcc     L0011
 ;
 ; player.x += amountToIncrement;
 ;
-L0010:	ldy     #$00
+	ldy     #$00
 	lda     (sp),y
 	clc
 	adc     _player
 	sta     _player
 ;
-; else if ((player.x + player.scrollX) >= 128 && (player.x + player.scrollX) < 384)
-;
-	jmp     incsp4
-L0011:	lda     _player
-	clc
-	adc     _player+11
-	pha
-	lda     #$00
-	adc     _player+11+1
-	tax
-	pla
-	cmp     #$80
-	txa
-	sbc     #$00
-	bcc     L000D
-	lda     _player
-	clc
-	adc     _player+11
-	pha
-	lda     #$00
-	adc     _player+11+1
-	tax
-	pla
-	cpx     #$01
-	bne     L0009
-	cmp     #$80
-L0009:	bcs     L000D
-;
-; if (player.scrollX <= bound) 
-;
-	lda     _player+11
-	sec
-	ldy     #$02
-	sbc     (sp),y
-	sta     tmp1
-	lda     _player+11+1
-	iny
-	sbc     (sp),y
-	ora     tmp1
-	beq     L000E
-	bcs     L000C
-;
-; player.scrollX += amountToIncrement;
-;
-L000E:	ldy     #$01
-	lda     (sp),y
-	tax
-	dey
-	lda     (sp),y
-	clc
-	adc     _player+11
-	sta     _player+11
-	txa
-	adc     _player+11+1
-	sta     _player+11+1
-;
-; else 
-;
-	jmp     incsp4
-;
-; player.scrollX = MAX_SCROLL;
-;
-L000C:	ldx     #$01
-	lda     #$00
-	sta     _player+11
-	stx     _player+11+1
-;
 ; }
 ;
-L000D:	jmp     incsp4
-
-.endproc
-
-; ---------------------------------------------------------------
-; void __near__ HandleLeftMovement (unsigned int bound, unsigned int amountToDecrement)
-; ---------------------------------------------------------------
-
-.segment	"CODE"
-
-.proc	_HandleLeftMovement: near
-
-.segment	"CODE"
-
-;
-; {
-;
-	jsr     pushax
-;
-; if (player.x > 0 && player.x < 128 || (player.x + player.scrollX > 384) || 
-;
-	lda     _player
-	beq     L000F
-	cmp     #$80
-	bcc     L0010
-L000F:	lda     _player
-	clc
-	adc     _player+11
-	pha
-	lda     #$00
-	adc     _player+11+1
-	tax
-	pla
-	cmp     #$81
-	txa
-	sbc     #$01
-	bcs     L0010
-;
-; (player.scrollX == MIN_SCROLL))
-;
-	lda     _player+11
-	ora     _player+11+1
-	bne     L0011
-;
-; player.x -= amountToDecrement;
-;
-L0010:	ldy     #$00
-	lda     (sp),y
-	eor     #$FF
-	sec
-	adc     _player
-	sta     _player
-;
-; else if ((player.x + player.scrollX) > 128 && (player.x + player.scrollX) <= 384)
-;
-	jmp     incsp4
-L0011:	lda     _player
-	clc
-	adc     _player+11
-	pha
-	lda     #$00
-	adc     _player+11+1
-	tax
-	pla
-	cmp     #$81
-	txa
-	sbc     #$00
-	bcc     L000E
-	lda     _player
-	clc
-	adc     _player+11
-	pha
-	lda     #$00
-	adc     _player+11+1
-	tax
-	pla
-	cpx     #$01
-	bne     L000A
-	cmp     #$81
-L000A:	bcs     L000E
-;
-; if (player.scrollX >= bound) 
-;
-	lda     _player+11
-	ldy     #$02
-	cmp     (sp),y
-	lda     _player+11+1
-	iny
-	sbc     (sp),y
-	lda     #$00
-	bcc     L0015
-;
-; player.scrollX -= amountToDecrement;
-;
-	ldy     #$01
-	lda     (sp),y
-	tax
-	dey
-	lda     (sp),y
-	eor     #$FF
-	sec
-	adc     _player+11
-	sta     _player+11
-	txa
-	eor     #$FF
-	adc     _player+11+1
-;
-; else 
-;
-	jmp     L0016
-;
-; player.scrollX = MIN_SCROLL;
-;
-L0015:	sta     _player+11
-L0016:	sta     _player+11+1
-;
-; }
-;
-L000E:	jmp     incsp4
+	jmp     incsp2
 
 .endproc
 
@@ -14675,20 +14339,20 @@ L0005:	sta     _player+9
 ;
 ; if (player.isDashing)
 ;
-	lda     _player+18
-	ora     _player+18+1
+	lda     _player+16
+	ora     _player+16+1
 	beq     L0002
 ;
 ; player.isDashing = 0;
 ;
 	lda     #$00
-	sta     _player+18
-	sta     _player+18+1
+	sta     _player+16
+	sta     _player+16+1
 ;
 ; player.dashCooldown = DASH_COOLDOWN;
 ;
 	lda     #$1E
-	sta     _player+21
+	sta     _player+19
 ;
 ; }
 ;
@@ -14782,57 +14446,52 @@ L0004:	lda     #$01
 	sta     _player+9
 	sta     _player+9+1
 ;
-; player.scrollX = 0;
-;
-	sta     _player+11
-	sta     _player+11+1
-;
 ; player.facingRight = 1;
 ;
 	lda     #$01
-	sta     _player+13
+	sta     _player+11
 ;
 ; player.velocityY = 0;
 ;
 	txa
-	sta     _player+14
-	sta     _player+14+1
+	sta     _player+12
+	sta     _player+12+1
 ;
 ; player.isJumping = 0;
 ;
-	sta     _player+16
+	sta     _player+14
 ;
 ; player.jumpBufferTimer = 0; 
 ;
-	sta     _player+17
+	sta     _player+15
 ;
 ; player.isDashing = 0;
 ;
-	sta     _player+18
-	sta     _player+18+1
+	sta     _player+16
+	sta     _player+16+1
 ;
 ; player.dashTimer = 0;
 ;
-	sta     _player+20
+	sta     _player+18
 ;
 ; player.dashCooldown = 0;
 ;
-	sta     _player+21
+	sta     _player+19
 ;
 ; player.hasDashedInAir = 0;
 ;
-	sta     _player+22
+	sta     _player+20
 ;
 ; player.dashDirection = 0; 
 ;
-	sta     _player+23
-	sta     _player+23+1
+	sta     _player+21
+	sta     _player+21+1
 ;
 ; player.health = MAX_HEALTH;
 ;
 	lda     #$04
-	sta     _player+25
-	stx     _player+25+1
+	sta     _player+23
+	stx     _player+23+1
 ;
 ; }
 ;
@@ -14946,29 +14605,16 @@ L0004:	lda     #$01
 	ldx     #$04
 	jsr     _vram_fill
 ;
-; vram_adr(NAMETABLE_B);            // Set VRAM address to start of screen
-;
-	ldx     #$24
-	lda     #$00
-	jsr     _vram_adr
-;
-; vram_fill(0x00, 1024);
-;
-	lda     #$00
-	jsr     pusha
-	ldx     #$04
-	jsr     _vram_fill
-;
 ; vram_adr(NTADR_A(8, 8)); // places text at screen position
 ;
 	ldx     #$21
 	lda     #$08
 	jsr     _vram_adr
 ;
-; vram_write(endScreenTitle, sizeof(deathScreenTitle) - 1); //write Title to screen
+; vram_write(deathScreenTitle, sizeof(deathScreenTitle) - 1); //write Title to screen
 ;
-	lda     #<(_endScreenTitle)
-	ldx     #>(_endScreenTitle)
+	lda     #<(_deathScreenTitle)
+	ldx     #>(_deathScreenTitle)
 	jsr     pushax
 	ldx     #$00
 	lda     #$0C
@@ -15023,36 +14669,20 @@ L0004:	lda     #$01
 ;
 ; player.health--;
 ;
-	lda     _player+25
+	lda     _player+23
 	bne     L0002
-	dec     _player+25+1
-L0002:	dec     _player+25
+	dec     _player+23+1
+L0002:	dec     _player+23
 ;
 ; if (player.health <= 0)
 ;
-	lda     _player+25
-	ora     _player+25+1
+	lda     _player+23
+	ora     _player+23+1
 	bne     L0003
 ;
-; player.scrollX = 0;
+; SetPlayerValues();
 ;
-	tax
-	sta     _player+11
-	sta     _player+11+1
-;
-; set_scroll_x(player.scrollX);
-;
-	jsr     _set_scroll_x
-;
-; player.x = 30;
-;
-	lda     #$1E
-	sta     _player
-;
-; player.y = 215;
-;
-	lda     #$D7
-	sta     _player+1
+	jsr     _SetPlayerValues
 ;
 ; currentGameState = DEATH_SCREEN;
 ;
@@ -15149,15 +14779,6 @@ L0009:	jsr     _UpdateColliderPositions
 ; DrawPlayer();
 ;
 	jsr     _DrawPlayer
-;
-; scroll(player.scrollX, 0);
-;
-	lda     _player+11
-	ldx     _player+11+1
-	jsr     pushax
-	ldx     #$00
-	txa
-	jsr     _scroll
 ;
 ; CheckIfEnd();
 ;

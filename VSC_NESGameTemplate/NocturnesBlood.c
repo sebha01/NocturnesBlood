@@ -97,9 +97,6 @@
 #define DASH_SPEED 5
 #define DASH_DURATION 6
 #define DASH_COOLDOWN 30
-//Scrolling
-#define MAX_SCROLL 256
-#define MIN_SCROLL 0
 //Health
 #define MAX_HEALTH 4
 
@@ -151,9 +148,6 @@ typedef struct
 	signed int right;
 	signed int top;
 	signed int bottom;
-	//Player x can move first 128 and last 128 pixels without screen moving
-	//Scroll x comes in to make sure the screen moves when the player does
-	unsigned int scrollX;
 	char facingRight;
 	//jumping variables 
 	int velocityY;
@@ -182,8 +176,7 @@ void CheckIfEnd(void);
 void DrawEndScreen(void);
 char OnGround(void); 
 char CheckIfCollidableTile(unsigned char tile);
-void HandleRightMovement(unsigned int bound, unsigned int amountToIncrement);
-void HandleLeftMovement(unsigned int bound, unsigned int amountToDecrement);
+void HandleMovement(signed int amountToIncrement);
 char CheckIfGoalTile(unsigned char tile); 
 void UpdateColliderPositions(void);
 void DashEnd(void);
@@ -229,8 +222,6 @@ void main (void)
 				MovePlayer();
 				//Draw sprites
 				DrawPlayer();
-				//Update scrolling
-				scroll(player.scrollX, 0);
 				//Check if player has reached end goal
 				CheckIfEnd();
 				break;
@@ -271,8 +262,6 @@ void DrawTitleScreen(void)
 	// //Clear the screen
 	vram_adr(NAMETABLE_A);
 	vram_fill(0x00, 1024);
-	vram_adr(NAMETABLE_B);
-	vram_fill(0x00, 1024);
 
 
 	vram_adr(NTADR_A(8, 8)); // places text at screen position
@@ -292,31 +281,22 @@ void GameLoop(void)
 	switch(currentLevel)
 	{
 		case 1:
-			currentLevelData = Level1Data;
+			currentLevelData = Level1A;
 			// Write the new level data
 			vram_adr(NAMETABLE_A);   // Set VRAM address to the top-left of the screen
 			vram_write(Level1A, 1024);
-
-			vram_adr(NAMETABLE_B);   // Set VRAM address to the top-left of the screen
-			vram_write(Level1B, 1024);
 			break;
 		case 2:
-			currentLevelData = Level2Data;
+			currentLevelData = Level2A;
 			// Write the new level data
 			vram_adr(NAMETABLE_A);
 			vram_write(Level2A, 1024);
-
-			vram_adr(NAMETABLE_B);
-			vram_write(Level2B, 1024);
 			break;
 		case 3:
-			currentLevelData = Level3Data;
+			currentLevelData = Level3A;
 			// Write the new level data
 			vram_adr(NAMETABLE_A);
 			vram_write(Level3A, 1024);
-
-			vram_adr(NAMETABLE_B);
-			vram_write(Level3B, 1024);
 			break;
 	}
 
@@ -354,7 +334,7 @@ void MovePlayer(void)
         if (!CheckIfCollidableTile(currentLevelData[GetTileIndex(player.left, player.y + 1)]))
         {
 			//Handle movement
-			HandleLeftMovement(4, PLAYER_SPEED);
+			HandleMovement(-2);
 			//Set facing right to false
 			player.facingRight = 0;
         }
@@ -366,7 +346,7 @@ void MovePlayer(void)
         if (!CheckIfCollidableTile(currentLevelData[GetTileIndex(player.right, player.y + 1)]))
         {
 			//Handle Movement
-			HandleRightMovement(252, PLAYER_SPEED);
+			HandleMovement(2);
 			//Set facing right to true
 			player.facingRight = 1;
         }
@@ -428,20 +408,20 @@ void MovePlayer(void)
 			//Make sure checkX is correct for collision checking
 			//If direction is right then 7 pixels will be added on to account for the width of the player
 			//If left then nothing will be added on as already checking in to the left
-			int checkX = nextX + player.scrollX + (player.dashDirection == 1 ? 7 : -7);
+			// int checkX = nextX + (player.dashDirection == 1 ? 7 : -7);
 
 			//Check that there is not a collidable and if there is not then the player can move
-			if (!CheckIfCollidableTile(currentLevelData[GetTileIndex(checkX, player.y + 1)])) 
+			if (!CheckIfCollidableTile(currentLevelData[GetTileIndex(nextX, player.y + 1)])) 
 			{
 				if (player.dashDirection == 1) 
 				{
 					//Dash direction is right
-					HandleRightMovement(255, 1);
+					HandleMovement(1);
 				} 
 				else if (player.dashDirection == -1)
 				{
 					//Dash direction is left
-					HandleLeftMovement(1, 1);
+					HandleMovement(-1);
 				}
 				else
 				{
@@ -521,6 +501,11 @@ void MovePlayer(void)
             }
         }
     }
+
+	if (player.bottom > 240) 
+	{
+    	damagePlayer();
+	}
 }
 
 void DrawPlayer(void)
@@ -540,6 +525,11 @@ void DrawPlayer(void)
 	//Clears all sprite entries in Object Attribute Memory OAM special memopry area that holds info about sprites
 	//Such as pos, tile index, palette etc.
 	oam_clear();
+
+	if (currentGameState != GAME_LOOP)
+	{
+		return;
+	}
 	
 	//make sure colliders are in correct position before rendering sprites
 	//especially for jumping and dashing
@@ -602,11 +592,11 @@ unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY)
     // Get the x and y tile that the player is currently on Divide by 8 as the players current position is in
 	// pixels. Each tile has 8 pixels so we need to divide by 8 to find the tile We need to add scrollX to it 
 	//so that we can find the correct position across both halves of the map
-    unsigned char tileX = (playerX + player.scrollX) / 8; 
+    unsigned char tileX = playerX / 8; 
     unsigned char tileY = playerY / 8;
     // As we play in a 64x30 map to first find the correct y position We multiply by 64 to get the correct row
 	//Then we add tileX to find the column and the index of the tile
-    unsigned int tileIndex = tileY * 64 + tileX;
+    unsigned int tileIndex = tileY * 32 + tileX;
 
     return tileIndex;
 }
@@ -616,24 +606,16 @@ void CheckIfEnd()
 	if (CheckIfGoalTile(currentLevelData[GetTileIndex(player.left + 4, player.bottom)]) ||
 	CheckIfGoalTile(currentLevelData[GetTileIndex(player.right - 4, player.bottom)]))
 	{
+		SetPlayerValues();
+
 		if (currentLevel == 3)
 		{
-			player.scrollX = 0;
-			set_scroll_x(player.scrollX);
-			player.x = 30;
-			player.y = 215;
 			currentGameState = END_SCREEN;
 			DrawEndScreen();
 		}
 		else
 		{
 			currentLevel++;
-			
-			player.scrollX = 0;
-			set_scroll_x(player.scrollX);
-			player.x = 30;
-			player.y = 215;
-
 			GameLoop();
 		}
 	}
@@ -652,10 +634,6 @@ void DrawEndScreen()
 
 	//Clear the screen
 	vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
-	vram_fill(0x00, 1024);
-
-	//Clear the screen
-	vram_adr(NAMETABLE_B);            // Set VRAM address to start of screen
 	vram_fill(0x00, 1024);
 
 	vram_adr(NTADR_A(8, 8)); // places text at screen position
@@ -690,56 +668,9 @@ char CheckIfCollidableTile(unsigned char tile)
 		|| tile == 0xB6 || tile == 0xB7 || tile == 0xB8 || tile == 0xB9;
 }
 
-void HandleRightMovement(unsigned int bound, unsigned int amountToIncrement)
+void HandleMovement(signed int amountToIncrement)
 {
-	//Make sure player x is 0 - 128 and player X and scrollX is 384 or greater
-	//before we increment playerX
-	if (player.x > 0 && player.x < 128 || (player.x + player.scrollX >= 384))
-	{
-		player.x += amountToIncrement;
-	}
-	// Make sure playerX and scrollX is greater than 128 and less than 384
-	//before incrementing scrollX
-	else if ((player.x + player.scrollX) >= 128 && (player.x + player.scrollX) < 384)
-	{
-		//Makes sure ScrollX goes up to 256 only
-		if (player.scrollX <= bound) 
-		{
-			player.scrollX += amountToIncrement;
-		} 
-		else 
-		{
-			//prevents scrollX from going above 256 in the odd case it does
-			player.scrollX = MAX_SCROLL;
-		}
-	}
-}
-
-
-void HandleLeftMovement(unsigned int bound, unsigned int amountToDecrement)
-{
-	 //Make sure player x is 0 - 128 and player X and scrollX is 384 or greater
-	//before we decrement playerX
-	if (player.x > 0 && player.x < 128 || (player.x + player.scrollX > 384) || 
-	(player.scrollX == MIN_SCROLL))
-	{
-		player.x -= amountToDecrement;
-	}
-	// Make sure playerX and scrollX is greater than 128 and less than 384
-	//before decrementing scrollX
-	else if ((player.x + player.scrollX) > 128 && (player.x + player.scrollX) <= 384)
-	{
-		//Makes sure ScrollX goes down to 0 only
-		if (player.scrollX >= bound) 
-		{
-			player.scrollX -= amountToDecrement;
-		} 
-		else 
-		{
-			//prevents scrollX from going negative in the odd case it does
-			player.scrollX = MIN_SCROLL;
-		}
-	} 
+	player.x += amountToIncrement;
 }
 
 char CheckIfGoalTile(unsigned char tile) 
@@ -781,7 +712,6 @@ void SetPlayerValues(void)
 	player.right = 0;
 	player.top = 0;
 	player.bottom = 0;
-	player.scrollX = 0;
 	player.facingRight = 1;
 	player.velocityY = 0;
 	player.isJumping = 0;
@@ -816,12 +746,8 @@ void DrawDeathScreen(void)
 	vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
 	vram_fill(0x00, 1024);
 
-	//Clear the screen
-	vram_adr(NAMETABLE_B);            // Set VRAM address to start of screen
-	vram_fill(0x00, 1024);
-
 	vram_adr(NTADR_A(8, 8)); // places text at screen position
-	vram_write(endScreenTitle, sizeof(deathScreenTitle) - 1); //write Title to screen
+	vram_write(deathScreenTitle, sizeof(deathScreenTitle) - 1); //write Title to screen
 	//Write prompt to start game
 	vram_adr(NTADR_A(10, 14));
 	vram_write(titlePrompt, sizeof(titlePrompt) - 1);
@@ -839,7 +765,6 @@ void damagePlayer(void)
 	if (player.health <= 0)
 	{
 		SetPlayerValues();
-		set_scroll_x(player.scrollX);
 		
 		currentGameState = DEATH_SCREEN;
 		DrawDeathScreen();
