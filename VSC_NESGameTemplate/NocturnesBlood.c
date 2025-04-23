@@ -602,6 +602,7 @@ void CheckIfEnd()
 		else
 		{
 			currentLevel++;
+			SetPlayerValues();
 			GameLoop();
 		}
 	}
@@ -748,8 +749,9 @@ void ResetLevel(void)
 
 	if (player.health <= 0)
 	{
+		currentLevel = 1;
 		SetPlayerValues();
-		currentGameState = DEATH_SCREEN;
+		currentGameState = DEATH_SCREEN;	
 		DrawDeathScreen();
 		return;
 	}

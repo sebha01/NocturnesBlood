@@ -4713,9 +4713,13 @@ L0007:	inc     _currentLevel
 	bne     L000A
 	inc     _currentLevel+1
 ;
+; SetPlayerValues();
+;
+L000A:	jsr     _SetPlayerValues
+;
 ; GameLoop();
 ;
-L000A:	jmp     _GameLoop
+	jmp     _GameLoop
 
 .endproc
 
@@ -5481,11 +5485,17 @@ L0002:	dec     _player+23
 	ora     _player+23+1
 	bne     L0003
 ;
+; currentLevel = 1;
+;
+	sta     _currentLevel+1
+	lda     #$01
+	sta     _currentLevel
+;
 ; SetPlayerValues();
 ;
 	jsr     _SetPlayerValues
 ;
-; currentGameState = DEATH_SCREEN;
+; currentGameState = DEATH_SCREEN; 
 ;
 	lda     #$03
 	sta     _currentGameState
