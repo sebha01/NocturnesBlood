@@ -47,16 +47,11 @@
  
 #include "LIB/neslib.h"
 #include "LIB/nesdoug.h" 
-#include "NES_ST/Level1Data.h"
-#include "NES_ST/Level2Data.h"
-#include "NES_ST/Level3Data.h"
 #include <stdlib.h>
 #include "NES_ST/Level1A.h"
-#include "NES_ST/Level1B.h"
 #include "NES_ST/Level2A.h"
-#include "NES_ST/Level2B.h"
 #include "NES_ST/Level3A.h"
-#include "NES_ST/Level3B.h"
+
 
 //Define colours
 #define BLACK 			0x0f
@@ -168,7 +163,6 @@ Player player;
 //function prototypes
 void DrawTitleScreen(void);
 void GameLoop(void);
-void Fade(void);
 void MovePlayer(void);
 void DrawPlayer(void);
 unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY);
@@ -176,13 +170,11 @@ void CheckIfEnd(void);
 void DrawEndScreen(void);
 char OnGround(void); 
 char CheckIfCollidableTile(unsigned char tile);
-void HandleMovement(signed int amountToIncrement);
 char CheckIfGoalTile(unsigned char tile); 
 void UpdateColliderPositions(void);
 void DashEnd(void);
 char CheckIfPlatformTile(unsigned char tile);
 void SetPlayerValues(void);
-char CheckIfSpikes(unsigned char tile);
 void DrawDeathScreen(void);
 void damagePlayer(void);
 
@@ -334,7 +326,7 @@ void MovePlayer(void)
         if (!CheckIfCollidableTile(currentLevelData[GetTileIndex(player.left, player.y + 1)]))
         {
 			//Handle movement
-			HandleMovement(-2);
+			player.x -= PLAYER_SPEED;
 			//Set facing right to false
 			player.facingRight = 0;
         }
@@ -346,7 +338,7 @@ void MovePlayer(void)
         if (!CheckIfCollidableTile(currentLevelData[GetTileIndex(player.right, player.y + 1)]))
         {
 			//Handle Movement
-			HandleMovement(2);
+			player.x += PLAYER_SPEED;
 			//Set facing right to true
 			player.facingRight = 1;
         }
@@ -404,30 +396,13 @@ void MovePlayer(void)
 		for (i = 0; i < DASH_SPEED; i++) 
 		{
 			//Calculates the next X position depending on direction
-			int nextX = player.x + player.dashDirection;
-			//Make sure checkX is correct for collision checking
-			//If direction is right then 7 pixels will be added on to account for the width of the player
-			//If left then nothing will be added on as already checking in to the left
-			// int checkX = nextX + (player.dashDirection == 1 ? 7 : -7);
+			int nextX = (player.dashDirection == 1) ? player.right + 2 : player.left - 2;
 
 			//Check that there is not a collidable and if there is not then the player can move
-			if (!CheckIfCollidableTile(currentLevelData[GetTileIndex(nextX, player.y + 1)])) 
+			if (!CheckIfCollidableTile(currentLevelData[GetTileIndex(nextX, player.top)]) &&
+				!CheckIfCollidableTile(currentLevelData[GetTileIndex(nextX, player.bottom)]))
 			{
-				if (player.dashDirection == 1) 
-				{
-					//Dash direction is right
-					HandleMovement(1);
-				} 
-				else if (player.dashDirection == -1)
-				{
-					//Dash direction is left
-					HandleMovement(-1);
-				}
-				else
-				{
-					//Disable dash if player is not holding left or right
-					DashEnd();
-				}
+				player.x += player.dashDirection;
 			} 
 			else 
 			{
@@ -457,7 +432,8 @@ void MovePlayer(void)
 			// Check for head collision and make sure player doesn't jump out the map
 			if (player.velocityY < 0) 
 			{
-				if (CheckIfCollidableTile(currentLevelData[GetTileIndex(player.x, player.top)]))
+				if (CheckIfCollidableTile(currentLevelData[GetTileIndex(player.left + 2, player.top)]) ||
+				CheckIfCollidableTile(currentLevelData[GetTileIndex(player.right - 2, player.top)]))
 				{
 					//Make sure player cannot jump higher and the player doesn't get stuck
 					player.velocityY = 0;
@@ -668,11 +644,6 @@ char CheckIfCollidableTile(unsigned char tile)
 		|| tile == 0xB6 || tile == 0xB7 || tile == 0xB8 || tile == 0xB9;
 }
 
-void HandleMovement(signed int amountToIncrement)
-{
-	player.x += amountToIncrement;
-}
-
 char CheckIfGoalTile(unsigned char tile) 
 {
 	//Stores all of the tiles that are collidable and is used to calculate collisions
@@ -722,13 +693,6 @@ void SetPlayerValues(void)
 	player.hasDashedInAir = 0;
 	player.dashDirection = 0; 
 	player.health = MAX_HEALTH;
-}
-
-char CheckIfSpikes(unsigned char tile)
-{
-	return tile == 0x8A || tile == 0x8B || tile == 0x9A || tile == 0x9B ||
-		tile == 0xAA || tile == 0xAB || tile == 0xC8 || tile == 0xC9 ||
-		tile == 0xD8 || tile == 0xD9 || tile == 0xEA || tile == 0xEB;
 }
 
 void DrawDeathScreen(void)
