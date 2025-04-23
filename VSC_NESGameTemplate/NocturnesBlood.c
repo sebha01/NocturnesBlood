@@ -838,10 +838,8 @@ void damagePlayer(void)
 
 	if (player.health <= 0)
 	{
-		player.scrollX = 0;
+		SetPlayerValues();
 		set_scroll_x(player.scrollX);
-		player.x = 30;
-		player.y = 215;
 		
 		currentGameState = DEATH_SCREEN;
 		DrawDeathScreen();
