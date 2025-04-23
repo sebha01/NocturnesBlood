@@ -680,8 +680,8 @@ char CheckIfPlatformTile(unsigned char tile)
 
 void SetPlayerValues(void)
 {
-	player.x = 30;
-	player.y = 215;
+	player.x = currentLevel == 3 ? 232 : 30;
+	player.y = currentLevel == 3 ? 24 : 215;
 	player.coyoteTime = 0;
 	player.left = 0;
 	player.right = 0;

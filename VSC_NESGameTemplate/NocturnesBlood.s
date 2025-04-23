@@ -5197,15 +5197,29 @@ L0004:	lda     #$01
 .segment	"CODE"
 
 ;
-; player.x = 30;
+; player.x = currentLevel == 3 ? 232 : 30;
 ;
-	lda     #$1E
-	sta     _player
+	lda     _currentLevel+1
+	bne     L0003
+	lda     _currentLevel
+	cmp     #$03
+	bne     L0003
+	lda     #$E8
+	jmp     L0008
+L0003:	lda     #$1E
+L0008:	sta     _player
 ;
-; player.y = 215;
+; player.y = currentLevel == 3 ? 24 : 215;
 ;
-	lda     #$D7
-	sta     _player+1
+	lda     _currentLevel+1
+	bne     L0009
+	lda     _currentLevel
+	cmp     #$03
+	bne     L0009
+	lda     #$18
+	jmp     L000A
+L0009:	lda     #$D7
+L000A:	sta     _player+1
 ;
 ; player.coyoteTime = 0;
 ;
