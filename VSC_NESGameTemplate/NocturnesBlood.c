@@ -488,6 +488,14 @@ void MovePlayer(void)
         }
     }
 
+	if (checkIfSpikes(currentLevelData[GetTileIndex(player.left + 6, player.bottom - 4)]) ||
+	checkIfSpikes(currentLevelData[GetTileIndex(player.right - 6, player.bottom - 4)]) ||
+	checkIfSpikes(currentLevelData[GetTileIndex(player.left + 6, player.top + 4)]) ||
+	checkIfSpikes(currentLevelData[GetTileIndex(player.right - 6, player.top + 4)]))
+	{
+		ResetLevel();
+	}
+
 	if (player.bottom > 240) 
 	{
 		ResetLevel();
@@ -500,7 +508,7 @@ void DrawPlayer(void)
 	unsigned int origin = 20;
 	unsigned char healthBarAttributes = 0x02;
 	unsigned char playerAttributes =  player.isDashing ? 0x03 :
-							currentLevel == 3 ? 0x00 : 0x01;
+						currentLevel == 3 ? 0x00 : 0x01;
 
 	if (!player.facingRight)
 	{
@@ -708,7 +716,7 @@ void SetPlayerValues(void)
 	player.dashTimer = 0;
 	player.dashCooldown = 0;
 	player.hasDashedInAir = 0;
-	player.dashDirection = 0; 
+	player.dashDirection = 0;
 }
 
 void DrawDeathScreen(void)

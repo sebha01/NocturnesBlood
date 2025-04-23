@@ -3449,12 +3449,12 @@ L0003:	ldx     #$20
 ;
 ; else if (!OnGround() && player.coyoteTime > 0) 
 ;
-	jmp     L004E
+	jmp     L0059
 L0002:	jsr     _OnGround
 	tax
-	bne     L004E
+	bne     L0059
 	lda     _player+2
-	beq     L004E
+	beq     L0059
 ;
 ; player.coyoteTime--;
 ;
@@ -3462,8 +3462,8 @@ L0002:	jsr     _OnGround
 ;
 ; if (player.dashCooldown > 0) 
 ;
-L004E:	lda     _player+19
-	beq     L004F
+L0059:	lda     _player+19
+	beq     L005A
 ;
 ; player.dashCooldown--;
 ;
@@ -3471,9 +3471,9 @@ L004E:	lda     _player+19
 ;
 ; if (movementPad & PAD_LEFT)
 ;
-L004F:	lda     _movementPad
+L005A:	lda     _movementPad
 	and     #$02
-	beq     L0050
+	beq     L005B
 ;
 ; if (!CheckIfCollidableTile(currentLevelData[GetTileIndex(player.left, player.y + 1)]))
 ;
@@ -3493,7 +3493,7 @@ L004F:	lda     _movementPad
 	lda     (ptr1),y
 	jsr     _CheckIfCollidableTile
 	tax
-	bne     L0050
+	bne     L005B
 ;
 ; player.x -= PLAYER_SPEED;
 ;
@@ -3508,9 +3508,9 @@ L004F:	lda     _movementPad
 ;
 ; if (movementPad & PAD_RIGHT)
 ;
-L0050:	lda     _movementPad
+L005B:	lda     _movementPad
 	and     #$01
-	beq     L0051
+	beq     L005C
 ;
 ; if (!CheckIfCollidableTile(currentLevelData[GetTileIndex(player.right, player.y + 1)]))
 ;
@@ -3530,7 +3530,7 @@ L0050:	lda     _movementPad
 	lda     (ptr1),y
 	jsr     _CheckIfCollidableTile
 	tax
-	bne     L0051
+	bne     L005C
 ;
 ; player.x += PLAYER_SPEED;
 ;
@@ -3546,32 +3546,32 @@ L0050:	lda     _movementPad
 ;
 ; if ((inputPad & PAD_B) && !player.isDashing && !(player.dashCooldown > 0)) 
 ;
-L0051:	lda     _inputPad
+L005C:	lda     _inputPad
 	and     #$40
-	beq     L0058
+	beq     L0063
 	lda     _player+16
 	ora     _player+16+1
-	bne     L0058
+	bne     L0063
 	lda     _player+19
-	bne     L0058
+	bne     L0063
 ;
 ; if (OnGround() || !player.hasDashedInAir)
 ;
 	jsr     _OnGround
 	tax
-	bne     L0055
+	bne     L0060
 	lda     _player+20
-	bne     L0058
+	bne     L0063
 ;
 ; player.dashDirection = (movementPad & PAD_LEFT ? -1 : movementPad & PAD_RIGHT ? 1 : 0);
 ;
-L0055:	lda     _movementPad
+L0060:	lda     _movementPad
 	and     #$02
-	beq     L0056
+	beq     L0061
 	ldx     #$FF
 	txa
 	jmp     L0019
-L0056:	lda     _movementPad
+L0061:	lda     _movementPad
 	ldx     #$00
 	and     #$01
 	beq     L0019
@@ -3595,7 +3595,7 @@ L0019:	sta     _player+21
 ;
 	jsr     _OnGround
 	tax
-	bne     L0058
+	bne     L0063
 ;
 ; player.hasDashedInAir = 1;
 ;
@@ -3604,12 +3604,12 @@ L0019:	sta     _player+21
 ;
 ; if (inputPad & PAD_A && !player.isDashing) 
 ;
-L0058:	lda     _inputPad
+L0063:	lda     _inputPad
 	and     #$80
-	beq     L005C
+	beq     L0067
 	lda     _player+16
 	ora     _player+16+1
-	bne     L005C
+	bne     L0067
 ;
 ; player.jumpBufferTimer = JUMP_BUFFER_FRAMES;
 ;
@@ -3618,12 +3618,12 @@ L0058:	lda     _inputPad
 ;
 ; if (player.jumpBufferTimer > 0 && !player.isJumping && player.coyoteTime > 0) 
 ;
-L005C:	lda     _player+15
-	beq     L0060
+L0067:	lda     _player+15
+	beq     L006B
 	lda     _player+14
-	bne     L0060
+	bne     L006B
 	lda     _player+2
-	beq     L0060
+	beq     L006B
 ;
 ; player.isJumping = 1;
 ;
@@ -3645,7 +3645,7 @@ L005C:	lda     _player+15
 ; else if (player.jumpBufferTimer > 0) 
 ;
 	jmp     L0024
-L0060:	lda     _player+15
+L006B:	lda     _player+15
 	beq     L0024
 ;
 ; player.jumpBufferTimer--;
@@ -3673,7 +3673,7 @@ L0026:	lda     _i
 	sbc     #$00
 	bvc     L002A
 	eor     #$80
-L002A:	jpl     L0062
+L002A:	jpl     L006D
 ;
 ; int nextX = (player.dashDirection == 1) ? player.right + 2 : player.left - 2;
 ;
@@ -3753,7 +3753,7 @@ L0031:	jsr     _DashEnd
 ; break;
 ;
 	jsr     incsp2
-	jmp     L0062
+	jmp     L006D
 ;
 ; }
 ;
@@ -3768,7 +3768,7 @@ L0035:	jsr     incsp2
 ;
 ; if (player.dashTimer <= 0) 
 ;
-L0062:	lda     _player+18
+L006D:	lda     _player+18
 	jne     L004A
 ;
 ; DashEnd();
@@ -3930,15 +3930,107 @@ L0038:	jsr     _OnGround
 	lda     #$01
 	sta     _player+14
 ;
+; if (checkIfSpikes(currentLevelData[GetTileIndex(player.left + 6, player.bottom - 4)]) ||
+;
+L004A:	lda     _currentLevelData
+	ldx     _currentLevelData+1
+	jsr     pushax
+	lda     _player+3
+	clc
+	adc     #$06
+	jsr     pusha
+	lda     _player+9
+	sec
+	sbc     #$04
+	jsr     _GetTileIndex
+	jsr     tosaddax
+	sta     ptr1
+	stx     ptr1+1
+	ldy     #$00
+	lda     (ptr1),y
+	jsr     _checkIfSpikes
+	tax
+	jne     L004E
+;
+; checkIfSpikes(currentLevelData[GetTileIndex(player.right - 6, player.bottom - 4)]) ||
+;
+	lda     _currentLevelData
+	ldx     _currentLevelData+1
+	jsr     pushax
+	lda     _player+5
+	sec
+	sbc     #$06
+	jsr     pusha
+	lda     _player+9
+	sec
+	sbc     #$04
+	jsr     _GetTileIndex
+	jsr     tosaddax
+	sta     ptr1
+	stx     ptr1+1
+	ldy     #$00
+	lda     (ptr1),y
+	jsr     _checkIfSpikes
+	tax
+	bne     L004E
+;
+; checkIfSpikes(currentLevelData[GetTileIndex(player.left + 6, player.top + 4)]) ||
+;
+	lda     _currentLevelData
+	ldx     _currentLevelData+1
+	jsr     pushax
+	lda     _player+3
+	clc
+	adc     #$06
+	jsr     pusha
+	lda     _player+7
+	clc
+	adc     #$04
+	jsr     _GetTileIndex
+	jsr     tosaddax
+	sta     ptr1
+	stx     ptr1+1
+	ldy     #$00
+	lda     (ptr1),y
+	jsr     _checkIfSpikes
+	tax
+	bne     L004E
+;
+; checkIfSpikes(currentLevelData[GetTileIndex(player.right - 6, player.top + 4)]))
+;
+	lda     _currentLevelData
+	ldx     _currentLevelData+1
+	jsr     pushax
+	lda     _player+5
+	sec
+	sbc     #$06
+	jsr     pusha
+	lda     _player+7
+	clc
+	adc     #$04
+	jsr     _GetTileIndex
+	jsr     tosaddax
+	sta     ptr1
+	stx     ptr1+1
+	ldy     #$00
+	lda     (ptr1),y
+	jsr     _checkIfSpikes
+	tax
+	beq     L004B
+;
+; ResetLevel();
+;
+L004E:	jsr     _ResetLevel
+;
 ; if (player.bottom > 240) 
 ;
-L004A:	lda     _player+9
+L004B:	lda     _player+9
 	cmp     #$F1
 	lda     _player+9+1
 	sbc     #$00
-	bvs     L004C
+	bvs     L0057
 	eor     #$80
-L004C:	bpl     L004B
+L0057:	bpl     L0056
 ;
 ; ResetLevel();
 ;
@@ -3946,7 +4038,7 @@ L004C:	bpl     L004B
 ;
 ; }
 ;
-L004B:	rts
+L0056:	rts
 
 .endproc
 
@@ -5340,7 +5432,7 @@ L000A:	sta     _player+1
 ;
 	sta     _player+20
 ;
-; player.dashDirection = 0; 
+; player.dashDirection = 0;
 ;
 	sta     _player+21
 	sta     _player+21+1
