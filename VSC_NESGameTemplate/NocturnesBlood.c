@@ -92,16 +92,15 @@
 #define JUMP_VELOCITY -10
 #define MAX_FALL_SPEED 4
 #define COYOTE_FRAMES 10
-#define JUMP_BUFFER_FRAMES 6
+#define JUMP_BUFFER_FRAMES 20
 //dashing
 #define DASH_SPEED 5
 #define DASH_DURATION 6
-#define DASH_COOLDOWN 20
+#define DASH_COOLDOWN 30
 //Scrolling
 #define MAX_SCROLL 256
 #define MIN_SCROLL 0
-//Enemies
-#define MAX_ENEMIES 2
+//Health
 #define MAX_HEALTH 4
 
 #pragma bss-name(push, "ZEROPAGE")

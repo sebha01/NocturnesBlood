@@ -12872,7 +12872,7 @@ L0054:	lda     _inputPad
 ;
 ; player.jumpBufferTimer = JUMP_BUFFER_FRAMES;
 ;
-	lda     #$06
+	lda     #$14
 	sta     _player+17
 ;
 ; if (player.jumpBufferTimer > 0 && !player.isJumping && player.coyoteTime > 0) 
@@ -14687,7 +14687,7 @@ L0005:	sta     _player+9
 ;
 ; player.dashCooldown = DASH_COOLDOWN;
 ;
-	lda     #$14
+	lda     #$1E
 	sta     _player+21
 ;
 ; }
