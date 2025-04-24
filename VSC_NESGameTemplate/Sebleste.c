@@ -48,9 +48,10 @@
 #include "LIB/neslib.h"
 #include "LIB/nesdoug.h" 
 #include <stdlib.h>
-#include "NES_ST/Level1A.h"
-#include "NES_ST/Level2A.h"
-#include "NES_ST/Level3A.h"
+#include "NES_ST/Level1.h"
+#include "NES_ST/Level2.h"
+#include "NES_ST/Level3.h"
+#include "NES_ST/TitleScreen.h"
 
 
 //Define colours
@@ -126,7 +127,7 @@ const unsigned char titlePrompt[] = "Press START";
 const unsigned char endScreenTitle[] = "YOU WON!!!";
 const unsigned char endScreenPrompt[] = "To play again";
 const unsigned char deathScreenTitle[] = "YOU ARE DEAD";
-const unsigned char loadingText[] = "LOADING...";
+const unsigned char loadingText[] = "SPAWNING";
 //variable for getting input from controller
 unsigned char inputPad;
 unsigned char movementPad;
@@ -260,6 +261,9 @@ void DrawTitleScreen(void)
 	vram_adr(NAMETABLE_A);
 	vram_fill(0x00, 1024);
 
+	vram_adr(NAMETABLE_A);
+	vram_write(TitleScreen, 1024);
+
 
 	vram_adr(NTADR_A(8, 8)); // places text at screen position
 	vram_write(text, sizeof(text) - 1); //write Title to screen
@@ -279,13 +283,13 @@ void GameLoop(void)
 	switch(currentLevel)
 	{
 		case 1:
-			currentLevelData = Level1A;
+			currentLevelData = Level1;
 			break;
 		case 2:
-			currentLevelData = Level2A;
+			currentLevelData = Level2;
 			break;
 		case 3:
-			currentLevelData = Level3A;
+			currentLevelData = Level3;
 			break;
 	}
 
