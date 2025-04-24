@@ -304,7 +304,7 @@ void GameLoop(void)
 	//Clear the screen
 	vram_adr(NAMETABLE_A);      
 	vram_fill(0x00, 1024);
-	vram_adr(NTADR_A(8, 8));
+	vram_adr(NTADR_A(12, 8));
 	vram_write(loadingText, sizeof(loadingText) - 1); 
 
 	ppu_on_all();
@@ -519,9 +519,6 @@ void MovePlayer(void)
 
 void DrawPlayer(void)
 {
-	unsigned int offset = 20;
-	unsigned int origin = 20;
-	unsigned char healthBarAttributes = 0x02;
 	unsigned char playerAttributes = player.isDashing ? 0x03 :
 						player.damageTimer > 0 && player.damageTimer % 2 == 0 ? 0x02 :
 						player.damageTimer > 0 && player.damageTimer % 2 == 1 ? 0x00 : 0x01;

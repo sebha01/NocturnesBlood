@@ -4422,10 +4422,10 @@ L0003:	ldx     #$20
 	ldx     #$04
 	jsr     _vram_fill
 ;
-; vram_adr(NTADR_A(8, 8));
+; vram_adr(NTADR_A(12, 8));
 ;
 	ldx     #$21
-	lda     #$08
+	lda     #$0C
 	jsr     _vram_adr
 ;
 ; vram_write(loadingText, sizeof(loadingText) - 1); 
