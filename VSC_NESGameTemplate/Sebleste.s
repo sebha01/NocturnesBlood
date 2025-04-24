@@ -3431,9 +3431,9 @@ L0003:	ldx     #$20
 .segment	"CODE"
 
 ;
-; if (movementPad & PAD_A && !player.isDashing) 
+; if (inputPad & PAD_A && !player.isDashing) 
 ;
-	lda     _movementPad
+	lda     _inputPad
 	and     #$80
 	beq     L0002
 	lda     _player+16
@@ -3453,7 +3453,7 @@ L0002:	jsr     _OnGround
 ;
 ; player.coyoteTime = COYOTE_FRAMES;
 ;
-	lda     #$14
+	lda     #$0A
 	sta     _player+2
 ;
 ; player.hasDashedInAir = 0;

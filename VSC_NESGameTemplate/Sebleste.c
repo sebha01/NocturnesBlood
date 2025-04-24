@@ -86,7 +86,7 @@
 #define GRAVITY 1
 #define JUMP_VELOCITY -10
 #define MAX_FALL_SPEED 4
-#define COYOTE_FRAMES  20
+#define COYOTE_FRAMES  10
 #define JUMP_BUFFER_FRAMES 20
 //dashing
 #define DASH_SPEED 5
@@ -313,7 +313,7 @@ void GameLoop(void)
 
 void MovePlayer(void)
 {
-	if (movementPad & PAD_A && !player.isDashing) 
+	if (inputPad & PAD_A && !player.isDashing) 
 	{
 		player.jumpBufferTimer = JUMP_BUFFER_FRAMES;
 	}
