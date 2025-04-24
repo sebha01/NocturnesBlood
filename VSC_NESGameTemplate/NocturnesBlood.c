@@ -499,10 +499,10 @@ void MovePlayer(void)
 		}
 	}
 
-	if (checkIfSpikes(currentLevelData[GetTileIndex(player.left + 6, player.bottom - 4)]) ||
-	checkIfSpikes(currentLevelData[GetTileIndex(player.right - 6, player.bottom - 4)]) ||
-	checkIfSpikes(currentLevelData[GetTileIndex(player.left + 6, player.top + 4)]) ||
-	checkIfSpikes(currentLevelData[GetTileIndex(player.right - 6, player.top + 4)]))
+	if (CheckIfSpikes(currentLevelData[GetTileIndex(player.left + 6, player.bottom - 4)]) ||
+	CheckIfSpikes(currentLevelData[GetTileIndex(player.right - 6, player.bottom - 4)]) ||
+	CheckIfSpikes(currentLevelData[GetTileIndex(player.left + 6, player.top + 4)]) ||
+	CheckIfSpikes(currentLevelData[GetTileIndex(player.right - 6, player.top + 4)]))
 	{
 		if (player.damageTimer == 0)
 		{

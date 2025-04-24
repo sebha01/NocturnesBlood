@@ -58,7 +58,7 @@
 	.export		_SetPlayerValues
 	.export		_DrawDeathScreen
 	.export		_ResetLevel
-	.export		_checkIfSpikes
+	.export		_CheckIfSpikes
 	.export		_main
 
 .segment	"DATA"
@@ -3950,7 +3950,7 @@ L004A:	dec     _player+25
 ;
 	jsr     _ResetLevel
 ;
-; if (checkIfSpikes(currentLevelData[GetTileIndex(player.left + 6, player.bottom - 4)]) ||
+; if (CheckIfSpikes(currentLevelData[GetTileIndex(player.left + 6, player.bottom - 4)]) ||
 ;
 L004B:	lda     _currentLevelData
 	ldx     _currentLevelData+1
@@ -3968,11 +3968,11 @@ L004B:	lda     _currentLevelData
 	stx     ptr1+1
 	ldy     #$00
 	lda     (ptr1),y
-	jsr     _checkIfSpikes
+	jsr     _CheckIfSpikes
 	tax
 	jne     L0050
 ;
-; checkIfSpikes(currentLevelData[GetTileIndex(player.right - 6, player.bottom - 4)]) ||
+; CheckIfSpikes(currentLevelData[GetTileIndex(player.right - 6, player.bottom - 4)]) ||
 ;
 	lda     _currentLevelData
 	ldx     _currentLevelData+1
@@ -3990,11 +3990,11 @@ L004B:	lda     _currentLevelData
 	stx     ptr1+1
 	ldy     #$00
 	lda     (ptr1),y
-	jsr     _checkIfSpikes
+	jsr     _CheckIfSpikes
 	tax
 	bne     L0050
 ;
-; checkIfSpikes(currentLevelData[GetTileIndex(player.left + 6, player.top + 4)]) ||
+; CheckIfSpikes(currentLevelData[GetTileIndex(player.left + 6, player.top + 4)]) ||
 ;
 	lda     _currentLevelData
 	ldx     _currentLevelData+1
@@ -4012,11 +4012,11 @@ L004B:	lda     _currentLevelData
 	stx     ptr1+1
 	ldy     #$00
 	lda     (ptr1),y
-	jsr     _checkIfSpikes
+	jsr     _CheckIfSpikes
 	tax
 	bne     L0050
 ;
-; checkIfSpikes(currentLevelData[GetTileIndex(player.right - 6, player.top + 4)]))
+; CheckIfSpikes(currentLevelData[GetTileIndex(player.right - 6, player.top + 4)]))
 ;
 	lda     _currentLevelData
 	ldx     _currentLevelData+1
@@ -4034,7 +4034,7 @@ L004B:	lda     _currentLevelData
 	stx     ptr1+1
 	ldy     #$00
 	lda     (ptr1),y
-	jsr     _checkIfSpikes
+	jsr     _CheckIfSpikes
 	tax
 	beq     L0058
 ;
@@ -5709,12 +5709,12 @@ L0003:	ldx     #$20
 .endproc
 
 ; ---------------------------------------------------------------
-; char __near__ checkIfSpikes (unsigned char tile)
+; char __near__ CheckIfSpikes (unsigned char tile)
 ; ---------------------------------------------------------------
 
 .segment	"CODE"
 
-.proc	_checkIfSpikes: near
+.proc	_CheckIfSpikes: near
 
 .segment	"CODE"
 
