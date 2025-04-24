@@ -53,6 +53,8 @@
 #include "NES_ST/Level2.h"
 #include "NES_ST/Level3.h"
 #include "NES_ST/TitleScreen.h"
+#include "NES_ST/DeathScreen.h"
+#include "NES_ST/WinScreen.h"
 
 
 //Define colours
@@ -618,13 +620,16 @@ void DrawEndScreen()
 	vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
 	vram_fill(0x00, 1024);
 
-	vram_adr(NTADR_A(8, 8)); // places text at screen position
+	vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
+	vram_write(WinScreen, 1024);
+
+	vram_adr(NTADR_A(11, 6)); // places text at screen position
 	vram_write(endScreenTitle, sizeof(endScreenTitle) - 1); //write Title to screen
 	//Write prompt to start game
-	vram_adr(NTADR_A(10, 14));
+	vram_adr(NTADR_A(11, 19));
 	vram_write(titlePrompt, sizeof(titlePrompt) - 1);
 
-	vram_adr(NTADR_A(10, 18));
+	vram_adr(NTADR_A(10, 21));
 	vram_write(endScreenPrompt, sizeof(endScreenPrompt) - 1);
 
 	ppu_on_all(); //	turn on screen
@@ -745,7 +750,9 @@ void ResetLevel(void)
 	//Clear the screen
 	vram_adr(NAMETABLE_A);      
 	vram_fill(0x00, 1024);
-	vram_adr(NTADR_A(9, 8));
+	vram_adr(NAMETABLE_A);      
+	vram_write(DeathScreen, 1024);
+	vram_adr(NTADR_A(10, 8));
 	vram_write(respawningText, sizeof(respawningText) - 1); 
 
 	ppu_on_all();
