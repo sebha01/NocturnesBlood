@@ -121,7 +121,7 @@ const unsigned char spritePalette[] =
 //Defines which state the game is currently in (START_SCREEN, GAME_LOOP or END_SCREEN)
 unsigned char currentGameState = START_SCREEN;
 //Text
-const unsigned char text[] = "DEATH HOLES"; 
+const unsigned char text[] = "SEBLESTE"; 
 const unsigned char titlePrompt[] = "Press START";
 const unsigned char endScreenTitle[] = "YOU WON!!!";
 const unsigned char endScreenPrompt[] = "To play again";

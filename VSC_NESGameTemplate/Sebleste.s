@@ -3182,7 +3182,7 @@ _spritePalette:
 	.byte	$19
 	.byte	$39
 _text:
-	.byte	$44,$45,$41,$54,$48,$20,$48,$4F,$4C,$45,$53,$00
+	.byte	$53,$45,$42,$4C,$45,$53,$54,$45,$00
 _titlePrompt:
 	.byte	$50,$72,$65,$73,$73,$20,$53,$54,$41,$52,$54,$00
 _endScreenTitle:
@@ -3252,7 +3252,7 @@ _player:
 	ldx     #>(_text)
 	jsr     pushax
 	ldx     #$00
-	lda     #$0B
+	lda     #$08
 	jsr     _vram_write
 ;
 ; vram_adr(NTADR_A(10, 14));
