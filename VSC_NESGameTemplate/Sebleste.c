@@ -55,6 +55,7 @@
 #include "NES_ST/TitleScreen.h"
 #include "NES_ST/DeathScreen.h"
 #include "NES_ST/WinScreen.h"
+#include "NES_ST/LoadingScreen.h"
 
 
 //Define colours
@@ -129,7 +130,7 @@ const unsigned char titlePrompt[] = "Press START";
 const unsigned char endScreenTitle[] = "YOU WON!";
 const unsigned char endScreenPrompt[] = "To play again";
 const unsigned char deathScreenTitle[] = "YOU ARE DEAD";
-const unsigned char loadingText[] = "LOADING INTO LEVEL";
+const unsigned char loadingText[] = "LOADING :D";
 const unsigned char respawningText[] = "RESPAWNING :)";
 const unsigned char DeathCounter[] = "Death Counter";
 //variable for getting input from controller
@@ -307,7 +308,9 @@ void GameLoop(void)
 	//Clear the screen
 	vram_adr(NAMETABLE_A);      
 	vram_fill(0x00, 1024);
-	vram_adr(NTADR_A(12, 8));
+	vram_adr(NAMETABLE_A);      
+	vram_write(LoadingScreen, 1024);
+	vram_adr(NTADR_A(11, 16));
 	vram_write(loadingText, sizeof(loadingText) - 1); 
 
 	ppu_on_all();
