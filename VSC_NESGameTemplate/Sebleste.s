@@ -38,6 +38,7 @@
 	.export		_endScreenPrompt
 	.export		_deathScreenTitle
 	.export		_loadingText
+	.export		_respawningText
 	.export		_DeathCounter
 	.export		_inputPad
 	.export		_movementPad
@@ -4222,10 +4223,13 @@ _endScreenPrompt:
 _deathScreenTitle:
 	.byte	$59,$4F,$55,$20,$41,$52,$45,$20,$44,$45,$41,$44,$00
 _loadingText:
-	.byte	$53,$50,$41,$57,$4E,$49,$4E,$47,$00
+	.byte	$2D,$2D,$20,$2D,$2D,$20,$4C,$4F,$41,$44,$49,$4E,$47,$20,$49,$4E
+	.byte	$54,$4F,$20,$4C,$45,$56,$45,$4C,$20,$2D,$2D,$20,$2D,$2D,$00
+_respawningText:
+	.byte	$52,$45,$53,$50,$41,$57,$4E,$49,$4E,$47,$20,$3A,$29,$00
 _DeathCounter:
 	.byte	$44,$65,$61,$74,$68,$20,$43,$6F,$75,$6E,$74,$65,$72,$00
-S0009:
+S000A:
 	.byte	$25,$64,$00
 
 .segment	"BSS"
@@ -4422,10 +4426,10 @@ L0003:	ldx     #$20
 	ldx     #$04
 	jsr     _vram_fill
 ;
-; vram_adr(NTADR_A(12, 8));
+; vram_adr(NTADR_A(1, 8));
 ;
 	ldx     #$21
-	lda     #$0C
+	lda     #$01
 	jsr     _vram_adr
 ;
 ; vram_write(loadingText, sizeof(loadingText) - 1); 
@@ -4434,7 +4438,7 @@ L0003:	ldx     #$20
 	ldx     #>(_loadingText)
 	jsr     pushax
 	ldx     #$00
-	lda     #$08
+	lda     #$1E
 	jsr     _vram_write
 ;
 ; ppu_on_all();
@@ -5128,27 +5132,13 @@ L005C:	rts
 .segment	"CODE"
 
 ;
-; unsigned int offset = 20;
-;
-	lda     #$14
-	jsr     pusha0
-;
-; unsigned int origin = 20;
-;
-	jsr     pusha0
-;
-; unsigned char healthBarAttributes = 0x02;
-;
-	lda     #$02
-	jsr     pusha
-;
 ; unsigned char playerAttributes = player.isDashing ? 0x03 :
 ;
 	lda     _player+16
 	ora     _player+16+1
 	beq     L0002
 	lda     #$03
-	jmp     L003A
+	jmp     L0038
 ;
 ; player.damageTimer > 0 && player.damageTimer % 2 == 0 ? 0x02 :
 ;
@@ -5159,21 +5149,21 @@ L0002:	lda     _player+25
 	and     #$01
 	bne     L0009
 	lda     #$02
-	jmp     L003A
+	jmp     L0038
 ;
 ; player.damageTimer > 0 && player.damageTimer % 2 == 1 ? 0x00 : 0x01;
 ;
 L0009:	lda     _player+25
 	ora     _player+25+1
-	beq     L0039
+	beq     L0037
 	lda     _player+25
 	and     #$01
 	cmp     #$01
-	bne     L0039
+	bne     L0037
 	lda     #$00
-	jmp     L003A
-L0039:	lda     #$01
-L003A:	jsr     pusha
+	jmp     L0038
+L0037:	lda     #$01
+L0038:	jsr     pusha
 ;
 ; if (!player.facingRight)
 ;
@@ -5236,9 +5226,9 @@ L0016:	ldy     #$02
 	lda     _player+11
 	beq     L0017
 	lda     _player
-	jmp     L003B
+	jmp     L0039
 L0017:	lda     _player+3
-L003B:	ldy     #$02
+L0039:	ldy     #$02
 	sta     (sp),y
 	lda     _player+7
 	dey
@@ -5276,9 +5266,9 @@ L001A:	ldy     #$02
 	lda     _player+11
 	beq     L001B
 	lda     _player
-	jmp     L003C
+	jmp     L003A
 L001B:	lda     _player+3
-L003C:	ldy     #$02
+L003A:	ldy     #$02
 	sta     (sp),y
 	lda     _player+1
 	dey
@@ -5287,7 +5277,7 @@ L003C:	ldy     #$02
 ;
 ; else if (player.isJumping)
 ;
-	jmp     L0044
+	jmp     L0042
 L0014:	lda     _player+14
 	jeq     L001E
 ;
@@ -5317,9 +5307,9 @@ L0020:	ldy     #$02
 	lda     _player+11
 	beq     L0021
 	lda     _player
-	jmp     L003D
+	jmp     L003B
 L0021:	lda     _player+3
-L003D:	ldy     #$02
+L003B:	ldy     #$02
 	sta     (sp),y
 	lda     _player+7
 	dey
@@ -5357,9 +5347,9 @@ L0024:	ldy     #$02
 	lda     _player+11
 	beq     L0025
 	lda     _player
-	jmp     L003E
+	jmp     L003C
 L0025:	lda     _player+3
-L003E:	ldy     #$02
+L003C:	ldy     #$02
 	sta     (sp),y
 	lda     _player+1
 	dey
@@ -5368,7 +5358,7 @@ L003E:	ldy     #$02
 ;
 ; else
 ;
-	jmp     L0044
+	jmp     L0042
 ;
 ; oam_spr((player.facingRight ? player.left : player.x), player.top, 0x08, playerAttributes);
 ;
@@ -5396,9 +5386,9 @@ L0029:	ldy     #$02
 	lda     _player+11
 	beq     L002A
 	lda     _player
-	jmp     L003F
+	jmp     L003D
 L002A:	lda     _player+3
-L003F:	ldy     #$02
+L003D:	ldy     #$02
 	sta     (sp),y
 	lda     _player+7
 	dey
@@ -5436,15 +5426,15 @@ L002D:	ldy     #$02
 	lda     _player+11
 	beq     L002E
 	lda     _player
-	jmp     L0040
+	jmp     L003E
 L002E:	lda     _player+3
-L0040:	ldy     #$02
+L003E:	ldy     #$02
 	sta     (sp),y
 	lda     _player+1
 	dey
 	sta     (sp),y
 	lda     #$19
-L0044:	dey
+L0042:	dey
 	sta     (sp),y
 	ldy     #$03
 	lda     (sp),y
@@ -5452,7 +5442,7 @@ L0044:	dey
 ;
 ; }
 ;
-L0027:	jmp     incsp6
+L0027:	jmp     incsp1
 
 .endproc
 
@@ -6383,19 +6373,19 @@ L0002:	ldx     #$20
 	ldx     #$04
 	jsr     _vram_fill
 ;
-; vram_adr(NTADR_A(8, 8));
+; vram_adr(NTADR_A(9, 8));
 ;
 	ldx     #$21
-	lda     #$08
+	lda     #$09
 	jsr     _vram_adr
 ;
-; vram_write(loadingText, sizeof(loadingText) - 1); 
+; vram_write(respawningText, sizeof(respawningText) - 1); 
 ;
-	lda     #<(_loadingText)
-	ldx     #>(_loadingText)
+	lda     #<(_respawningText)
+	ldx     #>(_respawningText)
 	jsr     pushax
 	ldx     #$00
-	lda     #$08
+	lda     #$0D
 	jsr     _vram_write
 ;
 ; ppu_on_all();
@@ -6542,11 +6532,11 @@ L0004:	lda     #$01
 	iny
 	lda     #>(_deathCounterText)
 	sta     (sp),y
-	lda     #<(S0009)
+	lda     #<(S000A)
 	ldy     #$00
 	sta     (sp),y
 	iny
-	lda     #>(S0009)
+	lda     #>(S000A)
 	sta     (sp),y
 	lda     _player+23
 	ldx     _player+23+1

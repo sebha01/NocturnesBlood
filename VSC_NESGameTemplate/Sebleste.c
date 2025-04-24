@@ -127,7 +127,8 @@ const unsigned char titlePrompt[] = "Press START";
 const unsigned char endScreenTitle[] = "YOU WON!!!";
 const unsigned char endScreenPrompt[] = "To play again";
 const unsigned char deathScreenTitle[] = "YOU ARE DEAD";
-const unsigned char loadingText[] = "SPAWNING";
+const unsigned char loadingText[] = "-- -- LOADING INTO LEVEL -- --";
+const unsigned char respawningText[] = "RESPAWNING :)";
 const unsigned char DeathCounter[] = "Death Counter";
 //variable for getting input from controller
 unsigned char inputPad;
@@ -304,7 +305,7 @@ void GameLoop(void)
 	//Clear the screen
 	vram_adr(NAMETABLE_A);      
 	vram_fill(0x00, 1024);
-	vram_adr(NTADR_A(12, 8));
+	vram_adr(NTADR_A(1, 8));
 	vram_write(loadingText, sizeof(loadingText) - 1); 
 
 	ppu_on_all();
@@ -744,8 +745,8 @@ void ResetLevel(void)
 	//Clear the screen
 	vram_adr(NAMETABLE_A);      
 	vram_fill(0x00, 1024);
-	vram_adr(NTADR_A(8, 8));
-	vram_write(loadingText, sizeof(loadingText) - 1); 
+	vram_adr(NTADR_A(9, 8));
+	vram_write(respawningText, sizeof(respawningText) - 1); 
 
 	ppu_on_all();
 	delay(60);
