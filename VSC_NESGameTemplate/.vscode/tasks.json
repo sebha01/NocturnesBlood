@@ -51,7 +51,7 @@
                 "showReuseMessage": false,
                 "clear": true
             },
-            "args": ["${workspaceFolder}/BUILD/NocturnesBlood.nes"],
+            "args": ["${workspaceFolder}/BUILD/Sebleste.nes"],
             "group": {
                 "kind": "test",
                 "isDefault": true
