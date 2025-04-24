@@ -181,7 +181,7 @@ char CheckIfPlatformTile(unsigned char tile);
 void SetPlayerValues(void);
 void DrawDeathScreen(void);
 void ResetLevel(void);
-char checkIfSpikes(unsigned char tile);
+char CheckIfSpikes(unsigned char tile);
 
 /*
 ----------------
@@ -798,7 +798,7 @@ void ResetLevel(void)
 	ppu_on_all(); //	turn on screen
 }
 
-char checkIfSpikes(unsigned char tile)
+char CheckIfSpikes(unsigned char tile)
 {
 	return tile == 0x8A || tile == 0x8B || tile == 0x8C || tile == 0x8D ||
 		tile == 0x9A || tile == 0x9B || tile == 0xAA || tile == 0xAB ||
