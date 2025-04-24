@@ -48,6 +48,7 @@
 #include "LIB/neslib.h"
 #include "LIB/nesdoug.h" 
 #include <stdlib.h>
+#include <stdio.h>
 #include "NES_ST/Level1.h"
 #include "NES_ST/Level2.h"
 #include "NES_ST/Level3.h"
@@ -94,7 +95,6 @@
 #define DASH_DURATION 6
 #define DASH_COOLDOWN 30
 //Health
-#define MAX_HEALTH 4
 #define LEVEL_COOLDOWN = 90
 #define DAMAGE_TIMER 20
 
@@ -128,6 +128,7 @@ const unsigned char endScreenTitle[] = "YOU WON!!!";
 const unsigned char endScreenPrompt[] = "To play again";
 const unsigned char deathScreenTitle[] = "YOU ARE DEAD";
 const unsigned char loadingText[] = "SPAWNING";
+const unsigned char DeathCounter[] = "Death Counter";
 //variable for getting input from controller
 unsigned char inputPad;
 unsigned char movementPad;
@@ -136,6 +137,7 @@ int i = 0;
 //lowest 1 highest 3
 int currentLevel = 1;
 const unsigned char* currentLevelData;
+char deathCounterText[6];
 
 typedef struct
 {
@@ -159,7 +161,7 @@ typedef struct
 	char hasDashedInAir;
 	// -1 = left, 1 = right
 	signed int dashDirection; 
-	unsigned int health;
+	unsigned int deathCounter;
 	unsigned int damageTimer;
 } Player;
 
@@ -183,6 +185,7 @@ void SetPlayerValues(void);
 void DrawDeathScreen(void);
 void ResetLevel(void);
 char CheckIfSpikes(unsigned char tile);
+void WriteDeathCounter(void);
 
 /*
 ----------------
@@ -280,10 +283,15 @@ void GameLoop(void)
 	ppu_off(); 
 	oam_clear();
 
+	//Load palette
+	pal_bg(palette);
+	pal_spr((const char*)spritePalette);
+
 	switch(currentLevel)
 	{
 		case 1:
 			currentLevelData = Level1;
+			player.deathCounter = 0;
 			break;
 		case 2:
 			currentLevelData = Level2;
@@ -305,12 +313,8 @@ void GameLoop(void)
 
 	vram_adr(NAMETABLE_A);      
 	vram_write(currentLevelData, 1024);
-	
-	player.health = MAX_HEALTH;
 
-	//Load palette
-	pal_bg(palette);
-	pal_spr((const char*)spritePalette);
+	WriteDeathCounter();
 
 	ppu_on_all();
 }
@@ -330,11 +334,6 @@ void MovePlayer(void)
 	else if (player.coyoteTime > 0) 
 	{
 		player.coyoteTime--;
-	}
-
-	if (player.dashCooldown > 0) 
-	{
-		player.dashCooldown--;
 	}
 
 	//-------------------------
@@ -382,6 +381,10 @@ void MovePlayer(void)
 			}
 		}
 	}
+	else if (player.dashCooldown > 0) 
+	{
+		player.dashCooldown--;
+	}
 
 	// Check if jump button (A) is pressed, player is not already jumping, and player is currently standing on solid ground
 	if (player.jumpBufferTimer > 0 && !player.isJumping && player.coyoteTime > 0) 
@@ -417,13 +420,7 @@ void MovePlayer(void)
 			if (!CheckIfCollidableTile(currentLevelData[GetTileIndex(nextX, player.top)]) &&
 				!CheckIfCollidableTile(currentLevelData[GetTileIndex(nextX, player.bottom)]))
 			{
-				player.x += player.dashDirection;
-			} 
-			else 
-			{
-				//If a collidable is hit then the dash will end early and the dash cool down starts
-				DashEnd();
-				break;
+				player.x += player.facingRight ? 1 : -1;
 			}
 		}
 
@@ -569,34 +566,6 @@ void DrawPlayer(void)
 		oam_spr((player.facingRight ? player.x : player.left), player.top, 0x09, playerAttributes);
 		oam_spr((player.facingRight ? player.left : player.x), player.y, 0x18, playerAttributes);
     	oam_spr((player.facingRight ? player.x : player.left), player.y, 0x19, playerAttributes);
-	}
-
-
-	//DRAW HEALTH BAR
-	for (i = 0; i < MAX_HEALTH; i++)
-	{
-		healthBarAttributes = currentLevel == 1 ? 0x01 : 
-							currentLevel == 2 ? 0x03 : 0x02;
-
-		if (i <= player.health - 1)
-		{
-			//Draw a full heart starting at the origin adding offset * i
-			oam_spr(origin + (i * offset), 20, 0x0E, healthBarAttributes);
-			oam_spr(origin + (i * offset), 28, 0x1E, healthBarAttributes);
-			//flip the sprite
-			healthBarAttributes |= 0x40;
-			oam_spr(origin + (i * offset) + 8, 20, 0x0E, healthBarAttributes);
-			oam_spr(origin + (i * offset) + 8, 28, 0x1E, healthBarAttributes);
-		}
-		else
-		{
-			oam_spr(origin + (i * offset), 20, 0x0F, healthBarAttributes);
-			oam_spr(origin + (i * offset), 28, 0x1F, healthBarAttributes);
-			//flip the sprite
-			healthBarAttributes |= 0x40;
-			oam_spr(origin + (i * offset) + 8, 20, 0x0F, healthBarAttributes);
-			oam_spr(origin + (i * offset) + 8, 28, 0x1F, healthBarAttributes);
-		}
 	}
 }
 
@@ -773,16 +742,7 @@ void ResetLevel(void)
 	//Clear all sprite data
 	oam_clear();
 
-	player.health --;
-
-	if (player.health <= 0)
-	{
-		currentLevel = 1;
-		SetPlayerValues();
-		currentGameState = DEATH_SCREEN;	
-		DrawDeathScreen();
-		return;
-	}
+	player.deathCounter++;
 
 	//Clear the screen
 	vram_adr(NAMETABLE_A);      
@@ -797,6 +757,8 @@ void ResetLevel(void)
 	vram_adr(NAMETABLE_A);      
 	vram_write(currentLevelData, 1024);
 
+	WriteDeathCounter();
+
 	SetPlayerValues();
 
 	ppu_on_all(); //	turn on screen
@@ -807,4 +769,13 @@ char CheckIfSpikes(unsigned char tile)
 	return tile == 0x8A || tile == 0x8B || tile == 0x8C || tile == 0x8D ||
 		tile == 0x9A || tile == 0x9B || tile == 0xAA || tile == 0xAB ||
 		tile == 0xC8 || tile == 0xC9 || tile == 0xD8 || tile == 0xD9;
+}
+
+void WriteDeathCounter(void)
+{
+	vram_adr(NTADR_A(1, 1));
+	vram_write(DeathCounter, sizeof(DeathCounter));
+	vram_adr(NTADR_A(17, 1));
+	sprintf(deathCounterText, "%d", player.deathCounter);
+	vram_write((const unsigned char*)deathCounterText, sizeof(deathCounterText));
 }
