@@ -95,6 +95,7 @@
 //Health
 #define MAX_HEALTH 4
 #define LEVEL_COOLDOWN = 90
+#define DAMAGE_TIMER 20
 
 #pragma bss-name(push, "ZEROPAGE")
 
@@ -158,6 +159,7 @@ typedef struct
 	// -1 = left, 1 = right
 	signed int dashDirection; 
 	unsigned int health;
+	unsigned int damageTimer;
 } Player;
 
 Player player;
@@ -321,11 +323,10 @@ void MovePlayer(void)
 		player.coyoteTime--;
 	}
 
-	// Dash cooldown. begin counting down if dash has finished the time until player can dash again
-    if (player.dashCooldown > 0) 
+	if (player.dashCooldown > 0) 
 	{
-        player.dashCooldown--;
-    }
+		player.dashCooldown--;
+	}
 
 	//-------------------------
     // Horizontal movement
@@ -488,12 +489,23 @@ void MovePlayer(void)
         }
     }
 
-	if (checkIfSpikes(currentLevelData[GetTileIndex(player.left + 6, player.bottom - 4)]) ||
+	if (player.damageTimer > 0)
+	{
+		player.damageTimer--;
+
+		if (player.damageTimer == 0)
+		{
+			ResetLevel();
+		}
+	}
+
+	if (player.damageTimer == 0 && 
+	checkIfSpikes(currentLevelData[GetTileIndex(player.left + 6, player.bottom - 4)]) ||
 	checkIfSpikes(currentLevelData[GetTileIndex(player.right - 6, player.bottom - 4)]) ||
 	checkIfSpikes(currentLevelData[GetTileIndex(player.left + 6, player.top + 4)]) ||
 	checkIfSpikes(currentLevelData[GetTileIndex(player.right - 6, player.top + 4)]))
 	{
-		ResetLevel();
+		player.damageTimer = DAMAGE_TIMER;
 	}
 
 	if (player.bottom > 240) 
@@ -507,7 +519,8 @@ void DrawPlayer(void)
 	unsigned int offset = 20;
 	unsigned int origin = 20;
 	unsigned char healthBarAttributes = 0x02;
-	unsigned char playerAttributes =  player.isDashing ? 0x03 :
+	unsigned char playerAttributes = player.isDashing ? 0x03 :
+						player.damageTimer > 0 ? 0x02 :
 						currentLevel == 3 ? 0x00 : 0x01;
 
 	if (!player.facingRight)
@@ -717,6 +730,7 @@ void SetPlayerValues(void)
 	player.dashCooldown = 0;
 	player.hasDashedInAir = 0;
 	player.dashDirection = 0;
+	player.damageTimer = 0;
 }
 
 void DrawDeathScreen(void)

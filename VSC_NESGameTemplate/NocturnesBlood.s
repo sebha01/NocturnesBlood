@@ -3204,7 +3204,7 @@ _movementPad:
 _currentLevelData:
 	.res	2,$00
 _player:
-	.res	25,$00
+	.res	27,$00
 
 ; ---------------------------------------------------------------
 ; void __near__ DrawTitleScreen (void)
@@ -3449,12 +3449,12 @@ L0003:	ldx     #$20
 ;
 ; else if (!OnGround() && player.coyoteTime > 0) 
 ;
-	jmp     L0059
+	jmp     L0060
 L0002:	jsr     _OnGround
 	tax
-	bne     L0059
+	bne     L0060
 	lda     _player+2
-	beq     L0059
+	beq     L0060
 ;
 ; player.coyoteTime--;
 ;
@@ -3462,8 +3462,8 @@ L0002:	jsr     _OnGround
 ;
 ; if (player.dashCooldown > 0) 
 ;
-L0059:	lda     _player+19
-	beq     L005A
+L0060:	lda     _player+19
+	beq     L0061
 ;
 ; player.dashCooldown--;
 ;
@@ -3471,9 +3471,9 @@ L0059:	lda     _player+19
 ;
 ; if (movementPad & PAD_LEFT)
 ;
-L005A:	lda     _movementPad
+L0061:	lda     _movementPad
 	and     #$02
-	beq     L005B
+	beq     L0062
 ;
 ; if (!CheckIfCollidableTile(currentLevelData[GetTileIndex(player.left, player.y + 1)]))
 ;
@@ -3493,7 +3493,7 @@ L005A:	lda     _movementPad
 	lda     (ptr1),y
 	jsr     _CheckIfCollidableTile
 	tax
-	bne     L005B
+	bne     L0062
 ;
 ; player.x -= PLAYER_SPEED;
 ;
@@ -3508,9 +3508,9 @@ L005A:	lda     _movementPad
 ;
 ; if (movementPad & PAD_RIGHT)
 ;
-L005B:	lda     _movementPad
+L0062:	lda     _movementPad
 	and     #$01
-	beq     L005C
+	beq     L0063
 ;
 ; if (!CheckIfCollidableTile(currentLevelData[GetTileIndex(player.right, player.y + 1)]))
 ;
@@ -3530,7 +3530,7 @@ L005B:	lda     _movementPad
 	lda     (ptr1),y
 	jsr     _CheckIfCollidableTile
 	tax
-	bne     L005C
+	bne     L0063
 ;
 ; player.x += PLAYER_SPEED;
 ;
@@ -3546,32 +3546,32 @@ L005B:	lda     _movementPad
 ;
 ; if ((inputPad & PAD_B) && !player.isDashing && !(player.dashCooldown > 0)) 
 ;
-L005C:	lda     _inputPad
+L0063:	lda     _inputPad
 	and     #$40
-	beq     L0063
+	beq     L006A
 	lda     _player+16
 	ora     _player+16+1
-	bne     L0063
+	bne     L006A
 	lda     _player+19
-	bne     L0063
+	bne     L006A
 ;
 ; if (OnGround() || !player.hasDashedInAir)
 ;
 	jsr     _OnGround
 	tax
-	bne     L0060
+	bne     L0067
 	lda     _player+20
-	bne     L0063
+	bne     L006A
 ;
 ; player.dashDirection = (movementPad & PAD_LEFT ? -1 : movementPad & PAD_RIGHT ? 1 : 0);
 ;
-L0060:	lda     _movementPad
+L0067:	lda     _movementPad
 	and     #$02
-	beq     L0061
+	beq     L0068
 	ldx     #$FF
 	txa
 	jmp     L0019
-L0061:	lda     _movementPad
+L0068:	lda     _movementPad
 	ldx     #$00
 	and     #$01
 	beq     L0019
@@ -3595,7 +3595,7 @@ L0019:	sta     _player+21
 ;
 	jsr     _OnGround
 	tax
-	bne     L0063
+	bne     L006A
 ;
 ; player.hasDashedInAir = 1;
 ;
@@ -3604,12 +3604,12 @@ L0019:	sta     _player+21
 ;
 ; if (inputPad & PAD_A && !player.isDashing) 
 ;
-L0063:	lda     _inputPad
+L006A:	lda     _inputPad
 	and     #$80
-	beq     L0067
+	beq     L006E
 	lda     _player+16
 	ora     _player+16+1
-	bne     L0067
+	bne     L006E
 ;
 ; player.jumpBufferTimer = JUMP_BUFFER_FRAMES;
 ;
@@ -3618,12 +3618,12 @@ L0063:	lda     _inputPad
 ;
 ; if (player.jumpBufferTimer > 0 && !player.isJumping && player.coyoteTime > 0) 
 ;
-L0067:	lda     _player+15
-	beq     L006B
+L006E:	lda     _player+15
+	beq     L0072
 	lda     _player+14
-	bne     L006B
+	bne     L0072
 	lda     _player+2
-	beq     L006B
+	beq     L0072
 ;
 ; player.isJumping = 1;
 ;
@@ -3645,7 +3645,7 @@ L0067:	lda     _player+15
 ; else if (player.jumpBufferTimer > 0) 
 ;
 	jmp     L0024
-L006B:	lda     _player+15
+L0072:	lda     _player+15
 	beq     L0024
 ;
 ; player.jumpBufferTimer--;
@@ -3673,7 +3673,7 @@ L0026:	lda     _i
 	sbc     #$00
 	bvc     L002A
 	eor     #$80
-L002A:	jpl     L006D
+L002A:	jpl     L0074
 ;
 ; int nextX = (player.dashDirection == 1) ? player.right + 2 : player.left - 2;
 ;
@@ -3753,7 +3753,7 @@ L0031:	jsr     _DashEnd
 ; break;
 ;
 	jsr     incsp2
-	jmp     L006D
+	jmp     L0074
 ;
 ; }
 ;
@@ -3768,7 +3768,7 @@ L0035:	jsr     incsp2
 ;
 ; if (player.dashTimer <= 0) 
 ;
-L006D:	lda     _player+18
+L0074:	lda     _player+18
 	jne     L004A
 ;
 ; DashEnd();
@@ -3930,9 +3930,38 @@ L0038:	jsr     _OnGround
 	lda     #$01
 	sta     _player+14
 ;
-; if (checkIfSpikes(currentLevelData[GetTileIndex(player.left + 6, player.bottom - 4)]) ||
+; if (player.damageTimer > 0)
 ;
-L004A:	lda     _currentLevelData
+L004A:	lda     _player+25
+	ora     _player+25+1
+	beq     L004E
+;
+; player.damageTimer--;
+;
+	lda     _player+25
+	bne     L004D
+	dec     _player+25+1
+L004D:	dec     _player+25
+;
+; if (player.damageTimer == 0)
+;
+	lda     _player+25
+	ora     _player+25+1
+	bne     L004E
+;
+; ResetLevel();
+;
+	jsr     _ResetLevel
+;
+; if (player.damageTimer == 0 && 
+;
+L004E:	lda     _player+25
+	ora     _player+25+1
+	bne     L0052
+;
+; checkIfSpikes(currentLevelData[GetTileIndex(player.left + 6, player.bottom - 4)]) ||
+;
+	lda     _currentLevelData
 	ldx     _currentLevelData+1
 	jsr     pushax
 	lda     _player+3
@@ -3950,11 +3979,11 @@ L004A:	lda     _currentLevelData
 	lda     (ptr1),y
 	jsr     _checkIfSpikes
 	tax
-	jne     L004E
+	jne     L0055
 ;
 ; checkIfSpikes(currentLevelData[GetTileIndex(player.right - 6, player.bottom - 4)]) ||
 ;
-	lda     _currentLevelData
+L0052:	lda     _currentLevelData
 	ldx     _currentLevelData+1
 	jsr     pushax
 	lda     _player+5
@@ -3972,7 +4001,7 @@ L004A:	lda     _currentLevelData
 	lda     (ptr1),y
 	jsr     _checkIfSpikes
 	tax
-	bne     L004E
+	bne     L0055
 ;
 ; checkIfSpikes(currentLevelData[GetTileIndex(player.left + 6, player.top + 4)]) ||
 ;
@@ -3994,7 +4023,7 @@ L004A:	lda     _currentLevelData
 	lda     (ptr1),y
 	jsr     _checkIfSpikes
 	tax
-	bne     L004E
+	bne     L0055
 ;
 ; checkIfSpikes(currentLevelData[GetTileIndex(player.right - 6, player.top + 4)]))
 ;
@@ -4016,21 +4045,24 @@ L004A:	lda     _currentLevelData
 	lda     (ptr1),y
 	jsr     _checkIfSpikes
 	tax
-	beq     L004B
+	beq     L0050
 ;
-; ResetLevel();
+; player.damageTimer = DAMAGE_TIMER;
 ;
-L004E:	jsr     _ResetLevel
+L0055:	ldx     #$00
+	lda     #$14
+	sta     _player+25
+	stx     _player+25+1
 ;
 ; if (player.bottom > 240) 
 ;
-L004B:	lda     _player+9
+L0050:	lda     _player+9
 	cmp     #$F1
 	lda     _player+9+1
 	sbc     #$00
-	bvs     L0057
+	bvs     L005E
 	eor     #$80
-L0057:	bpl     L0056
+L005E:	bpl     L005D
 ;
 ; ResetLevel();
 ;
@@ -4038,7 +4070,7 @@ L0057:	bpl     L0056
 ;
 ; }
 ;
-L0056:	rts
+L005D:	rts
 
 .endproc
 
@@ -4067,30 +4099,38 @@ L0056:	rts
 	lda     #$02
 	jsr     pusha
 ;
-; unsigned char playerAttributes =  player.isDashing ? 0x03 :
+; unsigned char playerAttributes = player.isDashing ? 0x03 :
 ;
 	lda     _player+16
 	ora     _player+16+1
 	beq     L0002
 	lda     #$03
-	jmp     L003C
+	jmp     L003F
+;
+; player.damageTimer > 0 ? 0x02 :
+;
+L0002:	lda     _player+25
+	ora     _player+25+1
+	beq     L0005
+	lda     #$02
+	jmp     L003F
 ;
 ; currentLevel == 3 ? 0x00 : 0x01;
 ;
-L0002:	lda     _currentLevel+1
-	bne     L003B
+L0005:	lda     _currentLevel+1
+	bne     L003E
 	lda     _currentLevel
 	cmp     #$03
-	bne     L003B
+	bne     L003E
 	lda     #$00
-	jmp     L003C
-L003B:	lda     #$01
-L003C:	jsr     pusha
+	jmp     L003F
+L003E:	lda     #$01
+L003F:	jsr     pusha
 ;
 ; if (!player.facingRight)
 ;
 	lda     _player+11
-	bne     L0007
+	bne     L000A
 ;
 ; playerAttributes |= 0x40;
 ;
@@ -4101,7 +4141,7 @@ L003C:	jsr     pusha
 ;
 ; oam_clear();
 ;
-L0007:	jsr     _oam_clear
+L000A:	jsr     _oam_clear
 ;
 ; if (currentGameState != GAME_LOOP)
 ;
@@ -4110,7 +4150,7 @@ L0007:	jsr     _oam_clear
 ;
 ; return;
 ;
-	jne     L0026
+	jne     L0029
 ;
 ; UpdateColliderPositions();
 ;
@@ -4120,17 +4160,17 @@ L0007:	jsr     _oam_clear
 ;
 	lda     _player+16
 	ora     _player+16+1
-	jeq     L0009
+	jeq     L000C
 ;
 ; oam_spr((player.facingRight ? player.left : player.x), player.top, 0x88, playerAttributes);
 ;
 	jsr     decsp3
 	lda     _player+11
-	beq     L000A
+	beq     L000D
 	lda     _player+3
-	jmp     L000B
-L000A:	lda     _player
-L000B:	ldy     #$02
+	jmp     L000E
+L000D:	lda     _player
+L000E:	ldy     #$02
 	sta     (sp),y
 	lda     _player+7
 	dey
@@ -4146,11 +4186,11 @@ L000B:	ldy     #$02
 ;
 	jsr     decsp3
 	lda     _player+11
-	beq     L000C
+	beq     L000F
 	lda     _player
-	jmp     L003D
-L000C:	lda     _player+3
-L003D:	ldy     #$02
+	jmp     L0040
+L000F:	lda     _player+3
+L0040:	ldy     #$02
 	sta     (sp),y
 	lda     _player+7
 	dey
@@ -4166,11 +4206,11 @@ L003D:	ldy     #$02
 ;
 	jsr     decsp3
 	lda     _player+11
-	beq     L000E
+	beq     L0011
 	lda     _player+3
-	jmp     L000F
-L000E:	lda     _player
-L000F:	ldy     #$02
+	jmp     L0012
+L0011:	lda     _player
+L0012:	ldy     #$02
 	sta     (sp),y
 	lda     _player+1
 	dey
@@ -4186,11 +4226,11 @@ L000F:	ldy     #$02
 ;
 	jsr     decsp3
 	lda     _player+11
-	beq     L0010
+	beq     L0013
 	lda     _player
-	jmp     L003E
-L0010:	lda     _player+3
-L003E:	ldy     #$02
+	jmp     L0041
+L0013:	lda     _player+3
+L0041:	ldy     #$02
 	sta     (sp),y
 	lda     _player+1
 	dey
@@ -4199,19 +4239,19 @@ L003E:	ldy     #$02
 ;
 ; else if (player.isJumping)
 ;
-	jmp     L004B
-L0009:	lda     _player+14
-	jeq     L0013
+	jmp     L004E
+L000C:	lda     _player+14
+	jeq     L0016
 ;
 ; oam_spr((player.facingRight ? player.left : player.x), player.top, 0x0A, playerAttributes);
 ;
 	jsr     decsp3
 	lda     _player+11
-	beq     L0014
+	beq     L0017
 	lda     _player+3
-	jmp     L0015
-L0014:	lda     _player
-L0015:	ldy     #$02
+	jmp     L0018
+L0017:	lda     _player
+L0018:	ldy     #$02
 	sta     (sp),y
 	lda     _player+7
 	dey
@@ -4227,11 +4267,11 @@ L0015:	ldy     #$02
 ;
 	jsr     decsp3
 	lda     _player+11
-	beq     L0016
+	beq     L0019
 	lda     _player
-	jmp     L003F
-L0016:	lda     _player+3
-L003F:	ldy     #$02
+	jmp     L0042
+L0019:	lda     _player+3
+L0042:	ldy     #$02
 	sta     (sp),y
 	lda     _player+7
 	dey
@@ -4247,11 +4287,11 @@ L003F:	ldy     #$02
 ;
 	jsr     decsp3
 	lda     _player+11
-	beq     L0018
+	beq     L001B
 	lda     _player+3
-	jmp     L0019
-L0018:	lda     _player
-L0019:	ldy     #$02
+	jmp     L001C
+L001B:	lda     _player
+L001C:	ldy     #$02
 	sta     (sp),y
 	lda     _player+1
 	dey
@@ -4267,11 +4307,11 @@ L0019:	ldy     #$02
 ;
 	jsr     decsp3
 	lda     _player+11
-	beq     L001A
+	beq     L001D
 	lda     _player
-	jmp     L0040
-L001A:	lda     _player+3
-L0040:	ldy     #$02
+	jmp     L0043
+L001D:	lda     _player+3
+L0043:	ldy     #$02
 	sta     (sp),y
 	lda     _player+1
 	dey
@@ -4280,17 +4320,17 @@ L0040:	ldy     #$02
 ;
 ; else
 ;
-	jmp     L004B
+	jmp     L004E
 ;
 ; oam_spr((player.facingRight ? player.left : player.x), player.top, 0x08, playerAttributes);
 ;
-L0013:	jsr     decsp3
+L0016:	jsr     decsp3
 	lda     _player+11
-	beq     L001D
+	beq     L0020
 	lda     _player+3
-	jmp     L001E
-L001D:	lda     _player
-L001E:	ldy     #$02
+	jmp     L0021
+L0020:	lda     _player
+L0021:	ldy     #$02
 	sta     (sp),y
 	lda     _player+7
 	dey
@@ -4306,11 +4346,11 @@ L001E:	ldy     #$02
 ;
 	jsr     decsp3
 	lda     _player+11
-	beq     L001F
+	beq     L0022
 	lda     _player
-	jmp     L0041
-L001F:	lda     _player+3
-L0041:	ldy     #$02
+	jmp     L0044
+L0022:	lda     _player+3
+L0044:	ldy     #$02
 	sta     (sp),y
 	lda     _player+7
 	dey
@@ -4326,11 +4366,11 @@ L0041:	ldy     #$02
 ;
 	jsr     decsp3
 	lda     _player+11
-	beq     L0021
+	beq     L0024
 	lda     _player+3
-	jmp     L0022
-L0021:	lda     _player
-L0022:	ldy     #$02
+	jmp     L0025
+L0024:	lda     _player
+L0025:	ldy     #$02
 	sta     (sp),y
 	lda     _player+1
 	dey
@@ -4346,17 +4386,17 @@ L0022:	ldy     #$02
 ;
 	jsr     decsp3
 	lda     _player+11
-	beq     L0023
+	beq     L0026
 	lda     _player
-	jmp     L0042
-L0023:	lda     _player+3
-L0042:	ldy     #$02
+	jmp     L0045
+L0026:	lda     _player+3
+L0045:	ldy     #$02
 	sta     (sp),y
 	lda     _player+1
 	dey
 	sta     (sp),y
 	lda     #$19
-L004B:	dey
+L004E:	dey
 	sta     (sp),y
 	ldy     #$03
 	lda     (sp),y
@@ -4367,33 +4407,33 @@ L004B:	dey
 	lda     #$00
 	sta     _i
 	sta     _i+1
-L0025:	lda     _i
+L0028:	lda     _i
 	cmp     #$04
 	lda     _i+1
 	sbc     #$00
-	bvc     L0029
+	bvc     L002C
 	eor     #$80
-L0029:	jpl     L0026
+L002C:	jpl     L0029
 ;
 ; healthBarAttributes = currentLevel == 1 ? 0x01 : 
 ;
 	lda     _currentLevel+1
-	bne     L002C
+	bne     L002F
 	lda     _currentLevel
 	cmp     #$01
-	beq     L0044
+	beq     L0047
 ;
 ; currentLevel == 2 ? 0x03 : 0x02;
 ;
-L002C:	lda     _currentLevel+1
-	bne     L0043
+L002F:	lda     _currentLevel+1
+	bne     L0046
 	lda     _currentLevel
 	cmp     #$02
-	bne     L0043
+	bne     L0046
 	lda     #$03
-	jmp     L0044
-L0043:	lda     #$02
-L0044:	ldy     #$01
+	jmp     L0047
+L0046:	lda     #$02
+L0047:	ldy     #$01
 	sta     (sp),y
 ;
 ; if (i <= player.health - 1)
@@ -4405,15 +4445,15 @@ L0044:	ldy     #$01
 	ldx     _player+23+1
 	sec
 	sbc     #$01
-	bcs     L0032
+	bcs     L0035
 	dex
-L0032:	jsr     tosicmp
-	beq     L003A
-	jcs     L0031
+L0035:	jsr     tosicmp
+	beq     L003D
+	jcs     L0034
 ;
 ; oam_spr(origin + (i * offset), 20, 0x0E, healthBarAttributes);
 ;
-L003A:	jsr     decsp3
+L003D:	jsr     decsp3
 	ldy     #$08
 	jsr     pushwysp
 	lda     _i
@@ -4527,11 +4567,11 @@ L003A:	jsr     decsp3
 ;
 ; else
 ;
-	jmp     L004C
+	jmp     L004F
 ;
 ; oam_spr(origin + (i * offset), 20, 0x0F, healthBarAttributes);
 ;
-L0031:	jsr     decsp3
+L0034:	jsr     decsp3
 	ldy     #$08
 	jsr     pushwysp
 	lda     _i
@@ -4642,7 +4682,7 @@ L0031:	jsr     decsp3
 	dey
 	sta     (sp),y
 	lda     #$1F
-L004C:	dey
+L004F:	dey
 	sta     (sp),y
 	ldy     #$04
 	lda     (sp),y
@@ -4651,13 +4691,13 @@ L004C:	dey
 ; for (i = 0; i < MAX_HEALTH; i++)
 ;
 	inc     _i
-	jne     L0025
+	jne     L0028
 	inc     _i+1
-	jmp     L0025
+	jmp     L0028
 ;
 ; }
 ;
-L0026:	jmp     incsp6
+L0029:	jmp     incsp6
 
 .endproc
 
@@ -5436,6 +5476,11 @@ L000A:	sta     _player+1
 ;
 	sta     _player+21
 	sta     _player+21+1
+;
+; player.damageTimer = 0;
+;
+	sta     _player+25
+	sta     _player+25+1
 ;
 ; }
 ;
