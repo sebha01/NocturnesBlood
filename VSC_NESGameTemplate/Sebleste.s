@@ -6275,8 +6275,8 @@ _endScreenPrompt:
 _deathScreenTitle:
 	.byte	$59,$4F,$55,$20,$41,$52,$45,$20,$44,$45,$41,$44,$00
 _loadingText:
-	.byte	$2D,$2D,$20,$2D,$2D,$20,$4C,$4F,$41,$44,$49,$4E,$47,$20,$49,$4E
-	.byte	$54,$4F,$20,$4C,$45,$56,$45,$4C,$20,$2D,$2D,$20,$2D,$2D,$00
+	.byte	$4C,$4F,$41,$44,$49,$4E,$47,$20,$49,$4E,$54,$4F,$20,$4C,$45,$56
+	.byte	$45,$4C,$00
 _respawningText:
 	.byte	$52,$45,$53,$50,$41,$57,$4E,$49,$4E,$47,$20,$3A,$29,$00
 _DeathCounter:
@@ -6478,10 +6478,10 @@ L0003:	ldx     #$20
 	ldx     #$04
 	jsr     _vram_fill
 ;
-; vram_adr(NTADR_A(1, 8));
+; vram_adr(NTADR_A(12, 8));
 ;
 	ldx     #$21
-	lda     #$01
+	lda     #$0C
 	jsr     _vram_adr
 ;
 ; vram_write(loadingText, sizeof(loadingText) - 1); 
@@ -6490,7 +6490,7 @@ L0003:	ldx     #$20
 	ldx     #>(_loadingText)
 	jsr     pushax
 	ldx     #$00
-	lda     #$1E
+	lda     #$12
 	jsr     _vram_write
 ;
 ; ppu_on_all();
@@ -6553,7 +6553,7 @@ L0003:	ldx     #$20
 ;
 ; player.jumpBufferTimer = JUMP_BUFFER_FRAMES;
 ;
-	lda     #$14
+	lda     #$0A
 	sta     _player+15
 ;
 ; if (OnGround()) 

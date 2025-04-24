@@ -91,7 +91,7 @@
 #define JUMP_VELOCITY -10
 #define MAX_FALL_SPEED 4
 #define COYOTE_FRAMES  10
-#define JUMP_BUFFER_FRAMES 20
+#define JUMP_BUFFER_FRAMES 10
 //dashing
 #define DASH_SPEED 5
 #define DASH_DURATION 6
@@ -129,7 +129,7 @@ const unsigned char titlePrompt[] = "Press START";
 const unsigned char endScreenTitle[] = "YOU WON!";
 const unsigned char endScreenPrompt[] = "To play again";
 const unsigned char deathScreenTitle[] = "YOU ARE DEAD";
-const unsigned char loadingText[] = "-- -- LOADING INTO LEVEL -- --";
+const unsigned char loadingText[] = "LOADING INTO LEVEL";
 const unsigned char respawningText[] = "RESPAWNING :)";
 const unsigned char DeathCounter[] = "Death Counter";
 //variable for getting input from controller
@@ -307,7 +307,7 @@ void GameLoop(void)
 	//Clear the screen
 	vram_adr(NAMETABLE_A);      
 	vram_fill(0x00, 1024);
-	vram_adr(NTADR_A(1, 8));
+	vram_adr(NTADR_A(12, 8));
 	vram_write(loadingText, sizeof(loadingText) - 1); 
 
 	ppu_on_all();
