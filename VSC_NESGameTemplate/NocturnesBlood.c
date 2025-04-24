@@ -499,13 +499,15 @@ void MovePlayer(void)
 		}
 	}
 
-	if (player.damageTimer == 0 && 
-	checkIfSpikes(currentLevelData[GetTileIndex(player.left + 6, player.bottom - 4)]) ||
+	if (checkIfSpikes(currentLevelData[GetTileIndex(player.left + 6, player.bottom - 4)]) ||
 	checkIfSpikes(currentLevelData[GetTileIndex(player.right - 6, player.bottom - 4)]) ||
 	checkIfSpikes(currentLevelData[GetTileIndex(player.left + 6, player.top + 4)]) ||
 	checkIfSpikes(currentLevelData[GetTileIndex(player.right - 6, player.top + 4)]))
 	{
-		player.damageTimer = DAMAGE_TIMER;
+		if (player.damageTimer == 0)
+		{
+			player.damageTimer = DAMAGE_TIMER;
+		}
 	}
 
 	if (player.bottom > 240) 
@@ -520,8 +522,8 @@ void DrawPlayer(void)
 	unsigned int origin = 20;
 	unsigned char healthBarAttributes = 0x02;
 	unsigned char playerAttributes = player.isDashing ? 0x03 :
-						player.damageTimer > 0 ? 0x02 :
-						currentLevel == 3 ? 0x00 : 0x01;
+						player.damageTimer > 0 && player.damageTimer % 2 == 0 ? 0x02 :
+						player.damageTimer > 0 && player.damageTimer % 2 == 1 ? 0x00 : 0x01;
 
 	if (!player.facingRight)
 	{
