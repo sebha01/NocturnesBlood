@@ -1301,7 +1301,7 @@ _Level2A:
 	.byte	$00
 	.byte	$00
 	.byte	$00
-	.byte	$8a
+	.byte	$00
 	.byte	$a4
 	.byte	$a5
 	.byte	$00
@@ -1333,7 +1333,7 @@ _Level2A:
 	.byte	$00
 	.byte	$00
 	.byte	$00
-	.byte	$9a
+	.byte	$00
 	.byte	$b4
 	.byte	$b5
 	.byte	$8b
@@ -1365,7 +1365,7 @@ _Level2A:
 	.byte	$00
 	.byte	$00
 	.byte	$00
-	.byte	$8a
+	.byte	$00
 	.byte	$a4
 	.byte	$a5
 	.byte	$9b
@@ -1397,7 +1397,7 @@ _Level2A:
 	.byte	$00
 	.byte	$00
 	.byte	$00
-	.byte	$9a
+	.byte	$00
 	.byte	$b4
 	.byte	$b5
 	.byte	$8b
@@ -1429,7 +1429,7 @@ _Level2A:
 	.byte	$00
 	.byte	$00
 	.byte	$00
-	.byte	$8a
+	.byte	$00
 	.byte	$a4
 	.byte	$a5
 	.byte	$9b
@@ -1461,7 +1461,7 @@ _Level2A:
 	.byte	$00
 	.byte	$00
 	.byte	$00
-	.byte	$9a
+	.byte	$00
 	.byte	$b4
 	.byte	$b5
 	.byte	$8b
