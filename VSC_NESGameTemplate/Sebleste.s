@@ -6269,7 +6269,7 @@ _text:
 _titlePrompt:
 	.byte	$50,$72,$65,$73,$73,$20,$53,$54,$41,$52,$54,$00
 _endScreenTitle:
-	.byte	$59,$4F,$55,$20,$57,$4F,$4E,$21,$21,$21,$00
+	.byte	$59,$4F,$55,$20,$57,$4F,$4E,$21,$00
 _endScreenPrompt:
 	.byte	$54,$6F,$20,$70,$6C,$61,$79,$20,$61,$67,$61,$69,$6E,$00
 _deathScreenTitle:
@@ -7716,10 +7716,10 @@ L000A:	jsr     _SetPlayerValues
 	lda     #$00
 	jsr     _vram_write
 ;
-; vram_adr(NTADR_A(11, 6)); // places text at screen position
+; vram_adr(NTADR_A(12, 6)); // places text at screen position
 ;
 	ldx     #$20
-	lda     #$CB
+	lda     #$CC
 	jsr     _vram_adr
 ;
 ; vram_write(endScreenTitle, sizeof(endScreenTitle) - 1); //write Title to screen
@@ -7728,7 +7728,7 @@ L000A:	jsr     _SetPlayerValues
 	ldx     #>(_endScreenTitle)
 	jsr     pushax
 	ldx     #$00
-	lda     #$0A
+	lda     #$08
 	jsr     _vram_write
 ;
 ; vram_adr(NTADR_A(11, 19));

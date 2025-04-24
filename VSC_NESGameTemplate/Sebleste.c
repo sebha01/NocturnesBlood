@@ -126,7 +126,7 @@ unsigned char currentGameState = START_SCREEN;
 //Text
 const unsigned char text[] = "SEBLESTE"; 
 const unsigned char titlePrompt[] = "Press START";
-const unsigned char endScreenTitle[] = "YOU WON!!!";
+const unsigned char endScreenTitle[] = "YOU WON!";
 const unsigned char endScreenPrompt[] = "To play again";
 const unsigned char deathScreenTitle[] = "YOU ARE DEAD";
 const unsigned char loadingText[] = "-- -- LOADING INTO LEVEL -- --";
@@ -623,7 +623,7 @@ void DrawEndScreen()
 	vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
 	vram_write(WinScreen, 1024);
 
-	vram_adr(NTADR_A(11, 6)); // places text at screen position
+	vram_adr(NTADR_A(12, 6)); // places text at screen position
 	vram_write(endScreenTitle, sizeof(endScreenTitle) - 1); //write Title to screen
 	//Write prompt to start game
 	vram_adr(NTADR_A(11, 19));
