@@ -265,10 +265,10 @@ void DrawTitleScreen(void)
 	vram_write(TitleScreen, 1024);
 
 
-	vram_adr(NTADR_A(8, 8)); // places text at screen position
+	vram_adr(NTADR_A(12, 5)); // places text at screen position
 	vram_write(text, sizeof(text) - 1); //write Title to screen
 	//Write prompt to start game
-	vram_adr(NTADR_A(10, 14));
+	vram_adr(NTADR_A(10, 18));
 	vram_write(titlePrompt, sizeof(titlePrompt) - 1);
 	
 	ppu_on_all(); //	turn on screen

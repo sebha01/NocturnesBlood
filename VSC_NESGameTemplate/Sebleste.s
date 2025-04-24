@@ -4281,10 +4281,10 @@ _player:
 	lda     #$00
 	jsr     _vram_write
 ;
-; vram_adr(NTADR_A(8, 8)); // places text at screen position
+; vram_adr(NTADR_A(12, 5)); // places text at screen position
 ;
-	ldx     #$21
-	lda     #$08
+	ldx     #$20
+	lda     #$AC
 	jsr     _vram_adr
 ;
 ; vram_write(text, sizeof(text) - 1); //write Title to screen
@@ -4296,10 +4296,10 @@ _player:
 	lda     #$08
 	jsr     _vram_write
 ;
-; vram_adr(NTADR_A(10, 14));
+; vram_adr(NTADR_A(10, 18));
 ;
-	ldx     #$21
-	lda     #$CA
+	ldx     #$22
+	lda     #$4A
 	jsr     _vram_adr
 ;
 ; vram_write(titlePrompt, sizeof(titlePrompt) - 1);
