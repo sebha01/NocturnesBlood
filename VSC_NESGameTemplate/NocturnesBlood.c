@@ -86,7 +86,7 @@
 #define GRAVITY 1
 #define JUMP_VELOCITY -10
 #define MAX_FALL_SPEED 4
-#define COYOTE_FRAMES 10
+#define COYOTE_FRAMES  20
 #define JUMP_BUFFER_FRAMES 20
 //dashing
 #define DASH_SPEED 5
@@ -313,12 +313,17 @@ void GameLoop(void)
 
 void MovePlayer(void)
 {
+	if (movementPad & PAD_A && !player.isDashing) 
+	{
+		player.jumpBufferTimer = JUMP_BUFFER_FRAMES;
+	}
+
 	if (OnGround()) 
 	{
 		player.coyoteTime = COYOTE_FRAMES;
 		player.hasDashedInAir = 0;
 	} 
-	else if (!OnGround() && player.coyoteTime > 0) 
+	else if (player.coyoteTime > 0) 
 	{
 		player.coyoteTime--;
 	}
@@ -372,11 +377,6 @@ void MovePlayer(void)
 				player.hasDashedInAir = 1;
 			}
 		}
-	}
-
-	if (inputPad & PAD_A && !player.isDashing) 
-	{
-		player.jumpBufferTimer = JUMP_BUFFER_FRAMES;
 	}
 
 	// Check if jump button (A) is pressed, player is not already jumping, and player is currently standing on solid ground
@@ -664,10 +664,10 @@ char OnGround(void)
 	//Make sure player does not land on top of the bottom of the screen
 	if (player.bottom + 1 >= 240) return 0;
 
-    return CheckIfCollidableTile(currentLevelData[GetTileIndex(player.right - 4, player.bottom + 1)]) ||
-		   CheckIfCollidableTile(currentLevelData[GetTileIndex(player.left + 4, player.bottom + 1)]) ||
-		   CheckIfPlatformTile(currentLevelData[GetTileIndex(player.right - 4, player.bottom + 1)]) ||
-		   CheckIfPlatformTile(currentLevelData[GetTileIndex(player.left + 4, player.bottom + 1)]);
+    return CheckIfCollidableTile(currentLevelData[GetTileIndex(player.right - 6, player.bottom + 1)]) ||
+		   CheckIfCollidableTile(currentLevelData[GetTileIndex(player.left + 6, player.bottom + 1)]) ||
+		   CheckIfPlatformTile(currentLevelData[GetTileIndex(player.right - 6, player.bottom + 1)]) ||
+		   CheckIfPlatformTile(currentLevelData[GetTileIndex(player.left + 6, player.bottom + 1)]);
 }
 
 char CheckIfCollidableTile(unsigned char tile) 
