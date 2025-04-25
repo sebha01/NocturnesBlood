@@ -207,10 +207,10 @@ void main (void)
 	//0 - 4
 	//3 for title screen
 	//0 for level 3
-	//1 for win screen
-	// for level 2
+	//2 for win screen
+	//1 for level 2
 	//4 for level 1
-	music_play(2);
+	music_play(3);
 
 
 	// Reminder for sound effects
@@ -250,7 +250,7 @@ void main (void)
 				if (inputPad & PAD_START)
 				{
 					currentGameState = START_SCREEN;
-					ChangeMusic(4);
+					ChangeMusic(3);
 					DrawTitleScreen();
 				}
 				break;
@@ -308,7 +308,7 @@ void GameLoop(void)
 			break;
 		case 2:
 			currentLevelData = Level2;
-			ChangeMusic(2);
+			ChangeMusic(1);
 			break;
 		case 3:
 			currentLevelData = Level3;
@@ -629,7 +629,7 @@ void DrawEndScreen()
 	//Set varirables back to their default value
 	currentLevel = 1;
 	SetPlayerValues();
-	ChangeMusic(1);
+	ChangeMusic(2);
 
 	//Clear the screen
 	vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen

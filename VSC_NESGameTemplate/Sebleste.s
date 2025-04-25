@@ -7483,9 +7483,9 @@ L0005:	lda     #>(_Level2)
 	lda     #<(_Level2)
 	sta     _currentLevelData
 ;
-; ChangeMusic(2);
+; ChangeMusic(1);
 ;
-	lda     #$02
+	lda     #$01
 ;
 ; break;
 ;
@@ -8737,10 +8737,10 @@ L000A:	jsr     _SetPlayerValues
 ;
 	jsr     _SetPlayerValues
 ;
-; ChangeMusic(1);
+; ChangeMusic(2);
 ;
 	ldx     #$00
-	lda     #$01
+	lda     #$02
 	jsr     _ChangeMusic
 ;
 ; vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
@@ -9703,9 +9703,9 @@ L0004:	ldy     #$00
 ;
 	jsr     _DrawTitleScreen
 ;
-; music_play(2);
+; music_play(3);
 ;
-	lda     #$02
+	lda     #$03
 	jsr     _music_play
 ;
 ; ppu_wait_nmi();
@@ -9787,10 +9787,10 @@ L000D:	lda     _inputPad
 	lda     #$00
 	sta     _currentGameState
 ;
-; ChangeMusic(4);
+; ChangeMusic(3);
 ;
 	tax
-	lda     #$04
+	lda     #$03
 	jsr     _ChangeMusic
 ;
 ; DrawTitleScreen();
