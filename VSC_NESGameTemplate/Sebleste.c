@@ -83,7 +83,6 @@
 #define START_SCREEN 0
 #define GAME_LOOP 1
 #define END_SCREEN 2
-#define DEATH_SCREEN 3
 //define constants used for player movement
 //Movement
 #define PLAYER_SPEED 2
@@ -129,7 +128,6 @@ const unsigned char text[] = "SEBLESTE";
 const unsigned char titlePrompt[] = "Press START";
 const unsigned char endScreenTitle[] = "YOU WON!";
 const unsigned char endScreenPrompt[] = "To play again";
-const unsigned char deathScreenTitle[] = "YOU ARE DEAD";
 const unsigned char loadingText[] = "LOADING :D";
 const unsigned char respawningText[] = "RESPAWNING :)";
 const unsigned char DeathCounter[] = "Death Counter";
@@ -206,10 +204,9 @@ void main (void)
 	//4 for title screen
 	//0 for level 3
 	//1 for win screen
-	// for death screen
 	//2 for level 2
-	// for level 1
-	music_play(2);
+	//3 for level 1
+	music_play(4);
 
 
 	// Reminder for sound effects
@@ -249,14 +246,7 @@ void main (void)
 				if (inputPad & PAD_START)
 				{
 					currentGameState = START_SCREEN;
-					DrawTitleScreen();
-				}
-				break;
-			case DEATH_SCREEN:
-				//Check if player has pressed start
-				if (inputPad & PAD_START)
-				{
-					currentGameState = START_SCREEN;
+					music_play(4);
 					DrawTitleScreen();
 				}
 				break;
@@ -310,12 +300,15 @@ void GameLoop(void)
 		case 1:
 			currentLevelData = Level1;
 			player.deathCounter = 0;
+			music_play(3);
 			break;
 		case 2:
 			currentLevelData = Level2;
+			music_play(2);
 			break;
 		case 3:
 			currentLevelData = Level3;
+			music_play(0);
 			break;
 	}
 
@@ -609,6 +602,7 @@ void CheckIfEnd()
 
 		if (currentLevel == 3)
 		{
+			music_play(1);
 			currentGameState = END_SCREEN;
 			DrawEndScreen();
 		}
@@ -728,33 +722,6 @@ void SetPlayerValues(void)
 	player.hasDashedInAir = 0;
 	player.dashDirection = 0;
 	player.damageTimer = 0;
-}
-
-void DrawDeathScreen(void)
-{
-	ppu_off(); // screen off
-	pal_bg(palette); //	load the BG palette
-
-	//Clear all sprite data
-	oam_clear();
-
-	//Set varirables back to their default value
-	currentLevel = 1;
-
-	//Clear the screen
-	vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
-	vram_fill(0x00, 1024);
-
-	vram_adr(NTADR_A(8, 8)); // places text at screen position
-	vram_write(deathScreenTitle, sizeof(deathScreenTitle) - 1); //write Title to screen
-	//Write prompt to start game
-	vram_adr(NTADR_A(10, 14));
-	vram_write(titlePrompt, sizeof(titlePrompt) - 1);
-
-	vram_adr(NTADR_A(10, 18));
-	vram_write(endScreenPrompt, sizeof(endScreenPrompt) - 1);
-
-	ppu_on_all(); //	turn on screen
 }
 
 void ResetLevel(void)

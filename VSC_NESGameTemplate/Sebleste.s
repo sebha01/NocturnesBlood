@@ -40,7 +40,6 @@
 	.export		_titlePrompt
 	.export		_endScreenTitle
 	.export		_endScreenPrompt
-	.export		_deathScreenTitle
 	.export		_loadingText
 	.export		_respawningText
 	.export		_DeathCounter
@@ -65,7 +64,6 @@
 	.export		_DashEnd
 	.export		_CheckIfPlatformTile
 	.export		_SetPlayerValues
-	.export		_DrawDeathScreen
 	.export		_ResetLevel
 	.export		_CheckIfSpikes
 	.export		_WriteDeathCounter
@@ -7299,15 +7297,13 @@ _endScreenTitle:
 	.byte	$59,$4F,$55,$20,$57,$4F,$4E,$21,$00
 _endScreenPrompt:
 	.byte	$54,$6F,$20,$70,$6C,$61,$79,$20,$61,$67,$61,$69,$6E,$00
-_deathScreenTitle:
-	.byte	$59,$4F,$55,$20,$41,$52,$45,$20,$44,$45,$41,$44,$00
 _loadingText:
 	.byte	$4C,$4F,$41,$44,$49,$4E,$47,$20,$3A,$44,$00
 _respawningText:
 	.byte	$52,$45,$53,$50,$41,$57,$4E,$49,$4E,$47,$20,$3A,$29,$00
 _DeathCounter:
 	.byte	$44,$65,$61,$74,$68,$20,$43,$6F,$75,$6E,$74,$65,$72,$00
-S000A:
+S0009:
 	.byte	$25,$64,$00
 
 .segment	"BSS"
@@ -7470,15 +7466,24 @@ L0004:	lda     #>(_Level1)
 	sta     _player+23
 	sta     _player+23+1
 ;
+; music_play(3);
+;
+	lda     #$03
+;
 ; break;
 ;
-	jmp     L0003
+	jmp     L0007
 ;
 ; currentLevelData = Level2;
 ;
 L0005:	lda     #>(_Level2)
 	sta     _currentLevelData+1
 	lda     #<(_Level2)
+	sta     _currentLevelData
+;
+; music_play(2);
+;
+	lda     #$02
 ;
 ; break;
 ;
@@ -7489,7 +7494,12 @@ L0005:	lda     #>(_Level2)
 L0006:	lda     #>(_Level3)
 	sta     _currentLevelData+1
 	lda     #<(_Level3)
-L0007:	sta     _currentLevelData
+	sta     _currentLevelData
+;
+; music_play(0);
+;
+	txa
+L0007:	jsr     _music_play
 ;
 ; vram_adr(NAMETABLE_A);      
 ;
@@ -8664,6 +8674,11 @@ L0004:	jsr     _SetPlayerValues
 	cmp     #$03
 	bne     L0007
 ;
+; music_play(1);
+;
+	lda     #$01
+	jsr     _music_play
+;
 ; currentGameState = END_SCREEN;
 ;
 	lda     #$02
@@ -9360,102 +9375,6 @@ L000A:	sta     _player+1
 .endproc
 
 ; ---------------------------------------------------------------
-; void __near__ DrawDeathScreen (void)
-; ---------------------------------------------------------------
-
-.segment	"CODE"
-
-.proc	_DrawDeathScreen: near
-
-.segment	"CODE"
-
-;
-; ppu_off(); // screen off
-;
-	jsr     _ppu_off
-;
-; pal_bg(palette); // load the BG palette
-;
-	lda     #<(_palette)
-	ldx     #>(_palette)
-	jsr     _pal_bg
-;
-; oam_clear();
-;
-	jsr     _oam_clear
-;
-; currentLevel = 1;
-;
-	ldx     #$00
-	lda     #$01
-	sta     _currentLevel
-	stx     _currentLevel+1
-;
-; vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
-;
-	ldx     #$20
-	lda     #$00
-	jsr     _vram_adr
-;
-; vram_fill(0x00, 1024);
-;
-	lda     #$00
-	jsr     pusha
-	ldx     #$04
-	jsr     _vram_fill
-;
-; vram_adr(NTADR_A(8, 8)); // places text at screen position
-;
-	ldx     #$21
-	lda     #$08
-	jsr     _vram_adr
-;
-; vram_write(deathScreenTitle, sizeof(deathScreenTitle) - 1); //write Title to screen
-;
-	lda     #<(_deathScreenTitle)
-	ldx     #>(_deathScreenTitle)
-	jsr     pushax
-	ldx     #$00
-	lda     #$0C
-	jsr     _vram_write
-;
-; vram_adr(NTADR_A(10, 14));
-;
-	ldx     #$21
-	lda     #$CA
-	jsr     _vram_adr
-;
-; vram_write(titlePrompt, sizeof(titlePrompt) - 1);
-;
-	lda     #<(_titlePrompt)
-	ldx     #>(_titlePrompt)
-	jsr     pushax
-	ldx     #$00
-	lda     #$0B
-	jsr     _vram_write
-;
-; vram_adr(NTADR_A(10, 18));
-;
-	ldx     #$22
-	lda     #$4A
-	jsr     _vram_adr
-;
-; vram_write(endScreenPrompt, sizeof(endScreenPrompt) - 1);
-;
-	lda     #<(_endScreenPrompt)
-	ldx     #>(_endScreenPrompt)
-	jsr     pushax
-	ldx     #$00
-	lda     #$0D
-	jsr     _vram_write
-;
-; ppu_on_all(); // turn on screen
-;
-	jmp     _ppu_on_all
-
-.endproc
-
-; ---------------------------------------------------------------
 ; void __near__ ResetLevel (void)
 ; ---------------------------------------------------------------
 
@@ -9673,11 +9592,11 @@ L0004:	lda     #$01
 	iny
 	lda     #>(_deathCounterText)
 	sta     (sp),y
-	lda     #<(S000A)
+	lda     #<(S0009)
 	ldy     #$00
 	sta     (sp),y
 	iny
-	lda     #>(S000A)
+	lda     #>(S0009)
 	sta     (sp),y
 	lda     _player+23
 	ldx     _player+23+1
@@ -9715,9 +9634,9 @@ L0004:	lda     #$01
 ;
 	jsr     _DrawTitleScreen
 ;
-; music_play(2);
+; music_play(4);
 ;
-	lda     #$02
+	lda     #$04
 	jsr     _music_play
 ;
 ; ppu_wait_nmi();
@@ -9742,18 +9661,16 @@ L0002:	jsr     _ppu_wait_nmi
 ;
 ; }
 ;
-	beq     L000E
+	beq     L000C
 	cmp     #$01
 	beq     L0009
 	cmp     #$02
-	beq     L000F
-	cmp     #$03
-	beq     L0010
+	beq     L000D
 	jmp     L0002
 ;
 ; if (inputPad & PAD_START)
 ;
-L000E:	lda     _inputPad
+L000C:	lda     _inputPad
 	and     #$10
 	beq     L0002
 ;
@@ -9792,7 +9709,7 @@ L0009:	jsr     _UpdateColliderPositions
 ;
 ; if (inputPad & PAD_START)
 ;
-L000F:	lda     _inputPad
+L000D:	lda     _inputPad
 	and     #$10
 	beq     L0002
 ;
@@ -9801,24 +9718,10 @@ L000F:	lda     _inputPad
 	lda     #$00
 	sta     _currentGameState
 ;
-; DrawTitleScreen();
+; music_play(4);
 ;
-	jsr     _DrawTitleScreen
-;
-; break;
-;
-	jmp     L0002
-;
-; if (inputPad & PAD_START)
-;
-L0010:	lda     _inputPad
-	and     #$10
-	beq     L0002
-;
-; currentGameState = START_SCREEN;
-;
-	lda     #$00
-	sta     _currentGameState
+	lda     #$04
+	jsr     _music_play
 ;
 ; DrawTitleScreen();
 ;
