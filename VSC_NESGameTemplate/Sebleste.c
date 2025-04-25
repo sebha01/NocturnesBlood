@@ -426,7 +426,7 @@ void MovePlayer(void)
 			if (!CheckIfCollidableTile(currentLevelData[GetTileIndex(nextX, player.top)]) &&
 				!CheckIfCollidableTile(currentLevelData[GetTileIndex(nextX, player.bottom)]))
 			{
-				player.x += player.facingRight ? 1 : -1;
+				player.x += player.dashDirection;
 			}
 		}
 
@@ -653,12 +653,14 @@ char CheckIfCollidableTile(unsigned char tile)
 {
 	//Stores all of the tiles that are collidable and is used to calculate collisions
     return tile == 0x10 || tile == 0x11 || tile == 0x12 || tile == 0x13
-		|| tile == 0x80 || tile == 0x81 || tile == 0x82 || tile == 0x83 
+		|| tile == 0x80 || tile == 0x81 || tile == 0x82 || tile == 0x83
+		|| tile == 0x8E || tile == 0x8F || tile == 0x9E || tile == 0x9F 
 		|| tile == 0x90 || tile == 0x91 || tile == 0x92 || tile == 0x93
 		|| tile == 0xA0 || tile == 0xA1 || tile == 0xA4 || tile == 0xA5 
 		|| tile == 0xA6 || tile == 0xA7 || tile == 0xA8 || tile == 0xA9 
 		|| tile == 0xB0 || tile == 0xB1 || tile == 0xB4 || tile == 0xB5 
-		|| tile == 0xB6 || tile == 0xB7 || tile == 0xB8 || tile == 0xB9;
+		|| tile == 0xB6 || tile == 0xB7 || tile == 0xB8 || tile == 0xB9
+		|| tile == 0xEE || tile == 0xEF || tile == 0xFE || tile == 0xFF;
 }
 
 char CheckIfGoalTile(unsigned char tile) 
