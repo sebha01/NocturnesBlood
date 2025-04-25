@@ -202,7 +202,14 @@ void main (void)
 	SetPlayerValues();
 	DrawTitleScreen();
 
-	music_play(1);
+	//0 - 4
+	//4 for title screen
+	//0 for level 3
+	//1 for win screen
+	// for death screen
+	//2 for level 2
+	// for level 1
+	music_play(2);
 
 
 	// Reminder for sound effects

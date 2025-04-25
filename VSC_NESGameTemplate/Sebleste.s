@@ -9715,9 +9715,9 @@ L0004:	lda     #$01
 ;
 	jsr     _DrawTitleScreen
 ;
-; music_play(1);
+; music_play(2);
 ;
-	lda     #$01
+	lda     #$02
 	jsr     _music_play
 ;
 ; ppu_wait_nmi();
