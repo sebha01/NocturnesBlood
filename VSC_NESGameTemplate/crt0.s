@@ -260,7 +260,12 @@ detectNTSC:
 .segment "RODATA"
 
 music_data:
-;	.include "music.s"
+	.include "MUSIC/Songs.s"
+
+	;.if(FT_SFX_ENABLE)
+;sounds_data:
+    ;.include "music/FamiTrackerSFX.s"
+    ;.endif
 
 
 

@@ -202,6 +202,13 @@ void main (void)
 	SetPlayerValues();
 	DrawTitleScreen();
 
+	music_play(1);
+
+
+	// Reminder for sound effects
+	// sfx_play(0, 0);
+	// sfx_play(1, 0);
+
 	// infinite loop
 	while (1)
 	{

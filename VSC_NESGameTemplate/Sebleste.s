@@ -18,6 +18,7 @@
 	.import		_ppu_on_all
 	.import		_oam_clear
 	.import		_oam_spr
+	.import		_music_play
 	.import		_pad_poll
 	.import		_vram_adr
 	.import		_vram_fill
@@ -9712,7 +9713,12 @@ L0004:	lda     #$01
 ;
 ; DrawTitleScreen();
 ;
-L000E:	jsr     _DrawTitleScreen
+	jsr     _DrawTitleScreen
+;
+; music_play(1);
+;
+	lda     #$01
+	jsr     _music_play
 ;
 ; ppu_wait_nmi();
 ;
@@ -9736,18 +9742,18 @@ L0002:	jsr     _ppu_wait_nmi
 ;
 ; }
 ;
-	beq     L000F
+	beq     L000E
 	cmp     #$01
 	beq     L0009
 	cmp     #$02
-	beq     L0010
+	beq     L000F
 	cmp     #$03
-	beq     L0011
+	beq     L0010
 	jmp     L0002
 ;
 ; if (inputPad & PAD_START)
 ;
-L000F:	lda     _inputPad
+L000E:	lda     _inputPad
 	and     #$10
 	beq     L0002
 ;
@@ -9786,6 +9792,25 @@ L0009:	jsr     _UpdateColliderPositions
 ;
 ; if (inputPad & PAD_START)
 ;
+L000F:	lda     _inputPad
+	and     #$10
+	beq     L0002
+;
+; currentGameState = START_SCREEN;
+;
+	lda     #$00
+	sta     _currentGameState
+;
+; DrawTitleScreen();
+;
+	jsr     _DrawTitleScreen
+;
+; break;
+;
+	jmp     L0002
+;
+; if (inputPad & PAD_START)
+;
 L0010:	lda     _inputPad
 	and     #$10
 	beq     L0002
@@ -9795,24 +9820,13 @@ L0010:	lda     _inputPad
 	lda     #$00
 	sta     _currentGameState
 ;
-; break;
+; DrawTitleScreen();
 ;
-	jmp     L000E
-;
-; if (inputPad & PAD_START)
-;
-L0011:	lda     _inputPad
-	and     #$10
-	beq     L0002
-;
-; currentGameState = START_SCREEN;
-;
-	lda     #$00
-	sta     _currentGameState
+	jsr     _DrawTitleScreen
 ;
 ; break;
 ;
-	jmp     L000E
+	jmp     L0002
 
 .endproc
 
