@@ -25,6 +25,7 @@
 	.import		_vram_write
 	.import		_delay
 	.import		_get_pad_new
+	.import		_set_music_speed
 	.import		_sprintf
 	.export		_Level1
 	.export		_Level2
@@ -67,6 +68,7 @@
 	.export		_ResetLevel
 	.export		_CheckIfSpikes
 	.export		_WriteDeathCounter
+	.export		_ChangeMusic
 	.export		_main
 
 .segment	"DATA"
@@ -7466,9 +7468,9 @@ L0004:	lda     #>(_Level1)
 	sta     _player+23
 	sta     _player+23+1
 ;
-; music_play(3);
+; ChangeMusic(4);
 ;
-	lda     #$03
+	lda     #$04
 ;
 ; break;
 ;
@@ -7481,7 +7483,7 @@ L0005:	lda     #>(_Level2)
 	lda     #<(_Level2)
 	sta     _currentLevelData
 ;
-; music_play(2);
+; ChangeMusic(2);
 ;
 	lda     #$02
 ;
@@ -7496,10 +7498,10 @@ L0006:	lda     #>(_Level3)
 	lda     #<(_Level3)
 	sta     _currentLevelData
 ;
-; music_play(0);
+; ChangeMusic(0);
 ;
 	txa
-L0007:	jsr     _music_play
+L0007:	jsr     _ChangeMusic
 ;
 ; vram_adr(NAMETABLE_A);      
 ;
@@ -8674,11 +8676,6 @@ L0004:	jsr     _SetPlayerValues
 	cmp     #$03
 	bne     L0007
 ;
-; music_play(1);
-;
-	lda     #$01
-	jsr     _music_play
-;
 ; currentGameState = END_SCREEN;
 ;
 	lda     #$02
@@ -8739,6 +8736,12 @@ L000A:	jsr     _SetPlayerValues
 ; SetPlayerValues();
 ;
 	jsr     _SetPlayerValues
+;
+; ChangeMusic(1);
+;
+	ldx     #$00
+	lda     #$01
+	jsr     _ChangeMusic
 ;
 ; vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
 ;
@@ -9616,6 +9619,72 @@ L0004:	lda     #$01
 .endproc
 
 ; ---------------------------------------------------------------
+; void __near__ ChangeMusic (unsigned int trackToChangeTo)
+; ---------------------------------------------------------------
+
+.segment	"CODE"
+
+.proc	_ChangeMusic: near
+
+.segment	"CODE"
+
+;
+; {
+;
+	jsr     pushax
+;
+; unsigned int currentSpeed = MAX_MUSIC_SPEED;
+;
+	lda     #$0C
+	jsr     pusha0
+;
+; while (currentSpeed > MIN_MUSIC_SPEED)
+;
+	jmp     L0004
+;
+; set_music_speed(currentSpeed);
+;
+L0002:	ldy     #$00
+	lda     (sp),y
+	jsr     _set_music_speed
+;
+; delay(6);
+;
+	lda     #$06
+	jsr     _delay
+;
+; currentSpeed--; 
+;
+	ldx     #$00
+	lda     #$01
+	jsr     subeq0sp
+;
+; while (currentSpeed > MIN_MUSIC_SPEED)
+;
+L0004:	ldy     #$00
+	lda     (sp),y
+	iny
+	ora     (sp),y
+	bne     L0002
+;
+; music_play(trackToChangeTo);
+;
+	iny
+	lda     (sp),y
+	jsr     _music_play
+;
+; set_music_speed(MAX_FALL_SPEED);
+;
+	lda     #$04
+	jsr     _set_music_speed
+;
+; }
+;
+	jmp     incsp4
+
+.endproc
+
+; ---------------------------------------------------------------
 ; void __near__ main (void)
 ; ---------------------------------------------------------------
 
@@ -9634,9 +9703,9 @@ L0004:	lda     #$01
 ;
 	jsr     _DrawTitleScreen
 ;
-; music_play(4);
+; music_play(2);
 ;
-	lda     #$04
+	lda     #$02
 	jsr     _music_play
 ;
 ; ppu_wait_nmi();
@@ -9718,10 +9787,11 @@ L000D:	lda     _inputPad
 	lda     #$00
 	sta     _currentGameState
 ;
-; music_play(4);
+; ChangeMusic(4);
 ;
+	tax
 	lda     #$04
-	jsr     _music_play
+	jsr     _ChangeMusic
 ;
 ; DrawTitleScreen();
 ;

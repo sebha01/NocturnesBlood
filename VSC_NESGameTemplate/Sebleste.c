@@ -99,6 +99,9 @@
 //Health
 #define LEVEL_COOLDOWN = 90
 #define DAMAGE_TIMER 20
+//Audio
+#define MAX_MUSIC_SPEED 12
+#define MIN_MUSIC_SPEED 0
 
 #pragma bss-name(push, "ZEROPAGE")
 
@@ -188,6 +191,7 @@ void DrawDeathScreen(void);
 void ResetLevel(void);
 char CheckIfSpikes(unsigned char tile);
 void WriteDeathCounter(void);
+void ChangeMusic(unsigned int trackToChangeTo);
 
 /*
 ----------------
@@ -201,12 +205,12 @@ void main (void)
 	DrawTitleScreen();
 
 	//0 - 4
-	//4 for title screen
+	//3 for title screen
 	//0 for level 3
 	//1 for win screen
-	//2 for level 2
-	//3 for level 1
-	music_play(4);
+	// for level 2
+	//4 for level 1
+	music_play(2);
 
 
 	// Reminder for sound effects
@@ -246,7 +250,7 @@ void main (void)
 				if (inputPad & PAD_START)
 				{
 					currentGameState = START_SCREEN;
-					music_play(4);
+					ChangeMusic(4);
 					DrawTitleScreen();
 				}
 				break;
@@ -300,15 +304,15 @@ void GameLoop(void)
 		case 1:
 			currentLevelData = Level1;
 			player.deathCounter = 0;
-			music_play(3);
+			ChangeMusic(4);
 			break;
 		case 2:
 			currentLevelData = Level2;
-			music_play(2);
+			ChangeMusic(2);
 			break;
 		case 3:
 			currentLevelData = Level3;
-			music_play(0);
+			ChangeMusic(0);
 			break;
 	}
 
@@ -602,7 +606,6 @@ void CheckIfEnd()
 
 		if (currentLevel == 3)
 		{
-			music_play(1);
 			currentGameState = END_SCREEN;
 			DrawEndScreen();
 		}
@@ -626,6 +629,7 @@ void DrawEndScreen()
 	//Set varirables back to their default value
 	currentLevel = 1;
 	SetPlayerValues();
+	ChangeMusic(1);
 
 	//Clear the screen
 	vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
@@ -769,4 +773,19 @@ void WriteDeathCounter(void)
 	vram_adr(NTADR_A(17, 1));
 	sprintf(deathCounterText, "%d", player.deathCounter);
 	vram_write((const unsigned char*)deathCounterText, sizeof(deathCounterText));
+}
+
+void ChangeMusic(unsigned int trackToChangeTo)
+{
+	unsigned int currentSpeed = MAX_MUSIC_SPEED;
+
+	while (currentSpeed > MIN_MUSIC_SPEED)
+	{
+		set_music_speed(currentSpeed);
+		delay(6);
+		currentSpeed--;	
+	}
+
+	music_play(trackToChangeTo);
+	set_music_speed(MAX_FALL_SPEED);
 }
