@@ -262,18 +262,10 @@ detectNTSC:
 music_data:
 	.include "MUSIC/Songs.s"
 
-	;.if(FT_SFX_ENABLE)
-;sounds_data:
-    ;.include "music/FamiTrackerSFX.s"
-    ;.endif
-
-
-
 	.if(FT_SFX_ENABLE)
 sounds_data:
-;	.include "sounds.s"
-	.endif
-
+    .include "music/SoundEffects.s"
+    .endif
 	
 	
 .segment "SAMPLES"

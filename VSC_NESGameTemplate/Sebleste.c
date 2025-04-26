@@ -205,17 +205,8 @@ void main (void)
 	DrawTitleScreen();
 
 	//0 - 4
-	//3 for title screen
-	//0 for level 3
-	//2 for win screen
-	//1 for level 2
-	//4 for level 1
+	//3 -> title screen, 0 -> level 3, 2 -> win screen, 1 -> level 2, 4 -> level 1
 	music_play(3);
-
-
-	// Reminder for sound effects
-	// sfx_play(0, 0);
-	// sfx_play(1, 0);
 
 	// infinite loop
 	while (1)
@@ -250,7 +241,7 @@ void main (void)
 				if (inputPad & PAD_START)
 				{
 					currentGameState = START_SCREEN;
-					ChangeMusic(3);
+					//ChangeMusic(3);
 					DrawTitleScreen();
 				}
 				break;
@@ -406,6 +397,7 @@ void MovePlayer(void)
 	// Check if jump button (A) is pressed, player is not already jumping, and player is currently standing on solid ground
 	if (player.jumpBufferTimer > 0 && !player.isJumping && player.coyoteTime > 0) 
 	{
+		sfx_play(2 , 0);
 		//Set the "bool" variable to true
 		player.isJumping = 1;
 		//Set the velocity to be the constant we defined applies an upward force to the player by being a negative value
@@ -424,6 +416,7 @@ void MovePlayer(void)
 	//-------------------------playerTop
 	if (player.isDashing) 
 	{
+		sfx_play(0 , 0);
 		//Decrement the dash timer so that when it runs out player stops dashing
 		player.dashTimer--;
 
@@ -455,6 +448,7 @@ void MovePlayer(void)
 		//Checks for if the player is jumping
         if (player.isJumping) 
         {
+
 			//Apply gravity to bring the player back down
             player.velocityY += GRAVITY;
 
@@ -602,6 +596,7 @@ void CheckIfEnd()
 	if (CheckIfGoalTile(currentLevelData[GetTileIndex(player.left + 4, player.bottom)]) ||
 	CheckIfGoalTile(currentLevelData[GetTileIndex(player.right - 4, player.bottom)]))
 	{
+		sfx_play(3 , 0);
 		SetPlayerValues();
 
 		if (currentLevel == 3)
@@ -730,6 +725,7 @@ void SetPlayerValues(void)
 
 void ResetLevel(void)
 {
+	sfx_play(1 , 0);
 	ppu_off(); // screen off
 	pal_bg(palette); //	load the BG palette
 	//Clear all sprite data
@@ -756,7 +752,7 @@ void ResetLevel(void)
 
 	SetPlayerValues();
 
-	ppu_on_all(); //	turn on screen
+	ppu_on_all();
 }
 
 char CheckIfSpikes(unsigned char tile)

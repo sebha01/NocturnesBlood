@@ -19,6 +19,7 @@
 	.import		_oam_clear
 	.import		_oam_spr
 	.import		_music_play
+	.import		_sfx_play
 	.import		_pad_poll
 	.import		_vram_adr
 	.import		_vram_fill
@@ -1419,8 +1420,8 @@ _Level2:
 	.byte	$10
 	.byte	$11
 	.byte	$e5
+	.byte	$e5
 	.byte	$e6
-	.byte	$00
 	.byte	$00
 	.byte	$00
 	.byte	$00
@@ -1451,8 +1452,8 @@ _Level2:
 	.byte	$b6
 	.byte	$b7
 	.byte	$f5
+	.byte	$f5
 	.byte	$f6
-	.byte	$00
 	.byte	$00
 	.byte	$00
 	.byte	$00
@@ -1551,8 +1552,8 @@ _Level2:
 	.byte	$00
 	.byte	$00
 	.byte	$00
-	.byte	$00
 	.byte	$e4
+	.byte	$e5
 	.byte	$e5
 	.byte	$b4
 	.byte	$b5
@@ -1583,8 +1584,8 @@ _Level2:
 	.byte	$00
 	.byte	$00
 	.byte	$00
-	.byte	$00
 	.byte	$f4
+	.byte	$f5
 	.byte	$f5
 	.byte	$a4
 	.byte	$a5
@@ -1675,8 +1676,8 @@ _Level2:
 	.byte	$b6
 	.byte	$b7
 	.byte	$e5
+	.byte	$e5
 	.byte	$e6
-	.byte	$00
 	.byte	$00
 	.byte	$00
 	.byte	$00
@@ -1707,8 +1708,8 @@ _Level2:
 	.byte	$10
 	.byte	$11
 	.byte	$f5
+	.byte	$f5
 	.byte	$f6
-	.byte	$00
 	.byte	$00
 	.byte	$00
 	.byte	$00
@@ -2090,7 +2091,7 @@ _Level2:
 	.byte	$55
 	.byte	$77
 	.byte	$55
-	.byte	$fd
+	.byte	$dd
 	.byte	$77
 	.byte	$55
 	.byte	$ff
@@ -2098,7 +2099,7 @@ _Level2:
 	.byte	$55
 	.byte	$ff
 	.byte	$d7
-	.byte	$ff
+	.byte	$77
 	.byte	$55
 	.byte	$55
 	.byte	$ff
@@ -2106,7 +2107,7 @@ _Level2:
 	.byte	$d5
 	.byte	$77
 	.byte	$55
-	.byte	$ff
+	.byte	$dd
 	.byte	$57
 	.byte	$d5
 	.byte	$f5
@@ -7787,6 +7788,13 @@ L006A:	lda     _player+15
 	lda     _player+2
 	beq     L006E
 ;
+; sfx_play(2 , 0);
+;
+	lda     #$02
+	jsr     pusha
+	lda     #$00
+	jsr     _sfx_play
+;
 ; player.isJumping = 1;
 ;
 	lda     #$01
@@ -7819,6 +7827,12 @@ L006E:	lda     _player+15
 L0022:	lda     _player+16
 	ora     _player+16+1
 	jeq     L0023
+;
+; sfx_play(0 , 0);
+;
+	lda     #$00
+	jsr     pusha
+	jsr     _sfx_play
 ;
 ; player.dashTimer--;
 ;
@@ -8664,9 +8678,16 @@ L0002:	jsr     pushax
 	bne     L0004
 	rts
 ;
+; sfx_play(3 , 0);
+;
+L0004:	lda     #$03
+	jsr     pusha
+	lda     #$00
+	jsr     _sfx_play
+;
 ; SetPlayerValues();
 ;
-L0004:	jsr     _SetPlayerValues
+	jsr     _SetPlayerValues
 ;
 ; if (currentLevel == 3)
 ;
@@ -9388,6 +9409,13 @@ L000A:	sta     _player+1
 .segment	"CODE"
 
 ;
+; sfx_play(1 , 0);
+;
+	lda     #$01
+	jsr     pusha
+	lda     #$00
+	jsr     _sfx_play
+;
 ; ppu_off(); // screen off
 ;
 	jsr     _ppu_off
@@ -9487,7 +9515,7 @@ L0002:	ldx     #$20
 ;
 	jsr     _SetPlayerValues
 ;
-; ppu_on_all(); // turn on screen
+; ppu_on_all();
 ;
 	jmp     _ppu_on_all
 
@@ -9786,12 +9814,6 @@ L000D:	lda     _inputPad
 ;
 	lda     #$00
 	sta     _currentGameState
-;
-; ChangeMusic(3);
-;
-	tax
-	lda     #$03
-	jsr     _ChangeMusic
 ;
 ; DrawTitleScreen();
 ;
