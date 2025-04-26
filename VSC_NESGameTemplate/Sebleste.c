@@ -83,7 +83,6 @@
 #define START_SCREEN 0
 #define GAME_LOOP 1
 #define END_SCREEN 2
-#define DEATH_SCREEN 3
 //define constants used for player movement
 //Movement
 #define PLAYER_SPEED 2
@@ -100,6 +99,9 @@
 //Health
 #define LEVEL_COOLDOWN = 90
 #define DAMAGE_TIMER 20
+//Audio
+#define MAX_MUSIC_SPEED 12
+#define MIN_MUSIC_SPEED 0
 
 #pragma bss-name(push, "ZEROPAGE")
 
@@ -129,7 +131,6 @@ const unsigned char text[] = "SEBLESTE";
 const unsigned char titlePrompt[] = "Press START";
 const unsigned char endScreenTitle[] = "YOU WON!";
 const unsigned char endScreenPrompt[] = "To play again";
-const unsigned char deathScreenTitle[] = "YOU ARE DEAD";
 const unsigned char loadingText[] = "LOADING :D";
 const unsigned char respawningText[] = "RESPAWNING :)";
 const unsigned char DeathCounter[] = "Death Counter";
@@ -190,6 +191,7 @@ void DrawDeathScreen(void);
 void ResetLevel(void);
 char CheckIfSpikes(unsigned char tile);
 void WriteDeathCounter(void);
+void ChangeMusic(unsigned int trackToChangeTo);
 
 /*
 ----------------
@@ -201,6 +203,10 @@ void main (void)
 {
 	SetPlayerValues();
 	DrawTitleScreen();
+
+	//0 - 4
+	//3 -> title screen, 0 -> level 3, 2 -> win screen, 1 -> level 2, 4 -> level 1
+	music_play(3);
 
 	// infinite loop
 	while (1)
@@ -235,14 +241,7 @@ void main (void)
 				if (inputPad & PAD_START)
 				{
 					currentGameState = START_SCREEN;
-					DrawTitleScreen();
-				}
-				break;
-			case DEATH_SCREEN:
-				//Check if player has pressed start
-				if (inputPad & PAD_START)
-				{
-					currentGameState = START_SCREEN;
+					//ChangeMusic(3);
 					DrawTitleScreen();
 				}
 				break;
@@ -296,12 +295,15 @@ void GameLoop(void)
 		case 1:
 			currentLevelData = Level1;
 			player.deathCounter = 0;
+			ChangeMusic(4);
 			break;
 		case 2:
 			currentLevelData = Level2;
+			ChangeMusic(1);
 			break;
 		case 3:
 			currentLevelData = Level3;
+			ChangeMusic(0);
 			break;
 	}
 
@@ -395,6 +397,7 @@ void MovePlayer(void)
 	// Check if jump button (A) is pressed, player is not already jumping, and player is currently standing on solid ground
 	if (player.jumpBufferTimer > 0 && !player.isJumping && player.coyoteTime > 0) 
 	{
+		sfx_play(2 , 0);
 		//Set the "bool" variable to true
 		player.isJumping = 1;
 		//Set the velocity to be the constant we defined applies an upward force to the player by being a negative value
@@ -413,6 +416,7 @@ void MovePlayer(void)
 	//-------------------------playerTop
 	if (player.isDashing) 
 	{
+		sfx_play(0 , 0);
 		//Decrement the dash timer so that when it runs out player stops dashing
 		player.dashTimer--;
 
@@ -426,7 +430,7 @@ void MovePlayer(void)
 			if (!CheckIfCollidableTile(currentLevelData[GetTileIndex(nextX, player.top)]) &&
 				!CheckIfCollidableTile(currentLevelData[GetTileIndex(nextX, player.bottom)]))
 			{
-				player.x += player.facingRight ? 1 : -1;
+				player.x += player.dashDirection;
 			}
 		}
 
@@ -444,6 +448,7 @@ void MovePlayer(void)
 		//Checks for if the player is jumping
         if (player.isJumping) 
         {
+
 			//Apply gravity to bring the player back down
             player.velocityY += GRAVITY;
 
@@ -591,6 +596,7 @@ void CheckIfEnd()
 	if (CheckIfGoalTile(currentLevelData[GetTileIndex(player.left + 4, player.bottom)]) ||
 	CheckIfGoalTile(currentLevelData[GetTileIndex(player.right - 4, player.bottom)]))
 	{
+		sfx_play(3 , 0);
 		SetPlayerValues();
 
 		if (currentLevel == 3)
@@ -618,6 +624,7 @@ void DrawEndScreen()
 	//Set varirables back to their default value
 	currentLevel = 1;
 	SetPlayerValues();
+	ChangeMusic(2);
 
 	//Clear the screen
 	vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
@@ -653,12 +660,14 @@ char CheckIfCollidableTile(unsigned char tile)
 {
 	//Stores all of the tiles that are collidable and is used to calculate collisions
     return tile == 0x10 || tile == 0x11 || tile == 0x12 || tile == 0x13
-		|| tile == 0x80 || tile == 0x81 || tile == 0x82 || tile == 0x83 
+		|| tile == 0x80 || tile == 0x81 || tile == 0x82 || tile == 0x83
+		|| tile == 0x8E || tile == 0x8F || tile == 0x9E || tile == 0x9F 
 		|| tile == 0x90 || tile == 0x91 || tile == 0x92 || tile == 0x93
 		|| tile == 0xA0 || tile == 0xA1 || tile == 0xA4 || tile == 0xA5 
 		|| tile == 0xA6 || tile == 0xA7 || tile == 0xA8 || tile == 0xA9 
 		|| tile == 0xB0 || tile == 0xB1 || tile == 0xB4 || tile == 0xB5 
-		|| tile == 0xB6 || tile == 0xB7 || tile == 0xB8 || tile == 0xB9;
+		|| tile == 0xB6 || tile == 0xB7 || tile == 0xB8 || tile == 0xB9
+		|| tile == 0xEE || tile == 0xEF || tile == 0xFE || tile == 0xFF;
 }
 
 char CheckIfGoalTile(unsigned char tile) 
@@ -714,35 +723,9 @@ void SetPlayerValues(void)
 	player.damageTimer = 0;
 }
 
-void DrawDeathScreen(void)
-{
-	ppu_off(); // screen off
-	pal_bg(palette); //	load the BG palette
-
-	//Clear all sprite data
-	oam_clear();
-
-	//Set varirables back to their default value
-	currentLevel = 1;
-
-	//Clear the screen
-	vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
-	vram_fill(0x00, 1024);
-
-	vram_adr(NTADR_A(8, 8)); // places text at screen position
-	vram_write(deathScreenTitle, sizeof(deathScreenTitle) - 1); //write Title to screen
-	//Write prompt to start game
-	vram_adr(NTADR_A(10, 14));
-	vram_write(titlePrompt, sizeof(titlePrompt) - 1);
-
-	vram_adr(NTADR_A(10, 18));
-	vram_write(endScreenPrompt, sizeof(endScreenPrompt) - 1);
-
-	ppu_on_all(); //	turn on screen
-}
-
 void ResetLevel(void)
 {
+	sfx_play(1 , 0);
 	ppu_off(); // screen off
 	pal_bg(palette); //	load the BG palette
 	//Clear all sprite data
@@ -769,7 +752,7 @@ void ResetLevel(void)
 
 	SetPlayerValues();
 
-	ppu_on_all(); //	turn on screen
+	ppu_on_all();
 }
 
 char CheckIfSpikes(unsigned char tile)
@@ -786,4 +769,19 @@ void WriteDeathCounter(void)
 	vram_adr(NTADR_A(17, 1));
 	sprintf(deathCounterText, "%d", player.deathCounter);
 	vram_write((const unsigned char*)deathCounterText, sizeof(deathCounterText));
+}
+
+void ChangeMusic(unsigned int trackToChangeTo)
+{
+	unsigned int currentSpeed = MAX_MUSIC_SPEED;
+
+	while (currentSpeed > MIN_MUSIC_SPEED)
+	{
+		set_music_speed(currentSpeed);
+		delay(6);
+		currentSpeed--;	
+	}
+
+	music_play(trackToChangeTo);
+	set_music_speed(MAX_FALL_SPEED);
 }
