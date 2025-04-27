@@ -619,18 +619,19 @@ void MovePlayer(void)
 				}
 			}
 
-			//makeSure hte fall speed doesn't exceed the max value so player doesn't fall too fast
+			//makeSure the fall speed doesn't exceed the max value so player doesn't fall too fast
             if (player.velocityY > MAX_FALL_SPEED)
 			{
                 player.velocityY = MAX_FALL_SPEED;
 			}
-			//Move the player depending on the value of the velocity velocity starts off negative so it acts as an upwards force
+			//Move the player depending on the value of the velocity velocity starts off negative so it acts as an
+			// upwards force
 			//As it becomes positive it becomes a downward force to pull the player back
             player.y += player.velocityY;
 			//Checks to see if player is stil falling but on the ground
             if (player.velocityY >= 0 && OnGround()) 
             {
-				//makes sure that the player doesn't go into the collidable tile
+				//makes sure that the player doesn't go into the ground or collidable tile
                 while (OnGround()) 
 				{
 					player.y -= 1;
@@ -639,6 +640,7 @@ void MovePlayer(void)
 				//Reset all variables to do with jumping and dashing now that the player is on the ground
 				//Also make sure that the player is at ground level so the player is not floating slightly
                 player.y += 1;
+				//make sure to update the collider positions
 				UpdateColliderPositions();
                 player.velocityY = 0;
                 player.isJumping = 0;
@@ -656,27 +658,33 @@ void MovePlayer(void)
         }
     }
 
+	//Check if the player damage timer has been triggered
 	if (player.damageTimer > 0)
 	{
+		//Decrement timer if greater than 0
 		player.damageTimer--;
 
+		//Make sure to reset the level if the timer is now 0
 		if (player.damageTimer == 0)
 		{
 			ResetLevel();
 		}
 	}
 
+	//Check a box perimeter around the player for if they have hit a spike
 	if (CheckIfSpikes(currentLevelData[GetTileIndex(player.left + 6, player.bottom - 4)]) ||
 	CheckIfSpikes(currentLevelData[GetTileIndex(player.right - 6, player.bottom - 4)]) ||
 	CheckIfSpikes(currentLevelData[GetTileIndex(player.left + 6, player.top + 4)]) ||
 	CheckIfSpikes(currentLevelData[GetTileIndex(player.right - 6, player.top + 4)]))
 	{
+		//Make sure damage timer is only set once so that reset level can actually happen
 		if (player.damageTimer == 0)
 		{
 			player.damageTimer = DAMAGE_TIMER;
 		}
 	}
 
+	//Check if the player has fallen out of the map
 	if (player.bottom > 240) 
 	{
 		ResetLevel();
@@ -685,10 +693,13 @@ void MovePlayer(void)
 
 void DrawPlayer(void)
 {
+	//Set the player attribute, flash red and grey if has hit a spike, if dashing is green
+	//Other than that player is blue by default
 	unsigned char playerAttributes = player.isDashing ? 0x03 :
 						player.damageTimer > 0 && player.damageTimer % 2 == 0 ? 0x02 :
 						player.damageTimer > 0 && player.damageTimer % 2 == 1 ? 0x00 : 0x01;
 
+	//Flip the sprite if player is facing left
 	if (!player.facingRight)
 	{
 		playerAttributes |= 0x40;
@@ -699,6 +710,7 @@ void DrawPlayer(void)
 	//Such as pos, tile index, palette etc.
 	oam_clear();
 
+	//Don't draw the player if current Game state is not the game loop
 	if (currentGameState != GAME_LOOP)
 	{
 		return;
@@ -708,8 +720,12 @@ void DrawPlayer(void)
 	//especially for jumping and dashing
 	UpdateColliderPositions();
 
+	//Check what state the player is in and update accordingly, x position is set by turnary operator
+	//which checks if player is facing right
+
 	if (player.isDashing)
 	{
+		//If player is dashing draw the dash sprite
 		oam_spr((player.facingRight ? player.left : player.x), player.top, 0x88, playerAttributes);
 		oam_spr((player.facingRight ? player.x : player.left), player.top, 0x89, playerAttributes);
 		oam_spr((player.facingRight ? player.left : player.x), player.y, 0x98, playerAttributes);
@@ -717,6 +733,7 @@ void DrawPlayer(void)
 	}
 	else if (player.isJumping)
 	{
+		//If player is jumping draw jump sprite
 		oam_spr((player.facingRight ? player.left : player.x), player.top, 0x0A, playerAttributes);
 		oam_spr((player.facingRight ? player.x : player.left), player.top, 0x0B, playerAttributes);
 		oam_spr((player.facingRight ? player.left : player.x), player.y, 0x1A, playerAttributes);
@@ -724,7 +741,7 @@ void DrawPlayer(void)
 	}
 	else
 	{
-		// Draw the player using two tiles: 0x08 (top), 0x24 (bottom)
+		// Draw the player if standing still or moving
 		oam_spr((player.facingRight ? player.left : player.x), player.top, 0x08, playerAttributes);
 		oam_spr((player.facingRight ? player.x : player.left), player.top, 0x09, playerAttributes);
 		oam_spr((player.facingRight ? player.left : player.x), player.y, 0x18, playerAttributes);
@@ -734,7 +751,7 @@ void DrawPlayer(void)
 
 void UpdateColliderPositions(void)
 {
-	//update player colliders
+	//update player collider positions so that collision checks are up to date
 	player.left = player.x - 8;
 	player.right = player.x + 8;
 	player.top = player.y - 8;
@@ -743,6 +760,7 @@ void UpdateColliderPositions(void)
 
 void DashEnd(void)
 {
+	//If player has hit collidable or dash duration is now 0 then start dash cooldown and set player to not dashing
 	if (player.isDashing)
 	{
 		player.isDashing = 0;
@@ -752,6 +770,11 @@ void DashEnd(void)
 
 void SetPlayerValues(void)
 {
+	/*
+	Reset the player values, position changes depending on it level 3
+	Other than that everyting else needs to be set back to 0 and the player needs
+	to be facing right by default
+	*/
 	player.x = currentLevel == 3 ? 232 : 30;
 	player.y = currentLevel == 3 ? 24 : 215;
 	player.coyoteTime = 0;
