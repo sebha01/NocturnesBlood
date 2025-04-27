@@ -32,34 +32,33 @@
 #define LT_RED       	0x27
 #define PINK         	0x36
 
-//define game states
+//define game states for controlling the game loop
 #define START_SCREEN 0
 #define GAME_LOOP 1
 #define END_SCREEN 2
 #define CREDITS_SCREEN 3
-//define constants used for player movement
-//Movement
+//Player Movement
 #define PLAYER_SPEED 2
-//Jumping
+//Player jump constants
 #define GRAVITY 1
 #define JUMP_VELOCITY -10
 #define MAX_FALL_SPEED 4
 #define COYOTE_FRAMES  6
 #define JUMP_BUFFER_FRAMES 10
-//dashing
+//player dash constants
 #define DASH_SPEED 5
 #define DASH_DURATION 6
 #define DASH_COOLDOWN 30
-//Health
+//Health constants
 #define LEVEL_COOLDOWN = 90
 #define DAMAGE_TIMER 20
-//Audio
+//Audio constants
 #define MAX_MUSIC_SPEED 12
 #define MIN_MUSIC_SPEED 0
 
 #pragma bss-name(push, "ZEROPAGE")
 
-//palette colours
+//background palette colours using the colours defined above
 const unsigned char palette[]=
 {
 	BLACK, DK_GY, LT_GY, WHITE,       
@@ -68,7 +67,7 @@ const unsigned char palette[]=
 	BLACK, DK_GREEN, GREEN, LT_GREEN 
 };  
 
-//Possible use for later
+// Sprite palette 
 const unsigned char spritePalette[] =
 {
 	BLACK, DK_GY, LT_GY, WHITE, 
@@ -78,8 +77,9 @@ const unsigned char spritePalette[] =
 };
 
 // GLOBAL VARIABLES
-//Defines which state the game is currently in (START_SCREEN, GAME_LOOP or END_SCREEN)
+//Sets which state the game loop is currently at
 unsigned char currentGameState = START_SCREEN;
+//Text
 //Title Text
 const unsigned char title[] = "SEBLESTE"; 
 const unsigned char titlePrompt[] = "Press START to play";
@@ -103,26 +103,34 @@ const unsigned char loadingText[] = "LOADING :D";
 const unsigned char respawningText[] = "RESPAWNING :)";
 //Death counter text
 const unsigned char DeathCounter[] = "Death Counter";
-//variable for getting input from controller
+//variables for getting input from controller
+//Gets input from button presses
 unsigned char inputPad;
+//Gets input for player movement
 unsigned char movementPad;
-//other variables
+//other variables for controlling for loops 
 int i = 0;
-//lowest 1 highest 3
+//lowest level is 1 and the highest 3
 int currentLevel = 1;
+//Pointer to use for getting the current level data
 const unsigned char* currentLevelData;
+//Variable for storing the current death counter
 char deathCounterText[6];
 
+//Structure used for the player
 typedef struct
 {
-	//variables
+	//Position variables
 	unsigned char x;
 	unsigned char y;
+	//Coyote time to forgive the player for mistimed jumps
 	char coyoteTime;
+	//Collider variables
 	signed int left;
 	signed int right;
 	signed int top;
 	signed int bottom;
+	//Boolean to control direction sprites are facing when drawn
 	char facingRight;
 	//jumping variables 
 	int velocityY;
@@ -135,6 +143,7 @@ typedef struct
 	char hasDashedInAir;
 	// -1 = left, 1 = right
 	signed int dashDirection; 
+	//Damage and death variables
 	unsigned int deathCounter;
 	unsigned int damageTimer;
 } Player;
@@ -368,7 +377,8 @@ void MovePlayer(void)
 		// Only allow midair dash if the player has not dashed in the air yet
 		if (OnGround() || !player.hasDashedInAir)
 		{
-			player.dashDirection = (movementPad & PAD_LEFT ? -1 : movementPad & PAD_RIGHT ? 1 : 0);
+			player.dashDirection = (movementPad & PAD_LEFT ? -1 : movementPad & PAD_RIGHT ? 1 : 
+									player.facingRight ? 1 : -1);
 			player.isDashing = 1;
 			player.dashTimer = DASH_DURATION;
 
