@@ -127,6 +127,7 @@ unsigned char currentGameState = START_SCREEN;
 //Title Text
 const unsigned char title[] = "SEBLESTE"; 
 const unsigned char titlePrompt[] = "Press START to play";
+const unsigned char titlePrompt2[] = "Press START";
 const unsigned char creditsPrompt[] = "Press SELECT for credits";
 //Credits screen text
 const unsigned char creditsTitle[] = "Credits";
@@ -271,8 +272,8 @@ void main (void)
 				}
 				else if (inputPad & PAD_SELECT)
 				{
-					currentGameState = CREDITS_SCREEN;
-					DrawCreditsScreen();
+					currentGameState = START_SCREEN;
+					DrawTitleScreen();
 				}
 		}
 	}
@@ -668,11 +669,14 @@ void DrawEndScreen()
 	vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
 	vram_write(WinScreen, 1024);
 
+	vram_adr(NTADR_A(12, 2)); // places text at screen position
+	vram_write(title, sizeof(title) - 1); //write Title to screen
+
 	vram_adr(NTADR_A(12, 6)); // places text at screen position
 	vram_write(endScreenTitle, sizeof(endScreenTitle) - 1); //write Title to screen
 	//Write prompt to start game
 	vram_adr(NTADR_A(11, 19));
-	vram_write(titlePrompt, sizeof(titlePrompt) - 1);
+	vram_write(titlePrompt2, sizeof(titlePrompt2) - 1);
 
 	vram_adr(NTADR_A(10, 21));
 	vram_write(endScreenPrompt, sizeof(endScreenPrompt) - 1);
@@ -835,34 +839,34 @@ void DrawCreditsScreen(void)
 	vram_adr(NAMETABLE_A);      
 	vram_write(WinScreen, 1024);
 
-	vram_adr(NTADR_A(12, 2));
+	vram_adr(NTADR_A(13, 2));
 	vram_write(creditsTitle, sizeof(creditsTitle) - 1); 
 
-	vram_adr(NTADR_A(4, 6));
+	vram_adr(NTADR_A(4, 5));
 	vram_write(credits1, sizeof(credits1) - 1); 
 
-	vram_adr(NTADR_A(14, 10));
+	vram_adr(NTADR_A(14, 8));
 	vram_write(credits2, sizeof(credits2) - 1); 
 
-	vram_adr(NTADR_A(5, 12));
+	vram_adr(NTADR_A(5, 10));
 	vram_write(credits3, sizeof(credits3) - 1); 
 
-	vram_adr(NTADR_A(7, 14));
+	vram_adr(NTADR_A(7, 12));
 	vram_write(credits4, sizeof(credits4) - 1); 
 
-	vram_adr(NTADR_A(13, 18));
+	vram_adr(NTADR_A(13, 17));
 	vram_write(credits5, sizeof(credits5) - 1); 
 
-	vram_adr(NTADR_A(5, 20));
+	vram_adr(NTADR_A(5, 19));
 	vram_write(credits6, sizeof(credits6) - 1); 
 
-	vram_adr(NTADR_A(5, 22));
+	vram_adr(NTADR_A(5, 21));
 	vram_write(credits7, sizeof(credits7) - 1); 
 
-	vram_adr(NTADR_A(6, 26));
+	vram_adr(NTADR_A(6, 25));
 	vram_write(titlePrompt, sizeof(titlePrompt) - 1); 
 
-	vram_adr(NTADR_A(1, 28));
+	vram_adr(NTADR_A(1, 27));
 	vram_write(startScreenPrompt, sizeof(startScreenPrompt) - 1); 
 
 	ppu_on_all();

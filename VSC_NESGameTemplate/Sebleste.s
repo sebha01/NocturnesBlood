@@ -40,6 +40,7 @@
 	.export		_currentGameState
 	.export		_title
 	.export		_titlePrompt
+	.export		_titlePrompt2
 	.export		_creditsPrompt
 	.export		_creditsTitle
 	.export		_startScreenPrompt
@@ -6321,14 +6322,14 @@ _WinScreen:
 	.byte	$00
 	.byte	$00
 	.byte	$00
-	.byte	$53
-	.byte	$45
-	.byte	$42
-	.byte	$4c
-	.byte	$45
-	.byte	$53
-	.byte	$54
-	.byte	$45
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
+	.byte	$00
 	.byte	$00
 	.byte	$00
 	.byte	$00
@@ -7308,6 +7309,8 @@ _title:
 _titlePrompt:
 	.byte	$50,$72,$65,$73,$73,$20,$53,$54,$41,$52,$54,$20,$74,$6F,$20,$70
 	.byte	$6C,$61,$79,$00
+_titlePrompt2:
+	.byte	$50,$72,$65,$73,$73,$20,$53,$54,$41,$52,$54,$00
 _creditsPrompt:
 	.byte	$50,$72,$65,$73,$73,$20,$53,$45,$4C,$45,$43,$54,$20,$66,$6F,$72
 	.byte	$20,$63,$72,$65,$64,$69,$74,$73,$00
@@ -7345,7 +7348,7 @@ _respawningText:
 	.byte	$52,$45,$53,$50,$41,$57,$4E,$49,$4E,$47,$20,$3A,$29,$00
 _DeathCounter:
 	.byte	$44,$65,$61,$74,$68,$20,$43,$6F,$75,$6E,$74,$65,$72,$00
-S0013:
+S0014:
 	.byte	$25,$64,$00
 
 .segment	"BSS"
@@ -8849,6 +8852,21 @@ L000A:	jsr     _SetPlayerValues
 	lda     #$00
 	jsr     _vram_write
 ;
+; vram_adr(NTADR_A(12, 2)); // places text at screen position
+;
+	ldx     #$20
+	lda     #$4C
+	jsr     _vram_adr
+;
+; vram_write(title, sizeof(title) - 1); //write Title to screen
+;
+	lda     #<(_title)
+	ldx     #>(_title)
+	jsr     pushax
+	ldx     #$00
+	lda     #$08
+	jsr     _vram_write
+;
 ; vram_adr(NTADR_A(12, 6)); // places text at screen position
 ;
 	ldx     #$20
@@ -8870,13 +8888,13 @@ L000A:	jsr     _SetPlayerValues
 	lda     #$6B
 	jsr     _vram_adr
 ;
-; vram_write(titlePrompt, sizeof(titlePrompt) - 1);
+; vram_write(titlePrompt2, sizeof(titlePrompt2) - 1);
 ;
-	lda     #<(_titlePrompt)
-	ldx     #>(_titlePrompt)
+	lda     #<(_titlePrompt2)
+	ldx     #>(_titlePrompt2)
 	jsr     pushax
 	ldx     #$00
-	lda     #$13
+	lda     #$0B
 	jsr     _vram_write
 ;
 ; vram_adr(NTADR_A(10, 21));
@@ -9680,11 +9698,11 @@ L0004:	lda     #$01
 	iny
 	lda     #>(_deathCounterText)
 	sta     (sp),y
-	lda     #<(S0013)
+	lda     #<(S0014)
 	ldy     #$00
 	sta     (sp),y
 	iny
-	lda     #>(S0013)
+	lda     #>(S0014)
 	sta     (sp),y
 	lda     _player+23
 	ldx     _player+23+1
@@ -9822,10 +9840,10 @@ L0004:	ldy     #$00
 	lda     #$00
 	jsr     _vram_write
 ;
-; vram_adr(NTADR_A(12, 2));
+; vram_adr(NTADR_A(13, 2));
 ;
 	ldx     #$20
-	lda     #$4C
+	lda     #$4D
 	jsr     _vram_adr
 ;
 ; vram_write(creditsTitle, sizeof(creditsTitle) - 1); 
@@ -9837,10 +9855,10 @@ L0004:	ldy     #$00
 	lda     #$07
 	jsr     _vram_write
 ;
-; vram_adr(NTADR_A(4, 6));
+; vram_adr(NTADR_A(4, 5));
 ;
 	ldx     #$20
-	lda     #$C4
+	lda     #$A4
 	jsr     _vram_adr
 ;
 ; vram_write(credits1, sizeof(credits1) - 1); 
@@ -9852,10 +9870,10 @@ L0004:	ldy     #$00
 	lda     #$18
 	jsr     _vram_write
 ;
-; vram_adr(NTADR_A(14, 10));
+; vram_adr(NTADR_A(14, 8));
 ;
 	ldx     #$21
-	lda     #$4E
+	lda     #$0E
 	jsr     _vram_adr
 ;
 ; vram_write(credits2, sizeof(credits2) - 1); 
@@ -9867,10 +9885,10 @@ L0004:	ldy     #$00
 	lda     #$03
 	jsr     _vram_write
 ;
-; vram_adr(NTADR_A(5, 12));
+; vram_adr(NTADR_A(5, 10));
 ;
 	ldx     #$21
-	lda     #$85
+	lda     #$45
 	jsr     _vram_adr
 ;
 ; vram_write(credits3, sizeof(credits3) - 1); 
@@ -9882,10 +9900,10 @@ L0004:	ldy     #$00
 	lda     #$16
 	jsr     _vram_write
 ;
-; vram_adr(NTADR_A(7, 14));
+; vram_adr(NTADR_A(7, 12));
 ;
 	ldx     #$21
-	lda     #$C7
+	lda     #$87
 	jsr     _vram_adr
 ;
 ; vram_write(credits4, sizeof(credits4) - 1); 
@@ -9897,10 +9915,10 @@ L0004:	ldy     #$00
 	lda     #$12
 	jsr     _vram_write
 ;
-; vram_adr(NTADR_A(13, 18));
+; vram_adr(NTADR_A(13, 17));
 ;
 	ldx     #$22
-	lda     #$4D
+	lda     #$2D
 	jsr     _vram_adr
 ;
 ; vram_write(credits5, sizeof(credits5) - 1); 
@@ -9912,10 +9930,10 @@ L0004:	ldy     #$00
 	lda     #$05
 	jsr     _vram_write
 ;
-; vram_adr(NTADR_A(5, 20));
+; vram_adr(NTADR_A(5, 19));
 ;
 	ldx     #$22
-	lda     #$85
+	lda     #$65
 	jsr     _vram_adr
 ;
 ; vram_write(credits6, sizeof(credits6) - 1); 
@@ -9927,10 +9945,10 @@ L0004:	ldy     #$00
 	lda     #$16
 	jsr     _vram_write
 ;
-; vram_adr(NTADR_A(5, 22));
+; vram_adr(NTADR_A(5, 21));
 ;
 	ldx     #$22
-	lda     #$C5
+	lda     #$A5
 	jsr     _vram_adr
 ;
 ; vram_write(credits7, sizeof(credits7) - 1); 
@@ -9942,10 +9960,10 @@ L0004:	ldy     #$00
 	lda     #$16
 	jsr     _vram_write
 ;
-; vram_adr(NTADR_A(6, 26));
+; vram_adr(NTADR_A(6, 25));
 ;
 	ldx     #$23
-	lda     #$46
+	lda     #$26
 	jsr     _vram_adr
 ;
 ; vram_write(titlePrompt, sizeof(titlePrompt) - 1); 
@@ -9957,10 +9975,10 @@ L0004:	ldy     #$00
 	lda     #$13
 	jsr     _vram_write
 ;
-; vram_adr(NTADR_A(1, 28));
+; vram_adr(NTADR_A(1, 27));
 ;
 	ldx     #$23
-	lda     #$81
+	lda     #$61
 	jsr     _vram_adr
 ;
 ; vram_write(startScreenPrompt, sizeof(startScreenPrompt) - 1); 
@@ -10129,14 +10147,14 @@ L0016:	lda     _inputPad
 	and     #$20
 	jeq     L0002
 ;
-; currentGameState = CREDITS_SCREEN;
+; currentGameState = START_SCREEN;
 ;
-	lda     #$03
+	lda     #$00
 	sta     _currentGameState
 ;
-; DrawCreditsScreen();
+; DrawTitleScreen();
 ;
-	jsr     _DrawCreditsScreen
+	jsr     _DrawTitleScreen
 ;
 ; }
 ;
