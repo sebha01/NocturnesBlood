@@ -90,7 +90,7 @@
 #define GRAVITY 1
 #define JUMP_VELOCITY -10
 #define MAX_FALL_SPEED 4
-#define COYOTE_FRAMES  10
+#define COYOTE_FRAMES  6
 #define JUMP_BUFFER_FRAMES 10
 //dashing
 #define DASH_SPEED 5
@@ -339,7 +339,8 @@ void MovePlayer(void)
 		player.coyoteTime = COYOTE_FRAMES;
 		player.hasDashedInAir = 0;
 	} 
-	else if (player.coyoteTime > 0) 
+	
+	if (player.coyoteTime > 0) 
 	{
 		player.coyoteTime--;
 	}
@@ -395,7 +396,7 @@ void MovePlayer(void)
 	}
 
 	// Check if jump button (A) is pressed, player is not already jumping, and player is currently standing on solid ground
-	if (player.jumpBufferTimer > 0 && !player.isJumping && player.coyoteTime > 0) 
+	if (player.jumpBufferTimer > 0 && (!player.isJumping || player.coyoteTime > 0))
 	{
 		sfx_play(2 , 0);
 		//Set the "bool" variable to true
@@ -404,6 +405,8 @@ void MovePlayer(void)
 		player.velocityY = JUMP_VELOCITY;
 
 		player.jumpBufferTimer = 0;
+
+		player.coyoteTime = 0;
 
 	}
 	else if (player.jumpBufferTimer > 0) 

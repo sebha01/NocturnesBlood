@@ -242,8 +242,8 @@ _Level1:
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
-	.byte	$82
 	.byte	$83
+	.byte	$82
 	.byte	$92
 	.byte	$93
 	.byte	$b2
@@ -274,10 +274,10 @@ _Level1:
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
+	.byte	$93
+	.byte	$92
 	.byte	$92
 	.byte	$93
-	.byte	$82
-	.byte	$83
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -306,8 +306,8 @@ _Level1:
 	.byte	$05
 	.byte	$b2
 	.byte	$b3
-	.byte	$82
-	.byte	$83
+	.byte	$93
+	.byte	$92
 	.byte	$92
 	.byte	$93
 	.byte	$b2
@@ -338,10 +338,10 @@ _Level1:
 	.byte	$15
 	.byte	$a2
 	.byte	$a3
+	.byte	$93
+	.byte	$92
 	.byte	$92
 	.byte	$93
-	.byte	$82
-	.byte	$83
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -370,8 +370,8 @@ _Level1:
 	.byte	$85
 	.byte	$84
 	.byte	$85
-	.byte	$82
-	.byte	$83
+	.byte	$93
+	.byte	$92
 	.byte	$92
 	.byte	$93
 	.byte	$b2
@@ -402,10 +402,10 @@ _Level1:
 	.byte	$95
 	.byte	$94
 	.byte	$95
+	.byte	$93
+	.byte	$92
 	.byte	$92
 	.byte	$93
-	.byte	$82
-	.byte	$83
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -434,8 +434,8 @@ _Level1:
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
-	.byte	$82
-	.byte	$83
+	.byte	$93
+	.byte	$92
 	.byte	$92
 	.byte	$93
 	.byte	$b2
@@ -466,10 +466,10 @@ _Level1:
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
+	.byte	$93
+	.byte	$92
 	.byte	$92
 	.byte	$93
-	.byte	$82
-	.byte	$83
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -498,8 +498,8 @@ _Level1:
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
-	.byte	$82
-	.byte	$83
+	.byte	$93
+	.byte	$92
 	.byte	$92
 	.byte	$93
 	.byte	$b2
@@ -530,18 +530,18 @@ _Level1:
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
+	.byte	$93
+	.byte	$92
 	.byte	$92
 	.byte	$93
-	.byte	$82
-	.byte	$83
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
-	.byte	$82
-	.byte	$83
+	.byte	$92
+	.byte	$93
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -562,8 +562,8 @@ _Level1:
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
-	.byte	$82
-	.byte	$83
+	.byte	$93
+	.byte	$92
 	.byte	$92
 	.byte	$93
 	.byte	$b2
@@ -594,18 +594,18 @@ _Level1:
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
+	.byte	$93
+	.byte	$92
 	.byte	$92
 	.byte	$93
-	.byte	$82
-	.byte	$83
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
-	.byte	$82
-	.byte	$83
+	.byte	$92
+	.byte	$93
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -626,8 +626,8 @@ _Level1:
 	.byte	$a3
 	.byte	$84
 	.byte	$85
-	.byte	$82
-	.byte	$83
+	.byte	$93
+	.byte	$92
 	.byte	$92
 	.byte	$93
 	.byte	$b2
@@ -658,18 +658,18 @@ _Level1:
 	.byte	$b3
 	.byte	$94
 	.byte	$95
+	.byte	$93
+	.byte	$92
 	.byte	$92
 	.byte	$93
-	.byte	$82
-	.byte	$83
 	.byte	$84
 	.byte	$85
 	.byte	$b2
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
-	.byte	$82
-	.byte	$83
+	.byte	$92
+	.byte	$93
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -690,8 +690,8 @@ _Level1:
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
-	.byte	$82
-	.byte	$83
+	.byte	$93
+	.byte	$92
 	.byte	$92
 	.byte	$93
 	.byte	$94
@@ -722,64 +722,10 @@ _Level1:
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
+	.byte	$93
+	.byte	$92
 	.byte	$92
 	.byte	$93
-	.byte	$82
-	.byte	$83
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$82
-	.byte	$83
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$82
-	.byte	$83
-	.byte	$92
-	.byte	$93
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$92
-	.byte	$93
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -788,16 +734,70 @@ _Level1:
 	.byte	$a3
 	.byte	$92
 	.byte	$93
-	.byte	$82
-	.byte	$83
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$93
+	.byte	$92
+	.byte	$92
+	.byte	$93
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$92
+	.byte	$93
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$93
+	.byte	$92
+	.byte	$92
+	.byte	$93
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
 	.byte	$84
 	.byte	$85
-	.byte	$82
-	.byte	$83
+	.byte	$92
+	.byte	$93
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -818,8 +818,8 @@ _Level1:
 	.byte	$a3
 	.byte	$84
 	.byte	$85
-	.byte	$82
-	.byte	$83
+	.byte	$93
+	.byte	$92
 	.byte	$92
 	.byte	$93
 	.byte	$b2
@@ -850,64 +850,10 @@ _Level1:
 	.byte	$b3
 	.byte	$94
 	.byte	$95
+	.byte	$93
+	.byte	$92
 	.byte	$92
 	.byte	$93
-	.byte	$82
-	.byte	$83
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$82
-	.byte	$83
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$82
-	.byte	$83
-	.byte	$92
-	.byte	$93
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$92
-	.byte	$93
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -916,16 +862,6 @@ _Level1:
 	.byte	$a3
 	.byte	$92
 	.byte	$93
-	.byte	$82
-	.byte	$83
-	.byte	$a2
-	.byte	$a3
-	.byte	$b2
-	.byte	$b3
-	.byte	$a2
-	.byte	$a3
-	.byte	$82
-	.byte	$83
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -946,8 +882,8 @@ _Level1:
 	.byte	$a3
 	.byte	$b2
 	.byte	$b3
-	.byte	$82
-	.byte	$83
+	.byte	$93
+	.byte	$92
 	.byte	$92
 	.byte	$93
 	.byte	$b2
@@ -978,8 +914,72 @@ _Level1:
 	.byte	$b3
 	.byte	$a2
 	.byte	$a3
+	.byte	$93
+	.byte	$92
 	.byte	$92
 	.byte	$93
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$92
+	.byte	$93
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$93
+	.byte	$92
+	.byte	$92
+	.byte	$93
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$92
+	.byte	$93
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$b2
+	.byte	$b3
+	.byte	$a2
+	.byte	$a3
+	.byte	$93
+	.byte	$92
 	.byte	$a2
 	.byte	$a3
 	.byte	$a0
@@ -988,8 +988,8 @@ _Level1:
 	.byte	$a1
 	.byte	$a0
 	.byte	$a1
-	.byte	$82
-	.byte	$83
+	.byte	$92
+	.byte	$93
 	.byte	$a2
 	.byte	$a3
 	.byte	$b2
@@ -7614,11 +7614,11 @@ L0003:	ldx     #$20
 ;
 L0002:	jsr     _OnGround
 	tax
-	beq     L005F
+	beq     L0060
 ;
 ; player.coyoteTime = COYOTE_FRAMES;
 ;
-	lda     #$0A
+	lda     #$06
 	sta     _player+2
 ;
 ; player.hasDashedInAir = 0;
@@ -7626,11 +7626,10 @@ L0002:	jsr     _OnGround
 	lda     #$00
 	sta     _player+20
 ;
-; else if (player.coyoteTime > 0) 
+; if (player.coyoteTime > 0) 
 ;
-	jmp     L0060
-L005F:	lda     _player+2
-	beq     L0060
+L0060:	lda     _player+2
+	beq     L0061
 ;
 ; player.coyoteTime--;
 ;
@@ -7638,9 +7637,9 @@ L005F:	lda     _player+2
 ;
 ; if (movementPad & PAD_LEFT)
 ;
-L0060:	lda     _movementPad
+L0061:	lda     _movementPad
 	and     #$02
-	beq     L0061
+	beq     L0062
 ;
 ; if (!CheckIfCollidableTile(currentLevelData[GetTileIndex(player.left, player.y + 1)]))
 ;
@@ -7660,7 +7659,7 @@ L0060:	lda     _movementPad
 	lda     (ptr1),y
 	jsr     _CheckIfCollidableTile
 	tax
-	bne     L0061
+	bne     L0062
 ;
 ; player.x -= PLAYER_SPEED;
 ;
@@ -7675,9 +7674,9 @@ L0060:	lda     _movementPad
 ;
 ; if (movementPad & PAD_RIGHT)
 ;
-L0061:	lda     _movementPad
+L0062:	lda     _movementPad
 	and     #$01
-	beq     L0062
+	beq     L0063
 ;
 ; if (!CheckIfCollidableTile(currentLevelData[GetTileIndex(player.right, player.y + 1)]))
 ;
@@ -7697,7 +7696,7 @@ L0061:	lda     _movementPad
 	lda     (ptr1),y
 	jsr     _CheckIfCollidableTile
 	tax
-	bne     L0062
+	bne     L0063
 ;
 ; player.x += PLAYER_SPEED;
 ;
@@ -7713,37 +7712,37 @@ L0061:	lda     _movementPad
 ;
 ; if ((inputPad & PAD_B) && !player.isDashing && !(player.dashCooldown > 0)) 
 ;
-L0062:	lda     _inputPad
+L0063:	lda     _inputPad
 	and     #$40
-	beq     L0069
+	beq     L006A
 	lda     _player+16
 	ora     _player+16+1
-	bne     L0069
+	bne     L006A
 	lda     _player+19
-	bne     L0069
+	bne     L006A
 ;
 ; if (OnGround() || !player.hasDashedInAir)
 ;
 	jsr     _OnGround
 	tax
-	bne     L0066
+	bne     L0067
 	lda     _player+20
-	bne     L006A
+	bne     L006B
 ;
 ; player.dashDirection = (movementPad & PAD_LEFT ? -1 : movementPad & PAD_RIGHT ? 1 : 0);
 ;
-L0066:	lda     _movementPad
+L0067:	lda     _movementPad
 	and     #$02
-	beq     L0067
+	beq     L0068
 	ldx     #$FF
 	txa
-	jmp     L0019
-L0067:	lda     _movementPad
+	jmp     L0018
+L0068:	lda     _movementPad
 	ldx     #$00
 	and     #$01
-	beq     L0019
+	beq     L0018
 	lda     #$01
-L0019:	sta     _player+21
+L0018:	sta     _player+21
 	stx     _player+21+1
 ;
 ; player.isDashing = 1;
@@ -7762,7 +7761,7 @@ L0019:	sta     _player+21
 ;
 	jsr     _OnGround
 	tax
-	bne     L006A
+	bne     L006B
 ;
 ; player.hasDashedInAir = 1;
 ;
@@ -7771,26 +7770,26 @@ L0019:	sta     _player+21
 ;
 ; else if (player.dashCooldown > 0) 
 ;
-	jmp     L006A
-L0069:	lda     _player+19
-	beq     L006A
+	jmp     L006B
+L006A:	lda     _player+19
+	beq     L006B
 ;
 ; player.dashCooldown--;
 ;
 	dec     _player+19
 ;
-; if (player.jumpBufferTimer > 0 && !player.isJumping && player.coyoteTime > 0) 
+; if (player.jumpBufferTimer > 0 && (!player.isJumping || player.coyoteTime > 0))
 ;
-L006A:	lda     _player+15
-	beq     L006E
+L006B:	lda     _player+15
+	beq     L0072
 	lda     _player+14
-	bne     L006E
+	beq     L0071
 	lda     _player+2
-	beq     L006E
+	beq     L0072
 ;
 ; sfx_play(2 , 0);
 ;
-	lda     #$02
+L0071:	lda     #$02
 	jsr     pusha
 	lda     #$00
 	jsr     _sfx_play
@@ -7812,11 +7811,15 @@ L006A:	lda     _player+15
 	lda     #$00
 	sta     _player+15
 ;
+; player.coyoteTime = 0;
+;
+	sta     _player+2
+;
 ; else if (player.jumpBufferTimer > 0) 
 ;
-	jmp     L0022
-L006E:	lda     _player+15
-	beq     L0022
+	jmp     L0023
+L0072:	lda     _player+15
+	beq     L0023
 ;
 ; player.jumpBufferTimer--;
 ;
@@ -7824,9 +7827,9 @@ L006E:	lda     _player+15
 ;
 ; if (player.isDashing) 
 ;
-L0022:	lda     _player+16
+L0023:	lda     _player+16
 	ora     _player+16+1
-	jeq     L0023
+	jeq     L0024
 ;
 ; sfx_play(0 , 0);
 ;
@@ -7843,35 +7846,35 @@ L0022:	lda     _player+16
 	lda     #$00
 	sta     _i
 	sta     _i+1
-L0024:	lda     _i
+L0025:	lda     _i
 	cmp     #$05
 	lda     _i+1
 	sbc     #$00
-	bvc     L0028
+	bvc     L0029
 	eor     #$80
-L0028:	jpl     L0070
+L0029:	jpl     L0074
 ;
 ; int nextX = (player.dashDirection == 1) ? player.right + 2 : player.left - 2;
 ;
 	lda     _player+21+1
-	bne     L002B
+	bne     L002C
 	lda     _player+21
 	cmp     #$01
-	bne     L002B
+	bne     L002C
 	lda     _player+5
 	ldx     _player+5+1
 	clc
 	adc     #$02
-	bcc     L002E
+	bcc     L002F
 	inx
-	jmp     L002E
-L002B:	lda     _player+3
+	jmp     L002F
+L002C:	lda     _player+3
 	ldx     _player+3+1
 	sec
 	sbc     #$02
-	bcs     L002E
+	bcs     L002F
 	dex
-L002E:	jsr     pushax
+L002F:	jsr     pushax
 ;
 ; if (!CheckIfCollidableTile(currentLevelData[GetTileIndex(nextX, player.top)]) &&
 ;
@@ -7890,7 +7893,7 @@ L002E:	jsr     pushax
 	lda     (ptr1),y
 	jsr     _CheckIfCollidableTile
 	tax
-	bne     L002F
+	bne     L0030
 ;
 ; !CheckIfCollidableTile(currentLevelData[GetTileIndex(nextX, player.bottom)]))
 ;
@@ -7909,7 +7912,7 @@ L002E:	jsr     pushax
 	lda     (ptr1),y
 	jsr     _CheckIfCollidableTile
 	tax
-	bne     L002F
+	bne     L0030
 ;
 ; player.x += player.dashDirection;
 ;
@@ -7920,19 +7923,19 @@ L002E:	jsr     pushax
 ;
 ; }
 ;
-L002F:	jsr     incsp2
+L0030:	jsr     incsp2
 ;
 ; for (i = 0; i < DASH_SPEED; i++) 
 ;
 	inc     _i
-	jne     L0024
+	jne     L0025
 	inc     _i+1
-	jmp     L0024
+	jmp     L0025
 ;
 ; if (player.dashTimer <= 0) 
 ;
-L0070:	lda     _player+18
-	jne     L0047
+L0074:	lda     _player+18
+	jne     L0048
 ;
 ; DashEnd();
 ;
@@ -7940,24 +7943,24 @@ L0070:	lda     _player+18
 ;
 ; else 
 ;
-	jmp     L0047
+	jmp     L0048
 ;
 ; if (player.isJumping) 
 ;
-L0023:	lda     _player+14
-	jeq     L0035
+L0024:	lda     _player+14
+	jeq     L0036
 ;
 ; player.velocityY += GRAVITY;
 ;
 	inc     _player+12
-	bne     L0036
+	bne     L0037
 	inc     _player+12+1
 ;
 ; if (player.velocityY < 0) 
 ;
-L0036:	ldx     _player+12+1
+L0037:	ldx     _player+12+1
 	cpx     #$80
-	bcc     L0038
+	bcc     L0039
 ;
 ; if (CheckIfCollidableTile(currentLevelData[GetTileIndex(player.left + 2, player.top)]) ||
 ;
@@ -7977,7 +7980,7 @@ L0036:	ldx     _player+12+1
 	lda     (ptr1),y
 	jsr     _CheckIfCollidableTile
 	tax
-	bne     L003A
+	bne     L003B
 ;
 ; CheckIfCollidableTile(currentLevelData[GetTileIndex(player.right - 2, player.top)]))
 ;
@@ -7997,11 +8000,11 @@ L0036:	ldx     _player+12+1
 	lda     (ptr1),y
 	jsr     _CheckIfCollidableTile
 	tax
-	beq     L0038
+	beq     L0039
 ;
 ; player.velocityY = 0;
 ;
-L003A:	lda     #$00
+L003B:	lda     #$00
 	sta     _player+12
 	sta     _player+12+1
 ;
@@ -8011,13 +8014,13 @@ L003A:	lda     #$00
 ;
 ; if (player.velocityY > MAX_FALL_SPEED)
 ;
-L0038:	lda     _player+12
+L0039:	lda     _player+12
 	cmp     #$05
 	lda     _player+12+1
 	sbc     #$00
-	bvs     L003E
+	bvs     L003F
 	eor     #$80
-L003E:	bpl     L003D
+L003F:	bpl     L003E
 ;
 ; player.velocityY = MAX_FALL_SPEED;
 ;
@@ -8028,7 +8031,7 @@ L003E:	bpl     L003D
 ;
 ; player.y += player.velocityY;
 ;
-L003D:	lda     _player+12
+L003E:	lda     _player+12
 	clc
 	adc     _player+1
 	sta     _player+1
@@ -8036,15 +8039,15 @@ L003D:	lda     _player+12
 ; if (player.velocityY >= 0 && OnGround()) 
 ;
 	ldx     _player+12+1
-	bmi     L0047
+	bmi     L0048
 	jsr     _OnGround
 	tax
-	bne     L0045
-	jmp     L0047
+	bne     L0046
+	jmp     L0048
 ;
 ; player.y -= 1;
 ;
-L0043:	dec     _player+1
+L0044:	dec     _player+1
 ;
 ; UpdateColliderPositions();
 ;
@@ -8052,9 +8055,9 @@ L0043:	dec     _player+1
 ;
 ; while (OnGround()) 
 ;
-L0045:	jsr     _OnGround
+L0046:	jsr     _OnGround
 	tax
-	bne     L0043
+	bne     L0044
 ;
 ; player.y += 1;
 ;
@@ -8080,13 +8083,13 @@ L0045:	jsr     _OnGround
 ;
 ; else 
 ;
-	jmp     L0047
+	jmp     L0048
 ;
 ; if (!OnGround()) 
 ;
-L0035:	jsr     _OnGround
+L0036:	jsr     _OnGround
 	tax
-	bne     L0047
+	bne     L0048
 ;
 ; player.isJumping = 1;
 ;
@@ -8095,22 +8098,22 @@ L0035:	jsr     _OnGround
 ;
 ; if (player.damageTimer > 0)
 ;
-L0047:	lda     _player+25
+L0048:	lda     _player+25
 	ora     _player+25+1
-	beq     L004B
+	beq     L004C
 ;
 ; player.damageTimer--;
 ;
 	lda     _player+25
-	bne     L004A
+	bne     L004B
 	dec     _player+25+1
-L004A:	dec     _player+25
+L004B:	dec     _player+25
 ;
 ; if (player.damageTimer == 0)
 ;
 	lda     _player+25
 	ora     _player+25+1
-	bne     L004B
+	bne     L004C
 ;
 ; ResetLevel();
 ;
@@ -8118,7 +8121,7 @@ L004A:	dec     _player+25
 ;
 ; if (CheckIfSpikes(currentLevelData[GetTileIndex(player.left + 6, player.bottom - 4)]) ||
 ;
-L004B:	lda     _currentLevelData
+L004C:	lda     _currentLevelData
 	ldx     _currentLevelData+1
 	jsr     pushax
 	lda     _player+3
@@ -8136,7 +8139,7 @@ L004B:	lda     _currentLevelData
 	lda     (ptr1),y
 	jsr     _CheckIfSpikes
 	tax
-	jne     L0050
+	jne     L0051
 ;
 ; CheckIfSpikes(currentLevelData[GetTileIndex(player.right - 6, player.bottom - 4)]) ||
 ;
@@ -8158,7 +8161,7 @@ L004B:	lda     _currentLevelData
 	lda     (ptr1),y
 	jsr     _CheckIfSpikes
 	tax
-	bne     L0050
+	bne     L0051
 ;
 ; CheckIfSpikes(currentLevelData[GetTileIndex(player.left + 6, player.top + 4)]) ||
 ;
@@ -8180,7 +8183,7 @@ L004B:	lda     _currentLevelData
 	lda     (ptr1),y
 	jsr     _CheckIfSpikes
 	tax
-	bne     L0050
+	bne     L0051
 ;
 ; CheckIfSpikes(currentLevelData[GetTileIndex(player.right - 6, player.top + 4)]))
 ;
@@ -8202,13 +8205,13 @@ L004B:	lda     _currentLevelData
 	lda     (ptr1),y
 	jsr     _CheckIfSpikes
 	tax
-	beq     L0058
+	beq     L0059
 ;
 ; if (player.damageTimer == 0)
 ;
-L0050:	lda     _player+25
+L0051:	lda     _player+25
 	ora     _player+25+1
-	bne     L0058
+	bne     L0059
 ;
 ; player.damageTimer = DAMAGE_TIMER;
 ;
@@ -8218,13 +8221,13 @@ L0050:	lda     _player+25
 ;
 ; if (player.bottom > 240) 
 ;
-L0058:	lda     _player+9
+L0059:	lda     _player+9
 	cmp     #$F1
 	lda     _player+9+1
 	sbc     #$00
-	bvs     L005B
+	bvs     L005C
 	eor     #$80
-L005B:	bpl     L005A
+L005C:	bpl     L005B
 ;
 ; ResetLevel();
 ;
@@ -8232,7 +8235,7 @@ L005B:	bpl     L005A
 ;
 ; }
 ;
-L005A:	rts
+L005B:	rts
 
 .endproc
 
