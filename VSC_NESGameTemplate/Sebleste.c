@@ -1,62 +1,16 @@
 /*
-	Code for Nocturnes Blood
+	Welcome to the code for Sebleste, a 2d Platformer with inspiration taken from 
+	Celeste, there are 3 levels, the player moves left or right, jumps and dashes.
 
-	Controller layout 
-
-	Button	|  Bit Value |	neslib Macro
-	A		|	0x80	 |	PAD_A
-	B		|	0x40	 |	PAD_B
-	Select	|	0x20	 |	PAD_SELECT
-	Start	|	0x10	 |	PAD_START
-	Up		|	0x08	 |	PAD_UP
-	Down	|	0x04	 |	PAD_DOWN
-	Left	|	0x02	 |	PAD_LEFT
-	Right	|	0x01	 |	PAD_RIGHT
-
-	Z        ← A Button  
-	X        ← B Button  
-	Enter    ← Start  
-	Right Shift or Tab  ← Select  
-	↑ Arrow  ← Up  
-	↓ Arrow  ← Down  
-	← Arrow  ← Left  
-	→ Arrow  ← Right  
-
-	pad_poll(0) -> reads current state of controller
-	pad_trigger(0) -> returns button once first pressed not held
-	pad_state(0) -> gives you last read value from pad_poll, useful if polled earlier in frame and want to refer to it later
-
---------------------------------------------------------------------------
-	Add a Simple Pause Menu IDEA
-	c
-	if (game_state == STATE_GAME && (pad_trigger(0) & PAD_START)) 
-	{
-		game_state = STATE_PAUSED;
-		// draw pause screen
-	}
-	And later:
-
-	c
-	if (game_state == STATE_PAUSED && (pad_trigger(0) & PAD_START)) 
-	{
-		game_state = STATE_GAME;
-		// resume gameplay
-	}
-
+	This project was made by Sebastian Ha
 */	
- 
+
 #include "LIB/neslib.h"
 #include "LIB/nesdoug.h" 
 #include <stdlib.h>
 #include <stdio.h>
-#include "NES_ST/Level1.h"
-#include "NES_ST/Level2.h"
-#include "NES_ST/Level3.h"
-#include "NES_ST/TitleScreen.h"
-#include "NES_ST/DeathScreen.h"
-#include "NES_ST/WinScreen.h"
-#include "NES_ST/LoadingScreen.h"
-
+#include "NES_ST/LevelData.h"
+#include "NES_ST/MenuData.h"
 
 //Define colours
 #define BLACK 			0x0f
@@ -79,34 +33,34 @@
 #define LT_RED       	0x27
 #define PINK         	0x36
 
-//define game states
+//define game states for controlling the game loop
 #define START_SCREEN 0
 #define GAME_LOOP 1
 #define END_SCREEN 2
-//define constants used for player movement
-//Movement
+#define CREDITS_SCREEN 3
+//Player Movement
 #define PLAYER_SPEED 2
-//Jumping
+//Player jump constants
 #define GRAVITY 1
 #define JUMP_VELOCITY -10
 #define MAX_FALL_SPEED 4
-#define COYOTE_FRAMES  10
+#define COYOTE_FRAMES  6
 #define JUMP_BUFFER_FRAMES 10
-//dashing
+//player dash constants
 #define DASH_SPEED 5
 #define DASH_DURATION 6
 #define DASH_COOLDOWN 30
-//Health
+//Health constants
 #define LEVEL_COOLDOWN = 90
 #define DAMAGE_TIMER 20
-//Audio
+//Audio constants
 #define MAX_MUSIC_SPEED 12
 #define MIN_MUSIC_SPEED 0
 
 #pragma bss-name(push, "ZEROPAGE")
 
-//palette colours
-const unsigned char palette[]=
+//background palette colours using the colours defined above
+const unsigned char palette[] =
 {
 	BLACK, DK_GY, LT_GY, WHITE,       
 	BLACK, DK_BLUE, BLUE, SKY_BLUE,  
@@ -114,7 +68,7 @@ const unsigned char palette[]=
 	BLACK, DK_GREEN, GREEN, LT_GREEN 
 };  
 
-//Possible use for later
+// Sprite palette 
 const unsigned char spritePalette[] =
 {
 	BLACK, DK_GY, LT_GY, WHITE, 
@@ -124,36 +78,60 @@ const unsigned char spritePalette[] =
 };
 
 // GLOBAL VARIABLES
-//Defines which state the game is currently in (START_SCREEN, GAME_LOOP or END_SCREEN)
+//Sets which state the game loop is currently at
 unsigned char currentGameState = START_SCREEN;
 //Text
-const unsigned char text[] = "SEBLESTE"; 
-const unsigned char titlePrompt[] = "Press START";
+//Title Text
+const unsigned char title[] = "SEBLESTE"; 
+const unsigned char titlePrompt[] = "Press START to play";
+const unsigned char titlePrompt2[] = "Press START";
+const unsigned char creditsPrompt[] = "Press SELECT for credits";
+//Credits screen text
+const unsigned char creditsTitle[] = "Credits";
+const unsigned char startScreenPrompt[] = "Press SELECT to return to start";
+const unsigned char credits1[] = "Developer - Sebastian Ha";
+const unsigned char credits2[] = "Art";
+const unsigned char credits3[] = "Character - PixelFight";
+const unsigned char credits4[] = "Map - Hexany Tiles";
+const unsigned char credits5[] = "Music";
+const unsigned char credits6[] = "Famitracker Demo Songs";
+const unsigned char credits7[] = "Fami Studio Demo Songs";
+//End screen text
 const unsigned char endScreenTitle[] = "YOU WON!";
 const unsigned char endScreenPrompt[] = "To play again";
+//Loading text
 const unsigned char loadingText[] = "LOADING :D";
 const unsigned char respawningText[] = "RESPAWNING :)";
-const unsigned char DeathCounter[] = "Death Counter";
-//variable for getting input from controller
+//Death counter text
+const unsigned char DeathCounter[] = "Death Counter:";
+//variables for getting input from controller
+//Gets input from button presses
 unsigned char inputPad;
+//Gets input for player movement
 unsigned char movementPad;
-//other variables
+//other variables for controlling for loops 
 int i = 0;
-//lowest 1 highest 3
+//lowest level is 1 and the highest 3
 int currentLevel = 1;
+//Pointer to use for getting the current level data
 const unsigned char* currentLevelData;
+//Variable for storing the current death counter
 char deathCounterText[6];
 
+//Structure used for the player
 typedef struct
 {
-	//variables
+	//Position variables
 	unsigned char x;
 	unsigned char y;
+	//Coyote time to forgive the player for mistimed jumps
 	char coyoteTime;
+	//Collider variables
 	signed int left;
 	signed int right;
 	signed int top;
 	signed int bottom;
+	//Boolean to control direction sprites are facing when drawn
 	char facingRight;
 	//jumping variables 
 	int velocityY;
@@ -166,30 +144,37 @@ typedef struct
 	char hasDashedInAir;
 	// -1 = left, 1 = right
 	signed int dashDirection; 
+	//Damage and death variables
 	unsigned int deathCounter;
 	unsigned int damageTimer;
 } Player;
 
+//Player object
 Player player;
 
 //function prototypes
+//Functions for drawing menu screens or resetting level
 void DrawTitleScreen(void);
+void DrawCreditsScreen(void);
+void DrawEndScreen(void);
+void ResetLevel(void);
+//Game loop function
 void GameLoop(void);
+// Player functions
 void MovePlayer(void);
 void DrawPlayer(void);
+void UpdateColliderPositions(void);
+void DashEnd(void);
+void SetPlayerValues(void);
+//Check functions for tile ID's, if player on ground or platform or spikes
 unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY);
 void CheckIfEnd(void);
-void DrawEndScreen(void);
 char OnGround(void); 
 char CheckIfCollidableTile(unsigned char tile);
 char CheckIfGoalTile(unsigned char tile); 
-void UpdateColliderPositions(void);
-void DashEnd(void);
 char CheckIfPlatformTile(unsigned char tile);
-void SetPlayerValues(void);
-void DrawDeathScreen(void);
-void ResetLevel(void);
 char CheckIfSpikes(unsigned char tile);
+//Miscellaneous functions
 void WriteDeathCounter(void);
 void ChangeMusic(unsigned int trackToChangeTo);
 
@@ -201,7 +186,9 @@ void ChangeMusic(unsigned int trackToChangeTo);
 
 void main (void) 
 {
+	//Set the player object values so they spawn in right position
 	SetPlayerValues();
+	// Make sure to draw the title screen so player sees this when Sebleste loaded
 	DrawTitleScreen();
 
 	//0 - 4
@@ -213,25 +200,34 @@ void main (void)
 	{
 		//Waits for next frame
 		ppu_wait_nmi();
+		//Set both movement variables to recieve input
 		movementPad = pad_poll(0);
 		inputPad = get_pad_new(0);
 
+		//Switch statement to control game loop and which sections appear on screen
 		switch(currentGameState)
 		{
 			case START_SCREEN:
 				//Check if player has pressed start
 				if (inputPad & PAD_START)
 				{
+					// if true start the game
 					currentGameState = GAME_LOOP;
 					GameLoop();
+				} // If not check for Select input
+				else if (inputPad & PAD_SELECT)
+				{
+					//Display credits if select pressed
+					currentGameState = CREDITS_SCREEN;
+					DrawCreditsScreen();
 				}
 				break;
 			case GAME_LOOP:
-				//Player code
+				//Update the player collider positions so that collisions work as intended
 				UpdateColliderPositions();
-				//Movement
+				//Update Movement
 				MovePlayer();
-				//Draw sprites
+				//Draw player sprites
 				DrawPlayer();
 				//Check if player has reached end goal
 				CheckIfEnd();
@@ -240,58 +236,218 @@ void main (void)
 				//Check if player has pressed start
 				if (inputPad & PAD_START)
 				{
+					//If so bring the player back to the starting screen
 					currentGameState = START_SCREEN;
-					//ChangeMusic(3);
+					//Change the music to title screen music
+					ChangeMusic(3);
 					DrawTitleScreen();
 				}
 				break;
+			case CREDITS_SCREEN:
+				if (inputPad & PAD_START)
+				{
+					//Start the game from the credits
+					currentGameState = GAME_LOOP;
+					GameLoop();
+				}
+				else if (inputPad & PAD_SELECT)
+				{
+					//Change current state
+					currentGameState = START_SCREEN;
+					//Don't need to change music as same as title screen, just need to draw
+					DrawTitleScreen();
+				}
 		}
 	}
 }
 	
 /*
----------------------------
--- -- OTHER FUNCTIONS -- --
----------------------------
+-------------------------------------------------
+-- -- MENU SCREEN AND RESET LEVEL FUNCTIONS -- --
+-------------------------------------------------
 */
 
 void DrawTitleScreen(void)
 {
-	ppu_off(); // screen off
-	pal_bg(palette); //	load the BG palette
-	// vram_adr and vram_put only work with screen off NOTE, you could replace everything between i = 0; and here with...
-	// vram_write(text,sizeof(text)); does the same thing
-	//Set VRAM address to row 10 and column 12
+	// screen off
+	ppu_off(); 
+	//	load the Background palette
+	pal_bg(palette); 
 
-	// //Clear the screen
+	// //Clear the screen to black
 	vram_adr(NAMETABLE_A);
 	vram_fill(0x00, 1024);
-
+	//Load title screen data in
 	vram_adr(NAMETABLE_A);
 	vram_write(TitleScreen, 1024);
 
-
-	vram_adr(NTADR_A(12, 5)); // places text at screen position
-	vram_write(text, sizeof(text) - 1); //write Title to screen
+	//Write title SEBLESTE to screen
+	vram_adr(NTADR_A(12, 5)); 
+	vram_write(title, sizeof(title) - 1); 
 	//Write prompt to start game
-	vram_adr(NTADR_A(10, 18));
+	vram_adr(NTADR_A(6, 18));
 	vram_write(titlePrompt, sizeof(titlePrompt) - 1);
+	//Write prompt to go to credits screen
+	vram_adr(NTADR_A(4, 22));
+	vram_write(creditsPrompt, sizeof(creditsPrompt) - 1);
 	
-	ppu_on_all(); //	turn on screen
+	//Turn screen on
+	ppu_on_all();
 }
+
+void DrawCreditsScreen(void)
+{
+	// screen off
+	ppu_off(); 
+	//Load background paletter
+	pal_bg(palette);
+	//Clear all sprite data
+	oam_clear();
+
+	//Clear the screen to black
+	vram_adr(NAMETABLE_A);      
+	vram_fill(0x00, 1024);
+	
+	//Load win screen data to screen, ran out of memory to be able to have a credits screen
+	vram_adr(NAMETABLE_A);      
+	vram_write(WinScreen, 1024);
+	//Write Credits title to screen
+	vram_adr(NTADR_A(13, 2));
+	vram_write(creditsTitle, sizeof(creditsTitle) - 1); 
+	//Developer - Sebastian Ha
+	vram_adr(NTADR_A(4, 5));
+	vram_write(credits1, sizeof(credits1) - 1); 
+	// Art
+	vram_adr(NTADR_A(14, 8));
+	vram_write(credits2, sizeof(credits2) - 1); 
+	// Character - PixelFight
+	vram_adr(NTADR_A(5, 10));
+	vram_write(credits3, sizeof(credits3) - 1); 
+	//Map - Hexany Tiles
+	vram_adr(NTADR_A(7, 12));
+	vram_write(credits4, sizeof(credits4) - 1); 
+	// Music
+	vram_adr(NTADR_A(13, 17));
+	vram_write(credits5, sizeof(credits5) - 1); 
+	// Famitracker Demo songs
+	vram_adr(NTADR_A(5, 19));
+	vram_write(credits6, sizeof(credits6) - 1); 
+	//Fami Studio Demo Songs
+	vram_adr(NTADR_A(5, 21));
+	vram_write(credits7, sizeof(credits7) - 1); 
+	// Press START to play
+	vram_adr(NTADR_A(6, 25));
+	vram_write(titlePrompt, sizeof(titlePrompt) - 1); 
+	//Press SELECT to return to start
+	vram_adr(NTADR_A(1, 27));
+	vram_write(startScreenPrompt, sizeof(startScreenPrompt) - 1); 
+
+	//Turn screen on
+	ppu_on_all();
+}
+
+void DrawEndScreen()
+{
+	// screen off
+	ppu_off(); 
+	//	load the BG palette
+	pal_bg(palette); 
+	//Clear all sprite data
+	oam_clear();
+
+	//Set current level
+	currentLevel = 1;
+	//Reset current player variable values
+	SetPlayerValues();
+	//Change current background music
+	ChangeMusic(2);
+
+	//Clear the screen to black
+	vram_adr(NAMETABLE_A);
+	vram_fill(0x00, 1024);
+	//Draw Win screen data to screen
+	vram_adr(NAMETABLE_A);           
+	vram_write(WinScreen, 1024);
+
+	// Display end screen message
+	vram_adr(NTADR_A(12, 2)); 
+	vram_write(title, sizeof(title) - 1);
+	//Display YOU WON! message
+	vram_adr(NTADR_A(12, 6)); 
+	vram_write(endScreenTitle, sizeof(endScreenTitle) - 1); 
+	//Write prompt to go back to start menu
+	vram_adr(NTADR_A(11, 19));
+	vram_write(titlePrompt2, sizeof(titlePrompt2) - 1);
+	//Continuation of prompt to go back to start menu
+	vram_adr(NTADR_A(10, 21));
+	vram_write(endScreenPrompt, sizeof(endScreenPrompt) - 1);
+
+	//turn on screen
+	ppu_on_all(); 
+}
+
+
+void ResetLevel(void)
+{
+	//Play death sound effect
+	sfx_play(1 , 0);
+	// screen off
+	ppu_off();
+	//Set background palette
+	pal_bg(palette); 
+	//Clear all sprite data
+	oam_clear();
+
+	//increment death counter ready for it to be written to screen
+	player.deathCounter++;
+
+	//Clear the screen
+	vram_adr(NAMETABLE_A);      
+	vram_fill(0x00, 1024);
+	//Display death screen to screen
+	vram_adr(NAMETABLE_A);      
+	vram_write(DeathScreen, 1024);
+	//Display respawning text
+	vram_adr(NTADR_A(10, 8));
+	vram_write(respawningText, sizeof(respawningText) - 1); 
+	//Turn on screen for player to see respawning message
+
+	ppu_on_all();
+	//Delay by 1 second
+	delay(60);
+	//turn screen off
+	ppu_off();
+	//Load current level data to screen
+	vram_adr(NAMETABLE_A);      
+	vram_write(currentLevelData, 1024);
+	//Write death counter to screen
+	WriteDeathCounter();
+	//Reset player variable values
+	SetPlayerValues();
+	//Turn screen on
+	ppu_on_all();
+}
+
+/*
+------------------------------
+-- -- GAME LOOP FUNCTION -- --
+------------------------------
+*/
 
 void GameLoop(void)
 {
 	//Turn screen off
 	ppu_off(); 
+	//Clear sprite data
 	oam_clear();
-
-	//Load palette
+	//Load background palette
 	pal_bg(palette);
+	//Set sprite palette
 	pal_spr((const char*)spritePalette);
 
 	switch(currentLevel)
 	{
+		//Set current level data, music and or death counter depending on which level is currently is
 		case 1:
 			currentLevelData = Level1;
 			player.deathCounter = 0;
@@ -307,39 +463,54 @@ void GameLoop(void)
 			break;
 	}
 
-	//Clear the screen
+	//Clear the screen to black
 	vram_adr(NAMETABLE_A);      
 	vram_fill(0x00, 1024);
+	//Display loading screen data
 	vram_adr(NAMETABLE_A);      
 	vram_write(LoadingScreen, 1024);
+	//Display loading text
 	vram_adr(NTADR_A(11, 16));
 	vram_write(loadingText, sizeof(loadingText) - 1); 
 
+	//Turn on screen so player sees "loading message"
 	ppu_on_all();
+	//Delay by 1 second so that player sees it is "loading"
 	delay(60);
+	//Turn screen off
 	ppu_off();
-
+	//Draw the current level data to scren
 	vram_adr(NAMETABLE_A);      
 	vram_write(currentLevelData, 1024);
-
+	//Write the death counter to screen once per level load
 	WriteDeathCounter();
-
+	//Turn screen on
 	ppu_on_all();
 }
 
+/*
+----------------------------
+-- -- PLAYER FUNCTIONS -- --
+----------------------------
+*/
+
 void MovePlayer(void)
 {
+	//Set jump buffer timer if jump button is pressed and player is not dashing
 	if (inputPad & PAD_A && !player.isDashing) 
 	{
 		player.jumpBufferTimer = JUMP_BUFFER_FRAMES;
 	}
 
+	//Set the coyote time to be 6 frames if the player is on the ground
 	if (OnGround()) 
 	{
 		player.coyoteTime = COYOTE_FRAMES;
 		player.hasDashedInAir = 0;
 	} 
-	else if (player.coyoteTime > 0) 
+	
+	//Decrement coyote Time if it is above 0
+	if (player.coyoteTime > 0) 
 	{
 		player.coyoteTime--;
 	}
@@ -350,9 +521,10 @@ void MovePlayer(void)
 	//left
     if (movementPad & PAD_LEFT)
     {
+		//Make sure player is not hitting a collidable tile
         if (!CheckIfCollidableTile(currentLevelData[GetTileIndex(player.left, player.y + 1)]))
         {
-			//Handle movement
+			//Handle movement to the left
 			player.x -= PLAYER_SPEED;
 			//Set facing right to false
 			player.facingRight = 0;
@@ -362,9 +534,10 @@ void MovePlayer(void)
 	//Right
     if (movementPad & PAD_RIGHT)
     {
+		//Make sure player is not hitting a collidable tile
         if (!CheckIfCollidableTile(currentLevelData[GetTileIndex(player.right, player.y + 1)]))
         {
-			//Handle Movement
+			//Handle Movement to the right
 			player.x += PLAYER_SPEED;
 			//Set facing right to true
 			player.facingRight = 1;
@@ -378,7 +551,10 @@ void MovePlayer(void)
 		// Only allow midair dash if the player has not dashed in the air yet
 		if (OnGround() || !player.hasDashedInAir)
 		{
-			player.dashDirection = (movementPad & PAD_LEFT ? -1 : movementPad & PAD_RIGHT ? 1 : 0);
+			//sets dash direction depending on which input is recieved or what direction player facing
+			player.dashDirection = (movementPad & PAD_LEFT ? -1 : movementPad & PAD_RIGHT ? 1 : 
+									player.facingRight ? 1 : -1);
+			//Set dashing to true and dash timer to duration of dash
 			player.isDashing = 1;
 			player.dashTimer = DASH_DURATION;
 
@@ -391,19 +567,22 @@ void MovePlayer(void)
 	}
 	else if (player.dashCooldown > 0) 
 	{
+		//Decrement dash cooldown if it is higher than 0
 		player.dashCooldown--;
 	}
 
 	// Check if jump button (A) is pressed, player is not already jumping, and player is currently standing on solid ground
-	if (player.jumpBufferTimer > 0 && !player.isJumping && player.coyoteTime > 0) 
+	if (player.jumpBufferTimer > 0 && (!player.isJumping || player.coyoteTime > 0))
 	{
+		//Play jump sound effect here so it only player once instead of repeated in the else block down below
 		sfx_play(2 , 0);
 		//Set the "bool" variable to true
 		player.isJumping = 1;
 		//Set the velocity to be the constant we defined applies an upward force to the player by being a negative value
 		player.velocityY = JUMP_VELOCITY;
-
+		//Reset jump buffer time and coyote time so player doesn't jump again accidently mid air
 		player.jumpBufferTimer = 0;
+		player.coyoteTime = 0;
 
 	}
 	else if (player.jumpBufferTimer > 0) 
@@ -416,6 +595,7 @@ void MovePlayer(void)
 	//-------------------------playerTop
 	if (player.isDashing) 
 	{
+		//Play dash sound effect
 		sfx_play(0 , 0);
 		//Decrement the dash timer so that when it runs out player stops dashing
 		player.dashTimer--;
@@ -443,12 +623,11 @@ void MovePlayer(void)
     else 
     {
         // ----------------------------
-		// Jumping mechanic only runs if player is not dashing on the ground
+		// Jumping mechanic ONLY runs if player is not dashing on the ground
 		// ----------------------------
 		//Checks for if the player is jumping
-        if (player.isJumping) 
+        if (player.isJumping && !player.isDashing) 
         {
-
 			//Apply gravity to bring the player back down
             player.velocityY += GRAVITY;
 
@@ -464,18 +643,19 @@ void MovePlayer(void)
 				}
 			}
 
-			//makeSure hte fall speed doesn't exceed the max value so player doesn't fall too fast
+			//makeSure the fall speed doesn't exceed the max value so player doesn't fall too fast
             if (player.velocityY > MAX_FALL_SPEED)
 			{
                 player.velocityY = MAX_FALL_SPEED;
 			}
-			//Move the player depending on the value of the velocity velocity starts off negative so it acts as an upwards force
+			//Move the player depending on the value of the velocity velocity starts off negative so it acts as an
+			// upwards force
 			//As it becomes positive it becomes a downward force to pull the player back
             player.y += player.velocityY;
 			//Checks to see if player is stil falling but on the ground
             if (player.velocityY >= 0 && OnGround()) 
             {
-				//makes sure that the player doesn't go into the collidable tile
+				//makes sure that the player doesn't go into the ground or collidable tile
                 while (OnGround()) 
 				{
 					player.y -= 1;
@@ -484,6 +664,7 @@ void MovePlayer(void)
 				//Reset all variables to do with jumping and dashing now that the player is on the ground
 				//Also make sure that the player is at ground level so the player is not floating slightly
                 player.y += 1;
+				//make sure to update the collider positions
 				UpdateColliderPositions();
                 player.velocityY = 0;
                 player.isJumping = 0;
@@ -501,27 +682,33 @@ void MovePlayer(void)
         }
     }
 
+	//Check if the player damage timer has been triggered
 	if (player.damageTimer > 0)
 	{
+		//Decrement timer if greater than 0
 		player.damageTimer--;
 
+		//Make sure to reset the level if the timer is now 0
 		if (player.damageTimer == 0)
 		{
 			ResetLevel();
 		}
 	}
 
+	//Check a box perimeter around the player for if they have hit a spike
 	if (CheckIfSpikes(currentLevelData[GetTileIndex(player.left + 6, player.bottom - 4)]) ||
 	CheckIfSpikes(currentLevelData[GetTileIndex(player.right - 6, player.bottom - 4)]) ||
 	CheckIfSpikes(currentLevelData[GetTileIndex(player.left + 6, player.top + 4)]) ||
 	CheckIfSpikes(currentLevelData[GetTileIndex(player.right - 6, player.top + 4)]))
 	{
+		//Make sure damage timer is only set once so that reset level can actually happen
 		if (player.damageTimer == 0)
 		{
 			player.damageTimer = DAMAGE_TIMER;
 		}
 	}
 
+	//Check if the player has fallen out of the map
 	if (player.bottom > 240) 
 	{
 		ResetLevel();
@@ -530,10 +717,13 @@ void MovePlayer(void)
 
 void DrawPlayer(void)
 {
+	//Set the player attribute, flash red and grey if has hit a spike, if dashing is green
+	//Other than that player is blue by default
 	unsigned char playerAttributes = player.isDashing ? 0x03 :
 						player.damageTimer > 0 && player.damageTimer % 2 == 0 ? 0x02 :
 						player.damageTimer > 0 && player.damageTimer % 2 == 1 ? 0x00 : 0x01;
 
+	//Flip the sprite if player is facing left
 	if (!player.facingRight)
 	{
 		playerAttributes |= 0x40;
@@ -544,6 +734,7 @@ void DrawPlayer(void)
 	//Such as pos, tile index, palette etc.
 	oam_clear();
 
+	//Don't draw the player if current Game state is not the game loop
 	if (currentGameState != GAME_LOOP)
 	{
 		return;
@@ -553,8 +744,12 @@ void DrawPlayer(void)
 	//especially for jumping and dashing
 	UpdateColliderPositions();
 
+	//Check what state the player is in and update accordingly, x position is set by turnary operator
+	//which checks if player is facing right
+
 	if (player.isDashing)
 	{
+		//If player is dashing draw the dash sprite
 		oam_spr((player.facingRight ? player.left : player.x), player.top, 0x88, playerAttributes);
 		oam_spr((player.facingRight ? player.x : player.left), player.top, 0x89, playerAttributes);
 		oam_spr((player.facingRight ? player.left : player.x), player.y, 0x98, playerAttributes);
@@ -562,6 +757,7 @@ void DrawPlayer(void)
 	}
 	else if (player.isJumping)
 	{
+		//If player is jumping draw jump sprite
 		oam_spr((player.facingRight ? player.left : player.x), player.top, 0x0A, playerAttributes);
 		oam_spr((player.facingRight ? player.x : player.left), player.top, 0x0B, playerAttributes);
 		oam_spr((player.facingRight ? player.left : player.x), player.y, 0x1A, playerAttributes);
@@ -569,7 +765,7 @@ void DrawPlayer(void)
 	}
 	else
 	{
-		// Draw the player using two tiles: 0x08 (top), 0x24 (bottom)
+		// Draw the player if standing still or moving
 		oam_spr((player.facingRight ? player.left : player.x), player.top, 0x08, playerAttributes);
 		oam_spr((player.facingRight ? player.x : player.left), player.top, 0x09, playerAttributes);
 		oam_spr((player.facingRight ? player.left : player.x), player.y, 0x18, playerAttributes);
@@ -577,14 +773,65 @@ void DrawPlayer(void)
 	}
 }
 
+void UpdateColliderPositions(void)
+{
+	//update player collider positions so that collision checks are up to date
+	player.left = player.x - 8;
+	player.right = player.x + 8;
+	player.top = player.y - 8;
+	player.bottom = player.y + 8;
+}
+
+void DashEnd(void)
+{
+	//If player has hit collidable or dash duration is now 0 then start dash cooldown and set player to not dashing
+	if (player.isDashing)
+	{
+		player.isDashing = 0;
+		player.dashCooldown = DASH_COOLDOWN;
+	}
+}
+
+void SetPlayerValues(void)
+{
+	/*
+	Reset the player values, position changes depending on it level 3
+	Other than that everyting else needs to be set back to 0 and the player needs
+	to be facing right by default
+	*/
+	player.x = currentLevel == 3 ? 232 : 30;
+	player.y = currentLevel == 3 ? 24 : 215;
+	player.coyoteTime = 0;
+	player.left = 0;
+	player.right = 0;
+	player.top = 0;
+	player.bottom = 0;
+	player.facingRight = 1;
+	player.velocityY = 0;
+	player.isJumping = 0;
+	player.jumpBufferTimer = 0; 
+	player.isDashing = 0;
+	player.dashTimer = 0;
+	player.dashCooldown = 0;
+	player.hasDashedInAir = 0;
+	player.dashDirection = 0;
+	player.damageTimer = 0;
+}
+
+
+/*
+------------------------------
+-- -- CHECKING FUNCTIONS -- --
+------------------------------
+*/
+
 unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY)
 {
     // Get the x and y tile that the player is currently on Divide by 8 as the players current position is in
-	// pixels. Each tile has 8 pixels so we need to divide by 8 to find the tile We need to add scrollX to it 
-	//so that we can find the correct position across both halves of the map
+	// pixels. Each tile has 8 pixels so we need to divide by 8 to find the tile
     unsigned char tileX = playerX / 8; 
     unsigned char tileY = playerY / 8;
-    // As we play in a 64x30 map to first find the correct y position We multiply by 64 to get the correct row
+    // As we play in a 32x30 map to first find the correct y position We multiply by 32 to get the correct row
 	//Then we add tileX to find the column and the index of the tile
     unsigned int tileIndex = tileY * 32 + tileX;
 
@@ -593,12 +840,17 @@ unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY)
 
 void CheckIfEnd()
 {
-	if (CheckIfGoalTile(currentLevelData[GetTileIndex(player.left + 4, player.bottom)]) ||
-	CheckIfGoalTile(currentLevelData[GetTileIndex(player.right - 4, player.bottom)]))
+	//Check if the position of the player matches the tile of the goal, if true then change levels or end game
+	if (CheckIfGoalTile(currentLevelData[GetTileIndex(player.left + 7, player.bottom)]) ||
+	CheckIfGoalTile(currentLevelData[GetTileIndex(player.right - 7, player.bottom)]) ||
+	CheckIfGoalTile(currentLevelData[GetTileIndex(player.x, player.bottom - 4)]))
 	{
+		//Play sound effect so player knows level completed
 		sfx_play(3 , 0);
+		//Reset player levels regardless
 		SetPlayerValues();
 
+		//If final level has been passed game ends
 		if (currentLevel == 3)
 		{
 			currentGameState = END_SCREEN;
@@ -606,6 +858,7 @@ void CheckIfEnd()
 		}
 		else
 		{
+			//Other than that progress levels and reset player values
 			currentLevel++;
 			SetPlayerValues();
 			GameLoop();
@@ -613,43 +866,12 @@ void CheckIfEnd()
 	}
 }
 
-void DrawEndScreen()
-{
-	ppu_off(); // screen off
-	pal_bg(palette); //	load the BG palette
-
-	//Clear all sprite data
-	oam_clear();
-
-	//Set varirables back to their default value
-	currentLevel = 1;
-	SetPlayerValues();
-	ChangeMusic(2);
-
-	//Clear the screen
-	vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
-	vram_fill(0x00, 1024);
-
-	vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
-	vram_write(WinScreen, 1024);
-
-	vram_adr(NTADR_A(12, 6)); // places text at screen position
-	vram_write(endScreenTitle, sizeof(endScreenTitle) - 1); //write Title to screen
-	//Write prompt to start game
-	vram_adr(NTADR_A(11, 19));
-	vram_write(titlePrompt, sizeof(titlePrompt) - 1);
-
-	vram_adr(NTADR_A(10, 21));
-	vram_write(endScreenPrompt, sizeof(endScreenPrompt) - 1);
-
-	ppu_on_all(); //	turn on screen
-}
-
 char OnGround(void) 
 {
 	//Make sure player does not land on top of the bottom of the screen
 	if (player.bottom + 1 >= 240) return 0;
 
+	//Stores all of the tiles that are ground tiles, used to determine if player is on the ground for jumping and dashing
     return CheckIfCollidableTile(currentLevelData[GetTileIndex(player.right - 6, player.bottom + 1)]) ||
 		   CheckIfCollidableTile(currentLevelData[GetTileIndex(player.left + 6, player.bottom + 1)]) ||
 		   CheckIfPlatformTile(currentLevelData[GetTileIndex(player.right - 6, player.bottom + 1)]) ||
@@ -672,116 +894,64 @@ char CheckIfCollidableTile(unsigned char tile)
 
 char CheckIfGoalTile(unsigned char tile) 
 {
-	//Stores all of the tiles that are collidable and is used to calculate collisions
+	//Stores all of the tiles that are goal tiles and is used to calculate level changes
     return tile == 0x04 || tile == 0x05 || tile == 0x14 || tile == 0x15;
-}
-
-void UpdateColliderPositions(void)
-{
-	//update player colliders
-	player.left = player.x - 8;
-	player.right = player.x + 8;
-	player.top = player.y - 8;
-	player.bottom = player.y + 8;
-}
-
-void DashEnd(void)
-{
-	if (player.isDashing)
-	{
-		player.isDashing = 0;
-		player.dashCooldown = DASH_COOLDOWN;
-	}
 }
 
 char CheckIfPlatformTile(unsigned char tile) 
 {
-	//Stores all of the tiles that are collidable and is used to calculate collisions
+	//Stores all of the tiles that are platform tiles, used to determine if player can jump through and land on
     return tile == 0x84 || tile == 0x85 || tile == 0x94 || tile == 0x95 ||
 			tile == 0xE4 || tile == 0xE5 || tile == 0xE6 || tile == 0xF4 ||
 			tile == 0xF5 || tile == 0xF6;
 }
 
-void SetPlayerValues(void)
-{
-	player.x = currentLevel == 3 ? 232 : 30;
-	player.y = currentLevel == 3 ? 24 : 215;
-	player.coyoteTime = 0;
-	player.left = 0;
-	player.right = 0;
-	player.top = 0;
-	player.bottom = 0;
-	player.facingRight = 1;
-	player.velocityY = 0;
-	player.isJumping = 0;
-	player.jumpBufferTimer = 0; 
-	player.isDashing = 0;
-	player.dashTimer = 0;
-	player.dashCooldown = 0;
-	player.hasDashedInAir = 0;
-	player.dashDirection = 0;
-	player.damageTimer = 0;
-}
-
-void ResetLevel(void)
-{
-	sfx_play(1 , 0);
-	ppu_off(); // screen off
-	pal_bg(palette); //	load the BG palette
-	//Clear all sprite data
-	oam_clear();
-
-	player.deathCounter++;
-
-	//Clear the screen
-	vram_adr(NAMETABLE_A);      
-	vram_fill(0x00, 1024);
-	vram_adr(NAMETABLE_A);      
-	vram_write(DeathScreen, 1024);
-	vram_adr(NTADR_A(10, 8));
-	vram_write(respawningText, sizeof(respawningText) - 1); 
-
-	ppu_on_all();
-	delay(60);
-	ppu_off();
-
-	vram_adr(NAMETABLE_A);      
-	vram_write(currentLevelData, 1024);
-
-	WriteDeathCounter();
-
-	SetPlayerValues();
-
-	ppu_on_all();
-}
-
 char CheckIfSpikes(unsigned char tile)
 {
+	//Only return true if the current tile is one that matches the options below
 	return tile == 0x8A || tile == 0x8B || tile == 0x8C || tile == 0x8D ||
 		tile == 0x9A || tile == 0x9B || tile == 0xAA || tile == 0xAB ||
 		tile == 0xC8 || tile == 0xC9 || tile == 0xD8 || tile == 0xD9;
 }
 
+/*
+-----------------------------------
+-- -- MISCELLANEOUS FUNCTIONS -- --
+-----------------------------------
+*/
+
 void WriteDeathCounter(void)
 {
-	vram_adr(NTADR_A(1, 1));
+	//Write the text for death counter
+	vram_adr(NTADR_A(7, 1));
 	vram_write(DeathCounter, sizeof(DeathCounter));
-	vram_adr(NTADR_A(17, 1));
+	//Set space so that after the : there is 3 spaces so that it can go to 3 digits if player plays for that long
+	vram_adr(NTADR_A(23, 1));
+	//Convert death counter variable to text
 	sprintf(deathCounterText, "%d", player.deathCounter);
-	vram_write((const unsigned char*)deathCounterText, sizeof(deathCounterText));
+	//Display death counter text
+	vram_write((const unsigned char*)deathCounterText, sizeof(deathCounterText) - 1);
 }
 
 void ChangeMusic(unsigned int trackToChangeTo)
 {
+	//Music speed from 0 - 12, was no function to quieten the volume so made do
+	//Set the current speed to be the max speed
 	unsigned int currentSpeed = MAX_MUSIC_SPEED;
 
+	//Lower the speed of the music while it is higher than the min speed
 	while (currentSpeed > MIN_MUSIC_SPEED)
 	{
+		//Set new speed
 		set_music_speed(currentSpeed);
+		//Delay by 6 frames so player can hear the speed slowing
 		delay(6);
+		//Decrement the speed 
 		currentSpeed--;	
 	}
 
+	//Once speed is 0, change to the new track
 	music_play(trackToChangeTo);
+	//Set the speed back to the highest now that track has changed
 	set_music_speed(MAX_FALL_SPEED);
 }
