@@ -148,29 +148,36 @@ typedef struct
 	unsigned int damageTimer;
 } Player;
 
+//Player object
 Player player;
 
 //function prototypes
+//Functions for drawing menu screens or resetting level
 void DrawTitleScreen(void);
+void DrawCreditsScreen(void);
+void DrawEndScreen(void);
+void DrawDeathScreen(void);
+void ResetLevel(void);
+//Game loop function
 void GameLoop(void);
+// Player functions
 void MovePlayer(void);
 void DrawPlayer(void);
+void UpdateColliderPositions(void);
+void DashEnd(void);
+void SetPlayerValues(void);
+//Check functions for tile ID's, if player on ground or platform or spikes
 unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY);
 void CheckIfEnd(void);
-void DrawEndScreen(void);
 char OnGround(void); 
 char CheckIfCollidableTile(unsigned char tile);
 char CheckIfGoalTile(unsigned char tile); 
-void UpdateColliderPositions(void);
-void DashEnd(void);
 char CheckIfPlatformTile(unsigned char tile);
-void SetPlayerValues(void);
-void DrawDeathScreen(void);
-void ResetLevel(void);
 char CheckIfSpikes(unsigned char tile);
+//Miscellaneous functions
 void WriteDeathCounter(void);
 void ChangeMusic(unsigned int trackToChangeTo);
-void DrawCreditsScreen(void);
+
 
 /*
 ----------------
