@@ -1,57 +1,13 @@
 /*
-	Code for Nocturnes Blood
-
-	Controller layout 
-
-	Button	|  Bit Value |	neslib Macro
-	A		|	0x80	 |	PAD_A
-	B		|	0x40	 |	PAD_B
-	Select	|	0x20	 |	PAD_SELECT
-	Start	|	0x10	 |	PAD_START
-	Up		|	0x08	 |	PAD_UP
-	Down	|	0x04	 |	PAD_DOWN
-	Left	|	0x02	 |	PAD_LEFT
-	Right	|	0x01	 |	PAD_RIGHT
-
-	Z        ← A Button  
-	X        ← B Button  
-	Enter    ← Start  
-	Right Shift or Tab  ← Select  
-	↑ Arrow  ← Up  
-	↓ Arrow  ← Down  
-	← Arrow  ← Left  
-	→ Arrow  ← Right  
-
-	pad_poll(0) -> reads current state of controller
-	pad_trigger(0) -> returns button once first pressed not held
-	pad_state(0) -> gives you last read value from pad_poll, useful if polled earlier in frame and want to refer to it later
-
---------------------------------------------------------------------------
-	Add a Simple Pause Menu IDEA
-	c
-	if (game_state == STATE_GAME && (pad_trigger(0) & PAD_START)) 
-	{
-		game_state = STATE_PAUSED;
-		// draw pause screen
-	}
-	And later:
-
-	c
-	if (game_state == STATE_PAUSED && (pad_trigger(0) & PAD_START)) 
-	{
-		game_state = STATE_GAME;
-		// resume gameplay
-	}
-
+	Welcome to the code for Sebleste, a 2d Platformer with inspiration taken from 
+	Celeste, there are 3 levels, the player moves left or right, jumps and dashes.
 */	
  
 #include "LIB/neslib.h"
 #include "LIB/nesdoug.h" 
 #include <stdlib.h>
 #include <stdio.h>
-#include "NES_ST/Level1.h"
-#include "NES_ST/Level2.h"
-#include "NES_ST/Level3.h"
+#include "NES_ST/LevelData.h"
 #include "NES_ST/MenuData.h"
 
 
@@ -482,7 +438,7 @@ void MovePlayer(void)
 		// Jumping mechanic only runs if player is not dashing on the ground
 		// ----------------------------
 		//Checks for if the player is jumping
-        if (player.isJumping) 
+        if (player.isJumping && !player.isDashing) 
         {
 
 			//Apply gravity to bring the player back down
