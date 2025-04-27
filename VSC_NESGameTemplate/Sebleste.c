@@ -781,11 +781,10 @@ void SetPlayerValues(void)
 unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY)
 {
     // Get the x and y tile that the player is currently on Divide by 8 as the players current position is in
-	// pixels. Each tile has 8 pixels so we need to divide by 8 to find the tile We need to add scrollX to it 
-	//so that we can find the correct position across both halves of the map
+	// pixels. Each tile has 8 pixels so we need to divide by 8 to find the tile
     unsigned char tileX = playerX / 8; 
     unsigned char tileY = playerY / 8;
-    // As we play in a 64x30 map to first find the correct y position We multiply by 64 to get the correct row
+    // As we play in a 32x30 map to first find the correct y position We multiply by 32 to get the correct row
 	//Then we add tileX to find the column and the index of the tile
     unsigned int tileIndex = tileY * 32 + tileX;
 
@@ -794,13 +793,17 @@ unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY)
 
 void CheckIfEnd()
 {
+	//Check if the position of the player matches the tile of the goal, if true then change levels or end game
 	if (CheckIfGoalTile(currentLevelData[GetTileIndex(player.left + 7, player.bottom)]) ||
 	CheckIfGoalTile(currentLevelData[GetTileIndex(player.right - 7, player.bottom)]) ||
 	CheckIfGoalTile(currentLevelData[GetTileIndex(player.x, player.bottom - 4)]))
 	{
+		//Play sound effect so player knows level completed
 		sfx_play(3 , 0);
+		//Reset player levels regardless
 		SetPlayerValues();
 
+		//If final level has been passed game ends
 		if (currentLevel == 3)
 		{
 			currentGameState = END_SCREEN;
@@ -808,6 +811,7 @@ void CheckIfEnd()
 		}
 		else
 		{
+			//Other than that progress levels and reset player values
 			currentLevel++;
 			SetPlayerValues();
 			GameLoop();
@@ -820,6 +824,7 @@ char OnGround(void)
 	//Make sure player does not land on top of the bottom of the screen
 	if (player.bottom + 1 >= 240) return 0;
 
+	//Stores all of the tiles that are ground tiles, used to determine if player is on the ground for jumping and dashing
     return CheckIfCollidableTile(currentLevelData[GetTileIndex(player.right - 6, player.bottom + 1)]) ||
 		   CheckIfCollidableTile(currentLevelData[GetTileIndex(player.left + 6, player.bottom + 1)]) ||
 		   CheckIfPlatformTile(currentLevelData[GetTileIndex(player.right - 6, player.bottom + 1)]) ||
@@ -842,13 +847,13 @@ char CheckIfCollidableTile(unsigned char tile)
 
 char CheckIfGoalTile(unsigned char tile) 
 {
-	//Stores all of the tiles that are collidable and is used to calculate collisions
+	//Stores all of the tiles that are goal tiles and is used to calculate level changes
     return tile == 0x04 || tile == 0x05 || tile == 0x14 || tile == 0x15;
 }
 
 char CheckIfPlatformTile(unsigned char tile) 
 {
-	//Stores all of the tiles that are collidable and is used to calculate collisions
+	//Stores all of the tiles that are platform tiles, used to determine if player can jump through and land on
     return tile == 0x84 || tile == 0x85 || tile == 0x94 || tile == 0x95 ||
 			tile == 0xE4 || tile == 0xE5 || tile == 0xE6 || tile == 0xF4 ||
 			tile == 0xF5 || tile == 0xF6;
@@ -856,6 +861,7 @@ char CheckIfPlatformTile(unsigned char tile)
 
 char CheckIfSpikes(unsigned char tile)
 {
+	//Only return true if the current tile is one that matches the options below
 	return tile == 0x8A || tile == 0x8B || tile == 0x8C || tile == 0x8D ||
 		tile == 0x9A || tile == 0x9B || tile == 0xAA || tile == 0xAB ||
 		tile == 0xC8 || tile == 0xC9 || tile == 0xD8 || tile == 0xD9;
@@ -869,6 +875,7 @@ char CheckIfSpikes(unsigned char tile)
 
 void WriteDeathCounter(void)
 {
+	//Write the text for death counter
 	vram_adr(NTADR_A(7, 1));
 	vram_write(DeathCounter, sizeof(DeathCounter));
 	//Set space so that after the : there is 3 spaces so that it can go to 3 digits if player plays for that long
