@@ -102,7 +102,7 @@ const unsigned char endScreenPrompt[] = "To play again";
 const unsigned char loadingText[] = "LOADING :D";
 const unsigned char respawningText[] = "RESPAWNING :)";
 //Death counter text
-const unsigned char DeathCounter[] = "Death Counter";
+const unsigned char DeathCounter[] = "Death Counter:";
 //variables for getting input from controller
 //Gets input from button presses
 unsigned char inputPad;
@@ -262,9 +262,9 @@ void main (void)
 }
 	
 /*
----------------------------
--- -- FUNCTIONS -- --
----------------------------
+-------------------------------------------------
+-- -- MENU SCREEN AND RESET LEVEL FUNCTIONS -- --
+-------------------------------------------------
 */
 
 void DrawTitleScreen(void)
@@ -419,7 +419,11 @@ void ResetLevel(void)
 
 
 
-
+/*
+------------------------------
+-- -- GAME LOOP FUNCTION -- --
+------------------------------
+*/
 
 void GameLoop(void)
 {
@@ -467,6 +471,12 @@ void GameLoop(void)
 
 	ppu_on_all();
 }
+
+/*
+----------------------------
+-- -- PLAYER FUNCTIONS -- --
+----------------------------
+*/
 
 void MovePlayer(void)
 {
@@ -762,23 +772,11 @@ void SetPlayerValues(void)
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/*
+------------------------------
+-- -- CHECKING FUNCTIONS -- --
+------------------------------
+*/
 
 unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY)
 {
@@ -863,40 +861,44 @@ char CheckIfSpikes(unsigned char tile)
 		tile == 0xC8 || tile == 0xC9 || tile == 0xD8 || tile == 0xD9;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
+/*
+-----------------------------------
+-- -- MISCELLANEOUS FUNCTIONS -- --
+-----------------------------------
+*/
 
 void WriteDeathCounter(void)
 {
-	vram_adr(NTADR_A(1, 1));
+	vram_adr(NTADR_A(7, 1));
 	vram_write(DeathCounter, sizeof(DeathCounter));
-	vram_adr(NTADR_A(17, 1));
+	//Set space so that after the : there is 3 spaces so that it can go to 3 digits if player plays for that long
+	vram_adr(NTADR_A(23, 1));
+	//Convert death counter variable to text
 	sprintf(deathCounterText, "%d", player.deathCounter);
-	vram_write((const unsigned char*)deathCounterText, sizeof(deathCounterText));
+	//Display death counter text
+	vram_write((const unsigned char*)deathCounterText, sizeof(deathCounterText) - 1);
 }
 
 void ChangeMusic(unsigned int trackToChangeTo)
 {
+	//Music speed from 0 - 12, was no function to quieten the volume so made do
+	//Set the current speed to be the max speed
 	unsigned int currentSpeed = MAX_MUSIC_SPEED;
 
+	//Lower the speed of the music while it is higher than the min speed
 	while (currentSpeed > MIN_MUSIC_SPEED)
 	{
+		//Set new speed
 		set_music_speed(currentSpeed);
+		//Delay by 6 frames so player can hear the speed slowing
 		delay(6);
+		//Decrement the speed 
 		currentSpeed--;	
 	}
 
+	//Once speed is 0, change to the new track
 	music_play(trackToChangeTo);
+	//Set the speed back to the highest now that track has changed
 	set_music_speed(MAX_FALL_SPEED);
 }
 

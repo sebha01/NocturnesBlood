@@ -7347,7 +7347,7 @@ _loadingText:
 _respawningText:
 	.byte	$52,$45,$53,$50,$41,$57,$4E,$49,$4E,$47,$20,$3A,$29,$00
 _DeathCounter:
-	.byte	$44,$65,$61,$74,$68,$20,$43,$6F,$75,$6E,$74,$65,$72,$00
+	.byte	$44,$65,$61,$74,$68,$20,$43,$6F,$75,$6E,$74,$65,$72,$3A,$00
 S0014:
 	.byte	$25,$64,$00
 
@@ -9908,10 +9908,10 @@ L0004:	lda     #$01
 .segment	"CODE"
 
 ;
-; vram_adr(NTADR_A(1, 1));
+; vram_adr(NTADR_A(7, 1));
 ;
 	ldx     #$20
-	lda     #$21
+	lda     #$27
 	jsr     _vram_adr
 ;
 ; vram_write(DeathCounter, sizeof(DeathCounter));
@@ -9920,13 +9920,13 @@ L0004:	lda     #$01
 	ldx     #>(_DeathCounter)
 	jsr     pushax
 	ldx     #$00
-	lda     #$0E
+	lda     #$0F
 	jsr     _vram_write
 ;
-; vram_adr(NTADR_A(17, 1));
+; vram_adr(NTADR_A(23, 1));
 ;
 	ldx     #$20
-	lda     #$31
+	lda     #$37
 	jsr     _vram_adr
 ;
 ; sprintf(deathCounterText, "%d", player.deathCounter);
@@ -9950,13 +9950,13 @@ L0004:	lda     #$01
 	ldy     #$06
 	jsr     _sprintf
 ;
-; vram_write((const unsigned char*)deathCounterText, sizeof(deathCounterText));
+; vram_write((const unsigned char*)deathCounterText, sizeof(deathCounterText) - 1);
 ;
 	lda     #<(_deathCounterText)
 	ldx     #>(_deathCounterText)
 	jsr     pushax
 	ldx     #$00
-	lda     #$06
+	lda     #$05
 	jmp     _vram_write
 
 .endproc
