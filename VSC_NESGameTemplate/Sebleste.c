@@ -52,10 +52,7 @@
 #include "NES_ST/Level1.h"
 #include "NES_ST/Level2.h"
 #include "NES_ST/Level3.h"
-#include "NES_ST/TitleScreen.h"
-#include "NES_ST/DeathScreen.h"
-#include "NES_ST/WinScreen.h"
-#include "NES_ST/LoadingScreen.h"
+#include "NES_ST/MenuData.h"
 
 
 //Define colours
@@ -83,6 +80,7 @@
 #define START_SCREEN 0
 #define GAME_LOOP 1
 #define END_SCREEN 2
+#define CREDITS_SCREEN 3
 //define constants used for player movement
 //Movement
 #define PLAYER_SPEED 2
@@ -126,13 +124,27 @@ const unsigned char spritePalette[] =
 // GLOBAL VARIABLES
 //Defines which state the game is currently in (START_SCREEN, GAME_LOOP or END_SCREEN)
 unsigned char currentGameState = START_SCREEN;
-//Text
-const unsigned char text[] = "SEBLESTE"; 
-const unsigned char titlePrompt[] = "Press START";
+//Title Text
+const unsigned char title[] = "SEBLESTE"; 
+const unsigned char titlePrompt[] = "Press START to play";
+const unsigned char creditsPrompt[] = "Press SELECT for credits";
+//Credits screen text
+const unsigned char creditsTitle[] = "Credits";
+const unsigned char startScreenPrompt[] = "Press SELECT to return to start";
+const unsigned char credits1[] = "Developer - Sebastian Ha";
+const unsigned char credits2[] = "Art";
+const unsigned char credits3[] = "Character - PixelFight";
+const unsigned char credits4[] = "Map - Hexany Tiles";
+const unsigned char credits5[] = "Music";
+const unsigned char credits6[] = "Famitracker Demo Songs";
+const unsigned char credits7[] = "Fami Studio Demo Songs";
+//End screen text
 const unsigned char endScreenTitle[] = "YOU WON!";
 const unsigned char endScreenPrompt[] = "To play again";
+//Loading text
 const unsigned char loadingText[] = "LOADING :D";
 const unsigned char respawningText[] = "RESPAWNING :)";
+//Death counter text
 const unsigned char DeathCounter[] = "Death Counter";
 //variable for getting input from controller
 unsigned char inputPad;
@@ -192,6 +204,7 @@ void ResetLevel(void);
 char CheckIfSpikes(unsigned char tile);
 void WriteDeathCounter(void);
 void ChangeMusic(unsigned int trackToChangeTo);
+void DrawCreditsScreen(void);
 
 /*
 ----------------
@@ -225,6 +238,11 @@ void main (void)
 					currentGameState = GAME_LOOP;
 					GameLoop();
 				}
+				else if (inputPad & PAD_SELECT)
+				{
+					currentGameState = CREDITS_SCREEN;
+					DrawCreditsScreen();
+				}
 				break;
 			case GAME_LOOP:
 				//Player code
@@ -245,6 +263,17 @@ void main (void)
 					DrawTitleScreen();
 				}
 				break;
+			case CREDITS_SCREEN:
+				if (inputPad & PAD_START)
+				{
+					currentGameState = GAME_LOOP;
+					GameLoop();
+				}
+				else if (inputPad & PAD_SELECT)
+				{
+					currentGameState = CREDITS_SCREEN;
+					DrawCreditsScreen();
+				}
 		}
 	}
 }
@@ -272,10 +301,13 @@ void DrawTitleScreen(void)
 
 
 	vram_adr(NTADR_A(12, 5)); // places text at screen position
-	vram_write(text, sizeof(text) - 1); //write Title to screen
+	vram_write(title, sizeof(title) - 1); //write Title to screen
 	//Write prompt to start game
-	vram_adr(NTADR_A(10, 18));
+	vram_adr(NTADR_A(6, 18));
 	vram_write(titlePrompt, sizeof(titlePrompt) - 1);
+
+	vram_adr(NTADR_A(4, 22));
+	vram_write(creditsPrompt, sizeof(creditsPrompt) - 1);
 	
 	ppu_on_all(); //	turn on screen
 }
@@ -787,4 +819,51 @@ void ChangeMusic(unsigned int trackToChangeTo)
 
 	music_play(trackToChangeTo);
 	set_music_speed(MAX_FALL_SPEED);
+}
+
+void DrawCreditsScreen(void)
+{
+	ppu_off(); // screen off
+	pal_bg(palette); //	load the BG palette
+	//Clear all sprite data
+	oam_clear();
+
+	//Clear the screen
+	vram_adr(NAMETABLE_A);      
+	vram_fill(0x00, 1024);
+	
+	vram_adr(NAMETABLE_A);      
+	vram_write(WinScreen, 1024);
+
+	vram_adr(NTADR_A(12, 2));
+	vram_write(creditsTitle, sizeof(creditsTitle) - 1); 
+
+	vram_adr(NTADR_A(4, 6));
+	vram_write(credits1, sizeof(credits1) - 1); 
+
+	vram_adr(NTADR_A(14, 10));
+	vram_write(credits2, sizeof(credits2) - 1); 
+
+	vram_adr(NTADR_A(5, 12));
+	vram_write(credits3, sizeof(credits3) - 1); 
+
+	vram_adr(NTADR_A(7, 14));
+	vram_write(credits4, sizeof(credits4) - 1); 
+
+	vram_adr(NTADR_A(13, 18));
+	vram_write(credits5, sizeof(credits5) - 1); 
+
+	vram_adr(NTADR_A(5, 20));
+	vram_write(credits6, sizeof(credits6) - 1); 
+
+	vram_adr(NTADR_A(5, 22));
+	vram_write(credits7, sizeof(credits7) - 1); 
+
+	vram_adr(NTADR_A(6, 26));
+	vram_write(titlePrompt, sizeof(titlePrompt) - 1); 
+
+	vram_adr(NTADR_A(1, 28));
+	vram_write(startScreenPrompt, sizeof(startScreenPrompt) - 1); 
+
+	ppu_on_all();
 }
