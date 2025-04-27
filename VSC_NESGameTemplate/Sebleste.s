@@ -6184,9 +6184,6 @@ _TitleScreen:
 	.byte	$55
 	.byte	$55
 	.byte	$55
-	.byte	$51
-	.byte	$55
-	.byte	$45
 	.byte	$55
 	.byte	$55
 	.byte	$55
@@ -6194,54 +6191,57 @@ _TitleScreen:
 	.byte	$55
 	.byte	$55
 	.byte	$55
-	.byte	$11
-	.byte	$14
 	.byte	$55
-	.byte	$15
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
 	.byte	$05
 	.byte	$05
-	.byte	$45
-	.byte	$55
-	.byte	$55
-	.byte	$00
-	.byte	$51
-	.byte	$00
-	.byte	$00
-	.byte	$50
-	.byte	$10
-	.byte	$00
-	.byte	$40
-	.byte	$54
-	.byte	$10
-	.byte	$50
-	.byte	$00
-	.byte	$05
-	.byte	$01
-	.byte	$00
-	.byte	$55
-	.byte	$55
-	.byte	$55
-	.byte	$50
-	.byte	$10
-	.byte	$00
-	.byte	$40
-	.byte	$00
-	.byte	$55
-	.byte	$55
-	.byte	$55
-	.byte	$55
-	.byte	$55
-	.byte	$00
-	.byte	$05
-	.byte	$45
-	.byte	$55
-	.byte	$55
 	.byte	$05
 	.byte	$05
 	.byte	$05
-	.byte	$00
-	.byte	$00
-	.byte	$04
+	.byte	$05
 	.byte	$05
 	.byte	$05
 _WinScreen:
@@ -7205,68 +7205,68 @@ _WinScreen:
 	.byte	$12
 	.byte	$13
 	.byte	$12
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$50
-	.byte	$50
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$40
-	.byte	$10
-	.byte	$00
-	.byte	$00
-	.byte	$40
-	.byte	$10
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$44
-	.byte	$11
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$11
-	.byte	$00
-	.byte	$00
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
+	.byte	$55
 	.byte	$05
 	.byte	$05
-	.byte	$00
-	.byte	$00
-	.byte	$44
-	.byte	$05
-	.byte	$01
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$04
-	.byte	$05
-	.byte	$50
-	.byte	$50
-	.byte	$00
-	.byte	$04
-	.byte	$01
-	.byte	$00
-	.byte	$50
-	.byte	$50
 	.byte	$05
 	.byte	$05
-	.byte	$00
-	.byte	$00
-	.byte	$00
-	.byte	$00
+	.byte	$05
+	.byte	$05
 	.byte	$05
 	.byte	$05
 _palette:
