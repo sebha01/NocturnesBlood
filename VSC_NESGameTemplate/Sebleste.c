@@ -211,21 +211,23 @@ void main (void)
 				//Check if player has pressed start
 				if (inputPad & PAD_START)
 				{
+					// if true start the game
 					currentGameState = GAME_LOOP;
 					GameLoop();
-				}
+				} // If not check for Select input
 				else if (inputPad & PAD_SELECT)
 				{
+					//Display credits if select pressed
 					currentGameState = CREDITS_SCREEN;
 					DrawCreditsScreen();
 				}
 				break;
 			case GAME_LOOP:
-				//Player code
+				//Update the player collider positions so that collisions work as intended
 				UpdateColliderPositions();
-				//Movement
+				//Update Movement
 				MovePlayer();
-				//Draw sprites
+				//Draw player sprites
 				DrawPlayer();
 				//Check if player has reached end goal
 				CheckIfEnd();
@@ -234,8 +236,9 @@ void main (void)
 				//Check if player has pressed start
 				if (inputPad & PAD_START)
 				{
+
 					currentGameState = START_SCREEN;
-					//ChangeMusic(3);
+					ChangeMusic(3);
 					DrawTitleScreen();
 				}
 				break;
@@ -605,8 +608,9 @@ unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY)
 
 void CheckIfEnd()
 {
-	if (CheckIfGoalTile(currentLevelData[GetTileIndex(player.left + 4, player.bottom)]) ||
-	CheckIfGoalTile(currentLevelData[GetTileIndex(player.right - 4, player.bottom)]))
+	if (CheckIfGoalTile(currentLevelData[GetTileIndex(player.left + 7, player.bottom)]) ||
+	CheckIfGoalTile(currentLevelData[GetTileIndex(player.right - 7, player.bottom)]) ||
+	CheckIfGoalTile(currentLevelData[GetTileIndex(player.x, player.bottom - 4)]))
 	{
 		sfx_play(3 , 0);
 		SetPlayerValues();

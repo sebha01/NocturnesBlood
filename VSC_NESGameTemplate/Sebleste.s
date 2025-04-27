@@ -64,24 +64,24 @@
 	.export		_deathCounterText
 	.export		_player
 	.export		_DrawTitleScreen
+	.export		_DrawCreditsScreen
+	.export		_DrawEndScreen
+	.export		_ResetLevel
 	.export		_GameLoop
 	.export		_MovePlayer
 	.export		_DrawPlayer
+	.export		_UpdateColliderPositions
+	.export		_DashEnd
+	.export		_SetPlayerValues
 	.export		_GetTileIndex
 	.export		_CheckIfEnd
-	.export		_DrawEndScreen
 	.export		_OnGround
 	.export		_CheckIfCollidableTile
 	.export		_CheckIfGoalTile
-	.export		_UpdateColliderPositions
-	.export		_DashEnd
 	.export		_CheckIfPlatformTile
-	.export		_SetPlayerValues
-	.export		_ResetLevel
 	.export		_CheckIfSpikes
 	.export		_WriteDeathCounter
 	.export		_ChangeMusic
-	.export		_DrawCreditsScreen
 	.export		_main
 
 .segment	"DATA"
@@ -7466,6 +7466,474 @@ _player:
 .endproc
 
 ; ---------------------------------------------------------------
+; void __near__ DrawCreditsScreen (void)
+; ---------------------------------------------------------------
+
+.segment	"CODE"
+
+.proc	_DrawCreditsScreen: near
+
+.segment	"CODE"
+
+;
+; ppu_off(); // screen off
+;
+	jsr     _ppu_off
+;
+; pal_bg(palette); // load the BG palette
+;
+	lda     #<(_palette)
+	ldx     #>(_palette)
+	jsr     _pal_bg
+;
+; oam_clear();
+;
+	jsr     _oam_clear
+;
+; vram_adr(NAMETABLE_A);      
+;
+	ldx     #$20
+	lda     #$00
+	jsr     _vram_adr
+;
+; vram_fill(0x00, 1024);
+;
+	lda     #$00
+	jsr     pusha
+	ldx     #$04
+	jsr     _vram_fill
+;
+; vram_adr(NAMETABLE_A);      
+;
+	ldx     #$20
+	lda     #$00
+	jsr     _vram_adr
+;
+; vram_write(WinScreen, 1024);
+;
+	lda     #<(_WinScreen)
+	ldx     #>(_WinScreen)
+	jsr     pushax
+	ldx     #$04
+	lda     #$00
+	jsr     _vram_write
+;
+; vram_adr(NTADR_A(13, 2));
+;
+	ldx     #$20
+	lda     #$4D
+	jsr     _vram_adr
+;
+; vram_write(creditsTitle, sizeof(creditsTitle) - 1); 
+;
+	lda     #<(_creditsTitle)
+	ldx     #>(_creditsTitle)
+	jsr     pushax
+	ldx     #$00
+	lda     #$07
+	jsr     _vram_write
+;
+; vram_adr(NTADR_A(4, 5));
+;
+	ldx     #$20
+	lda     #$A4
+	jsr     _vram_adr
+;
+; vram_write(credits1, sizeof(credits1) - 1); 
+;
+	lda     #<(_credits1)
+	ldx     #>(_credits1)
+	jsr     pushax
+	ldx     #$00
+	lda     #$18
+	jsr     _vram_write
+;
+; vram_adr(NTADR_A(14, 8));
+;
+	ldx     #$21
+	lda     #$0E
+	jsr     _vram_adr
+;
+; vram_write(credits2, sizeof(credits2) - 1); 
+;
+	lda     #<(_credits2)
+	ldx     #>(_credits2)
+	jsr     pushax
+	ldx     #$00
+	lda     #$03
+	jsr     _vram_write
+;
+; vram_adr(NTADR_A(5, 10));
+;
+	ldx     #$21
+	lda     #$45
+	jsr     _vram_adr
+;
+; vram_write(credits3, sizeof(credits3) - 1); 
+;
+	lda     #<(_credits3)
+	ldx     #>(_credits3)
+	jsr     pushax
+	ldx     #$00
+	lda     #$16
+	jsr     _vram_write
+;
+; vram_adr(NTADR_A(7, 12));
+;
+	ldx     #$21
+	lda     #$87
+	jsr     _vram_adr
+;
+; vram_write(credits4, sizeof(credits4) - 1); 
+;
+	lda     #<(_credits4)
+	ldx     #>(_credits4)
+	jsr     pushax
+	ldx     #$00
+	lda     #$12
+	jsr     _vram_write
+;
+; vram_adr(NTADR_A(13, 17));
+;
+	ldx     #$22
+	lda     #$2D
+	jsr     _vram_adr
+;
+; vram_write(credits5, sizeof(credits5) - 1); 
+;
+	lda     #<(_credits5)
+	ldx     #>(_credits5)
+	jsr     pushax
+	ldx     #$00
+	lda     #$05
+	jsr     _vram_write
+;
+; vram_adr(NTADR_A(5, 19));
+;
+	ldx     #$22
+	lda     #$65
+	jsr     _vram_adr
+;
+; vram_write(credits6, sizeof(credits6) - 1); 
+;
+	lda     #<(_credits6)
+	ldx     #>(_credits6)
+	jsr     pushax
+	ldx     #$00
+	lda     #$16
+	jsr     _vram_write
+;
+; vram_adr(NTADR_A(5, 21));
+;
+	ldx     #$22
+	lda     #$A5
+	jsr     _vram_adr
+;
+; vram_write(credits7, sizeof(credits7) - 1); 
+;
+	lda     #<(_credits7)
+	ldx     #>(_credits7)
+	jsr     pushax
+	ldx     #$00
+	lda     #$16
+	jsr     _vram_write
+;
+; vram_adr(NTADR_A(6, 25));
+;
+	ldx     #$23
+	lda     #$26
+	jsr     _vram_adr
+;
+; vram_write(titlePrompt, sizeof(titlePrompt) - 1); 
+;
+	lda     #<(_titlePrompt)
+	ldx     #>(_titlePrompt)
+	jsr     pushax
+	ldx     #$00
+	lda     #$13
+	jsr     _vram_write
+;
+; vram_adr(NTADR_A(1, 27));
+;
+	ldx     #$23
+	lda     #$61
+	jsr     _vram_adr
+;
+; vram_write(startScreenPrompt, sizeof(startScreenPrompt) - 1); 
+;
+	lda     #<(_startScreenPrompt)
+	ldx     #>(_startScreenPrompt)
+	jsr     pushax
+	ldx     #$00
+	lda     #$1F
+	jsr     _vram_write
+;
+; ppu_on_all();
+;
+	jmp     _ppu_on_all
+
+.endproc
+
+; ---------------------------------------------------------------
+; void __near__ DrawEndScreen (void)
+; ---------------------------------------------------------------
+
+.segment	"CODE"
+
+.proc	_DrawEndScreen: near
+
+.segment	"CODE"
+
+;
+; ppu_off(); // screen off
+;
+	jsr     _ppu_off
+;
+; pal_bg(palette); // load the BG palette
+;
+	lda     #<(_palette)
+	ldx     #>(_palette)
+	jsr     _pal_bg
+;
+; oam_clear();
+;
+	jsr     _oam_clear
+;
+; currentLevel = 1;
+;
+	ldx     #$00
+	lda     #$01
+	sta     _currentLevel
+	stx     _currentLevel+1
+;
+; SetPlayerValues();
+;
+	jsr     _SetPlayerValues
+;
+; ChangeMusic(2);
+;
+	ldx     #$00
+	lda     #$02
+	jsr     _ChangeMusic
+;
+; vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
+;
+	ldx     #$20
+	lda     #$00
+	jsr     _vram_adr
+;
+; vram_fill(0x00, 1024);
+;
+	lda     #$00
+	jsr     pusha
+	ldx     #$04
+	jsr     _vram_fill
+;
+; vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
+;
+	ldx     #$20
+	lda     #$00
+	jsr     _vram_adr
+;
+; vram_write(WinScreen, 1024);
+;
+	lda     #<(_WinScreen)
+	ldx     #>(_WinScreen)
+	jsr     pushax
+	ldx     #$04
+	lda     #$00
+	jsr     _vram_write
+;
+; vram_adr(NTADR_A(12, 2)); // places text at screen position
+;
+	ldx     #$20
+	lda     #$4C
+	jsr     _vram_adr
+;
+; vram_write(title, sizeof(title) - 1); //write Title to screen
+;
+	lda     #<(_title)
+	ldx     #>(_title)
+	jsr     pushax
+	ldx     #$00
+	lda     #$08
+	jsr     _vram_write
+;
+; vram_adr(NTADR_A(12, 6)); // places text at screen position
+;
+	ldx     #$20
+	lda     #$CC
+	jsr     _vram_adr
+;
+; vram_write(endScreenTitle, sizeof(endScreenTitle) - 1); //write Title to screen
+;
+	lda     #<(_endScreenTitle)
+	ldx     #>(_endScreenTitle)
+	jsr     pushax
+	ldx     #$00
+	lda     #$08
+	jsr     _vram_write
+;
+; vram_adr(NTADR_A(11, 19));
+;
+	ldx     #$22
+	lda     #$6B
+	jsr     _vram_adr
+;
+; vram_write(titlePrompt2, sizeof(titlePrompt2) - 1);
+;
+	lda     #<(_titlePrompt2)
+	ldx     #>(_titlePrompt2)
+	jsr     pushax
+	ldx     #$00
+	lda     #$0B
+	jsr     _vram_write
+;
+; vram_adr(NTADR_A(10, 21));
+;
+	ldx     #$22
+	lda     #$AA
+	jsr     _vram_adr
+;
+; vram_write(endScreenPrompt, sizeof(endScreenPrompt) - 1);
+;
+	lda     #<(_endScreenPrompt)
+	ldx     #>(_endScreenPrompt)
+	jsr     pushax
+	ldx     #$00
+	lda     #$0D
+	jsr     _vram_write
+;
+; ppu_on_all(); // turn on screen
+;
+	jmp     _ppu_on_all
+
+.endproc
+
+; ---------------------------------------------------------------
+; void __near__ ResetLevel (void)
+; ---------------------------------------------------------------
+
+.segment	"CODE"
+
+.proc	_ResetLevel: near
+
+.segment	"CODE"
+
+;
+; sfx_play(1 , 0);
+;
+	lda     #$01
+	jsr     pusha
+	lda     #$00
+	jsr     _sfx_play
+;
+; ppu_off(); // screen off
+;
+	jsr     _ppu_off
+;
+; pal_bg(palette); // load the BG palette
+;
+	lda     #<(_palette)
+	ldx     #>(_palette)
+	jsr     _pal_bg
+;
+; oam_clear();
+;
+	jsr     _oam_clear
+;
+; player.deathCounter++;
+;
+	inc     _player+23
+	bne     L0002
+	inc     _player+23+1
+;
+; vram_adr(NAMETABLE_A);      
+;
+L0002:	ldx     #$20
+	lda     #$00
+	jsr     _vram_adr
+;
+; vram_fill(0x00, 1024);
+;
+	lda     #$00
+	jsr     pusha
+	ldx     #$04
+	jsr     _vram_fill
+;
+; vram_adr(NAMETABLE_A);      
+;
+	ldx     #$20
+	lda     #$00
+	jsr     _vram_adr
+;
+; vram_write(DeathScreen, 1024);
+;
+	lda     #<(_DeathScreen)
+	ldx     #>(_DeathScreen)
+	jsr     pushax
+	ldx     #$04
+	lda     #$00
+	jsr     _vram_write
+;
+; vram_adr(NTADR_A(10, 8));
+;
+	ldx     #$21
+	lda     #$0A
+	jsr     _vram_adr
+;
+; vram_write(respawningText, sizeof(respawningText) - 1); 
+;
+	lda     #<(_respawningText)
+	ldx     #>(_respawningText)
+	jsr     pushax
+	ldx     #$00
+	lda     #$0D
+	jsr     _vram_write
+;
+; ppu_on_all();
+;
+	jsr     _ppu_on_all
+;
+; delay(60);
+;
+	lda     #$3C
+	jsr     _delay
+;
+; ppu_off();
+;
+	jsr     _ppu_off
+;
+; vram_adr(NAMETABLE_A);      
+;
+	ldx     #$20
+	lda     #$00
+	jsr     _vram_adr
+;
+; vram_write(currentLevelData, 1024);
+;
+	lda     _currentLevelData
+	ldx     _currentLevelData+1
+	jsr     pushax
+	ldx     #$04
+	lda     #$00
+	jsr     _vram_write
+;
+; WriteDeathCounter();
+;
+	jsr     _WriteDeathCounter
+;
+; SetPlayerValues();
+;
+	jsr     _SetPlayerValues
+;
+; ppu_on_all();
+;
+	jmp     _ppu_on_all
+
+.endproc
+
+; ---------------------------------------------------------------
 ; void __near__ GameLoop (void)
 ; ---------------------------------------------------------------
 
@@ -7671,7 +8139,7 @@ L0003:	ldx     #$20
 ;
 L0002:	jsr     _OnGround
 	tax
-	beq     L0061
+	beq     L0066
 ;
 ; player.coyoteTime = COYOTE_FRAMES;
 ;
@@ -7685,8 +8153,8 @@ L0002:	jsr     _OnGround
 ;
 ; if (player.coyoteTime > 0) 
 ;
-L0061:	lda     _player+2
-	beq     L0062
+L0066:	lda     _player+2
+	beq     L0067
 ;
 ; player.coyoteTime--;
 ;
@@ -7694,9 +8162,9 @@ L0061:	lda     _player+2
 ;
 ; if (movementPad & PAD_LEFT)
 ;
-L0062:	lda     _movementPad
+L0067:	lda     _movementPad
 	and     #$02
-	beq     L0063
+	beq     L0068
 ;
 ; if (!CheckIfCollidableTile(currentLevelData[GetTileIndex(player.left, player.y + 1)]))
 ;
@@ -7716,7 +8184,7 @@ L0062:	lda     _movementPad
 	lda     (ptr1),y
 	jsr     _CheckIfCollidableTile
 	tax
-	bne     L0063
+	bne     L0068
 ;
 ; player.x -= PLAYER_SPEED;
 ;
@@ -7731,9 +8199,9 @@ L0062:	lda     _movementPad
 ;
 ; if (movementPad & PAD_RIGHT)
 ;
-L0063:	lda     _movementPad
+L0068:	lda     _movementPad
 	and     #$01
-	beq     L0064
+	beq     L0069
 ;
 ; if (!CheckIfCollidableTile(currentLevelData[GetTileIndex(player.right, player.y + 1)]))
 ;
@@ -7753,7 +8221,7 @@ L0063:	lda     _movementPad
 	lda     (ptr1),y
 	jsr     _CheckIfCollidableTile
 	tax
-	bne     L0064
+	bne     L0069
 ;
 ; player.x += PLAYER_SPEED;
 ;
@@ -7769,33 +8237,45 @@ L0063:	lda     _movementPad
 ;
 ; if ((inputPad & PAD_B) && !player.isDashing && !(player.dashCooldown > 0)) 
 ;
-L0064:	lda     _inputPad
+L0069:	lda     _inputPad
 	and     #$40
-	beq     L0069
+	beq     L006F
 	lda     _player+16
 	ora     _player+16+1
-	bne     L0069
+	bne     L006F
 	lda     _player+19
-	bne     L0069
+	bne     L006F
 ;
 ; if (OnGround() || !player.hasDashedInAir)
 ;
 	jsr     _OnGround
 	tax
-	bne     L0068
+	bne     L006D
 	lda     _player+20
-	bne     L006A
+	bne     L0070
 ;
-; player.dashDirection = player.facingRight ? 1 : -1;
+; player.dashDirection = (movementPad & PAD_LEFT ? -1 : movementPad & PAD_RIGHT ? 1 : 
 ;
-L0068:	lda     _player+11
-	beq     L0015
+L006D:	lda     _movementPad
+	and     #$02
+	bne     L0019
+	lda     _movementPad
+	and     #$01
+	beq     L0017
 	ldx     #$00
 	lda     #$01
-	jmp     L0016
-L0015:	ldx     #$FF
+	jmp     L001A
+;
+; player.facingRight ? 1 : -1);
+;
+L0017:	lda     _player+11
+	beq     L0019
+	ldx     #$00
+	lda     #$01
+	jmp     L001A
+L0019:	ldx     #$FF
 	txa
-L0016:	sta     _player+21
+L001A:	sta     _player+21
 	stx     _player+21+1
 ;
 ; player.isDashing = 1;
@@ -7814,7 +8294,7 @@ L0016:	sta     _player+21
 ;
 	jsr     _OnGround
 	tax
-	bne     L006A
+	bne     L0070
 ;
 ; player.hasDashedInAir = 1;
 ;
@@ -7823,9 +8303,9 @@ L0016:	sta     _player+21
 ;
 ; else if (player.dashCooldown > 0) 
 ;
-	jmp     L006A
-L0069:	lda     _player+19
-	beq     L006A
+	jmp     L0070
+L006F:	lda     _player+19
+	beq     L0070
 ;
 ; player.dashCooldown--;
 ;
@@ -7833,16 +8313,16 @@ L0069:	lda     _player+19
 ;
 ; if (player.jumpBufferTimer > 0 && (!player.isJumping || player.coyoteTime > 0))
 ;
-L006A:	lda     _player+15
-	beq     L0071
+L0070:	lda     _player+15
+	beq     L0077
 	lda     _player+14
-	beq     L0070
+	beq     L0076
 	lda     _player+2
-	beq     L0071
+	beq     L0077
 ;
 ; sfx_play(2 , 0);
 ;
-L0070:	lda     #$02
+L0076:	lda     #$02
 	jsr     pusha
 	lda     #$00
 	jsr     _sfx_play
@@ -7870,9 +8350,9 @@ L0070:	lda     #$02
 ;
 ; else if (player.jumpBufferTimer > 0) 
 ;
-	jmp     L0021
-L0071:	lda     _player+15
-	beq     L0021
+	jmp     L0025
+L0077:	lda     _player+15
+	beq     L0025
 ;
 ; player.jumpBufferTimer--;
 ;
@@ -7880,9 +8360,9 @@ L0071:	lda     _player+15
 ;
 ; if (player.isDashing) 
 ;
-L0021:	lda     _player+16
+L0025:	lda     _player+16
 	ora     _player+16+1
-	jeq     L0022
+	jeq     L0026
 ;
 ; sfx_play(0 , 0);
 ;
@@ -7899,35 +8379,35 @@ L0021:	lda     _player+16
 	lda     #$00
 	sta     _i
 	sta     _i+1
-L0023:	lda     _i
+L0027:	lda     _i
 	cmp     #$05
 	lda     _i+1
 	sbc     #$00
-	bvc     L0027
+	bvc     L002B
 	eor     #$80
-L0027:	jpl     L0073
+L002B:	jpl     L0079
 ;
 ; int nextX = (player.dashDirection == 1) ? player.right + 2 : player.left - 2;
 ;
 	lda     _player+21+1
-	bne     L002A
+	bne     L002E
 	lda     _player+21
 	cmp     #$01
-	bne     L002A
+	bne     L002E
 	lda     _player+5
 	ldx     _player+5+1
 	clc
 	adc     #$02
-	bcc     L002D
+	bcc     L0031
 	inx
-	jmp     L002D
-L002A:	lda     _player+3
+	jmp     L0031
+L002E:	lda     _player+3
 	ldx     _player+3+1
 	sec
 	sbc     #$02
-	bcs     L002D
+	bcs     L0031
 	dex
-L002D:	jsr     pushax
+L0031:	jsr     pushax
 ;
 ; if (!CheckIfCollidableTile(currentLevelData[GetTileIndex(nextX, player.top)]) &&
 ;
@@ -7946,7 +8426,7 @@ L002D:	jsr     pushax
 	lda     (ptr1),y
 	jsr     _CheckIfCollidableTile
 	tax
-	bne     L002E
+	bne     L0032
 ;
 ; !CheckIfCollidableTile(currentLevelData[GetTileIndex(nextX, player.bottom)]))
 ;
@@ -7965,7 +8445,7 @@ L002D:	jsr     pushax
 	lda     (ptr1),y
 	jsr     _CheckIfCollidableTile
 	tax
-	bne     L002E
+	bne     L0032
 ;
 ; player.x += player.dashDirection;
 ;
@@ -7976,19 +8456,19 @@ L002D:	jsr     pushax
 ;
 ; }
 ;
-L002E:	jsr     incsp2
+L0032:	jsr     incsp2
 ;
 ; for (i = 0; i < DASH_SPEED; i++) 
 ;
 	inc     _i
-	jne     L0023
+	jne     L0027
 	inc     _i+1
-	jmp     L0023
+	jmp     L0027
 ;
 ; if (player.dashTimer <= 0) 
 ;
-L0073:	lda     _player+18
-	jne     L0049
+L0079:	lda     _player+18
+	jne     L004D
 ;
 ; DashEnd();
 ;
@@ -7996,27 +8476,27 @@ L0073:	lda     _player+18
 ;
 ; else 
 ;
-	jmp     L0049
+	jmp     L004D
 ;
 ; if (player.isJumping && !player.isDashing) 
 ;
-L0022:	lda     _player+14
-	jeq     L0034
+L0026:	lda     _player+14
+	jeq     L0038
 	lda     _player+16
 	ora     _player+16+1
-	jne     L0034
+	jne     L0038
 ;
 ; player.velocityY += GRAVITY;
 ;
 	inc     _player+12
-	bne     L0038
+	bne     L003C
 	inc     _player+12+1
 ;
 ; if (player.velocityY < 0) 
 ;
-L0038:	ldx     _player+12+1
+L003C:	ldx     _player+12+1
 	cpx     #$80
-	bcc     L003A
+	bcc     L003E
 ;
 ; if (CheckIfCollidableTile(currentLevelData[GetTileIndex(player.left + 2, player.top)]) ||
 ;
@@ -8036,7 +8516,7 @@ L0038:	ldx     _player+12+1
 	lda     (ptr1),y
 	jsr     _CheckIfCollidableTile
 	tax
-	bne     L003C
+	bne     L0040
 ;
 ; CheckIfCollidableTile(currentLevelData[GetTileIndex(player.right - 2, player.top)]))
 ;
@@ -8056,11 +8536,11 @@ L0038:	ldx     _player+12+1
 	lda     (ptr1),y
 	jsr     _CheckIfCollidableTile
 	tax
-	beq     L003A
+	beq     L003E
 ;
 ; player.velocityY = 0;
 ;
-L003C:	lda     #$00
+L0040:	lda     #$00
 	sta     _player+12
 	sta     _player+12+1
 ;
@@ -8070,13 +8550,13 @@ L003C:	lda     #$00
 ;
 ; if (player.velocityY > MAX_FALL_SPEED)
 ;
-L003A:	lda     _player+12
+L003E:	lda     _player+12
 	cmp     #$05
 	lda     _player+12+1
 	sbc     #$00
-	bvs     L0040
+	bvs     L0044
 	eor     #$80
-L0040:	bpl     L003F
+L0044:	bpl     L0043
 ;
 ; player.velocityY = MAX_FALL_SPEED;
 ;
@@ -8087,7 +8567,7 @@ L0040:	bpl     L003F
 ;
 ; player.y += player.velocityY;
 ;
-L003F:	lda     _player+12
+L0043:	lda     _player+12
 	clc
 	adc     _player+1
 	sta     _player+1
@@ -8095,15 +8575,15 @@ L003F:	lda     _player+12
 ; if (player.velocityY >= 0 && OnGround()) 
 ;
 	ldx     _player+12+1
-	bmi     L0049
+	bmi     L004D
 	jsr     _OnGround
 	tax
-	bne     L0047
-	jmp     L0049
+	bne     L004B
+	jmp     L004D
 ;
 ; player.y -= 1;
 ;
-L0045:	dec     _player+1
+L0049:	dec     _player+1
 ;
 ; UpdateColliderPositions();
 ;
@@ -8111,9 +8591,9 @@ L0045:	dec     _player+1
 ;
 ; while (OnGround()) 
 ;
-L0047:	jsr     _OnGround
+L004B:	jsr     _OnGround
 	tax
-	bne     L0045
+	bne     L0049
 ;
 ; player.y += 1;
 ;
@@ -8139,13 +8619,13 @@ L0047:	jsr     _OnGround
 ;
 ; else 
 ;
-	jmp     L0049
+	jmp     L004D
 ;
 ; if (!OnGround()) 
 ;
-L0034:	jsr     _OnGround
+L0038:	jsr     _OnGround
 	tax
-	bne     L0049
+	bne     L004D
 ;
 ; player.isJumping = 1;
 ;
@@ -8154,22 +8634,22 @@ L0034:	jsr     _OnGround
 ;
 ; if (player.damageTimer > 0)
 ;
-L0049:	lda     _player+25
+L004D:	lda     _player+25
 	ora     _player+25+1
-	beq     L004D
+	beq     L0051
 ;
 ; player.damageTimer--;
 ;
 	lda     _player+25
-	bne     L004C
+	bne     L0050
 	dec     _player+25+1
-L004C:	dec     _player+25
+L0050:	dec     _player+25
 ;
 ; if (player.damageTimer == 0)
 ;
 	lda     _player+25
 	ora     _player+25+1
-	bne     L004D
+	bne     L0051
 ;
 ; ResetLevel();
 ;
@@ -8177,7 +8657,7 @@ L004C:	dec     _player+25
 ;
 ; if (CheckIfSpikes(currentLevelData[GetTileIndex(player.left + 6, player.bottom - 4)]) ||
 ;
-L004D:	lda     _currentLevelData
+L0051:	lda     _currentLevelData
 	ldx     _currentLevelData+1
 	jsr     pushax
 	lda     _player+3
@@ -8195,7 +8675,7 @@ L004D:	lda     _currentLevelData
 	lda     (ptr1),y
 	jsr     _CheckIfSpikes
 	tax
-	jne     L0052
+	jne     L0056
 ;
 ; CheckIfSpikes(currentLevelData[GetTileIndex(player.right - 6, player.bottom - 4)]) ||
 ;
@@ -8217,7 +8697,7 @@ L004D:	lda     _currentLevelData
 	lda     (ptr1),y
 	jsr     _CheckIfSpikes
 	tax
-	bne     L0052
+	bne     L0056
 ;
 ; CheckIfSpikes(currentLevelData[GetTileIndex(player.left + 6, player.top + 4)]) ||
 ;
@@ -8239,7 +8719,7 @@ L004D:	lda     _currentLevelData
 	lda     (ptr1),y
 	jsr     _CheckIfSpikes
 	tax
-	bne     L0052
+	bne     L0056
 ;
 ; CheckIfSpikes(currentLevelData[GetTileIndex(player.right - 6, player.top + 4)]))
 ;
@@ -8261,13 +8741,13 @@ L004D:	lda     _currentLevelData
 	lda     (ptr1),y
 	jsr     _CheckIfSpikes
 	tax
-	beq     L005A
+	beq     L005E
 ;
 ; if (player.damageTimer == 0)
 ;
-L0052:	lda     _player+25
+L0056:	lda     _player+25
 	ora     _player+25+1
-	bne     L005A
+	bne     L005E
 ;
 ; player.damageTimer = DAMAGE_TIMER;
 ;
@@ -8277,13 +8757,13 @@ L0052:	lda     _player+25
 ;
 ; if (player.bottom > 240) 
 ;
-L005A:	lda     _player+9
+L005E:	lda     _player+9
 	cmp     #$F1
 	lda     _player+9+1
 	sbc     #$00
-	bvs     L005D
+	bvs     L0061
 	eor     #$80
-L005D:	bpl     L005C
+L0061:	bpl     L0060
 ;
 ; ResetLevel();
 ;
@@ -8291,7 +8771,7 @@ L005D:	bpl     L005C
 ;
 ; }
 ;
-L005C:	rts
+L0060:	rts
 
 .endproc
 
@@ -8621,6 +9101,213 @@ L0027:	jmp     incsp1
 .endproc
 
 ; ---------------------------------------------------------------
+; void __near__ UpdateColliderPositions (void)
+; ---------------------------------------------------------------
+
+.segment	"CODE"
+
+.proc	_UpdateColliderPositions: near
+
+.segment	"CODE"
+
+;
+; player.left = player.x - 8;
+;
+	ldx     #$00
+	lda     _player
+	sec
+	sbc     #$08
+	bcs     L0002
+	dex
+L0002:	sta     _player+3
+	stx     _player+3+1
+;
+; player.right = player.x + 8;
+;
+	ldx     #$00
+	lda     _player
+	clc
+	adc     #$08
+	bcc     L0003
+	inx
+L0003:	sta     _player+5
+	stx     _player+5+1
+;
+; player.top = player.y - 8;
+;
+	ldx     #$00
+	lda     _player+1
+	sec
+	sbc     #$08
+	bcs     L0004
+	dex
+L0004:	sta     _player+7
+	stx     _player+7+1
+;
+; player.bottom = player.y + 8;
+;
+	ldx     #$00
+	lda     _player+1
+	clc
+	adc     #$08
+	bcc     L0005
+	inx
+L0005:	sta     _player+9
+	stx     _player+9+1
+;
+; }
+;
+	rts
+
+.endproc
+
+; ---------------------------------------------------------------
+; void __near__ DashEnd (void)
+; ---------------------------------------------------------------
+
+.segment	"CODE"
+
+.proc	_DashEnd: near
+
+.segment	"CODE"
+
+;
+; if (player.isDashing)
+;
+	lda     _player+16
+	ora     _player+16+1
+	beq     L0002
+;
+; player.isDashing = 0;
+;
+	lda     #$00
+	sta     _player+16
+	sta     _player+16+1
+;
+; player.dashCooldown = DASH_COOLDOWN;
+;
+	lda     #$1E
+	sta     _player+19
+;
+; }
+;
+L0002:	rts
+
+.endproc
+
+; ---------------------------------------------------------------
+; void __near__ SetPlayerValues (void)
+; ---------------------------------------------------------------
+
+.segment	"CODE"
+
+.proc	_SetPlayerValues: near
+
+.segment	"CODE"
+
+;
+; player.x = currentLevel == 3 ? 232 : 30;
+;
+	lda     _currentLevel+1
+	bne     L0003
+	lda     _currentLevel
+	cmp     #$03
+	bne     L0003
+	lda     #$E8
+	jmp     L0008
+L0003:	lda     #$1E
+L0008:	sta     _player
+;
+; player.y = currentLevel == 3 ? 24 : 215;
+;
+	lda     _currentLevel+1
+	bne     L0009
+	lda     _currentLevel
+	cmp     #$03
+	bne     L0009
+	lda     #$18
+	jmp     L000A
+L0009:	lda     #$D7
+L000A:	sta     _player+1
+;
+; player.coyoteTime = 0;
+;
+	lda     #$00
+	sta     _player+2
+;
+; player.left = 0;
+;
+	sta     _player+3
+	sta     _player+3+1
+;
+; player.right = 0;
+;
+	sta     _player+5
+	sta     _player+5+1
+;
+; player.top = 0;
+;
+	sta     _player+7
+	sta     _player+7+1
+;
+; player.bottom = 0;
+;
+	sta     _player+9
+	sta     _player+9+1
+;
+; player.facingRight = 1;
+;
+	lda     #$01
+	sta     _player+11
+;
+; player.velocityY = 0;
+;
+	lda     #$00
+	sta     _player+12
+	sta     _player+12+1
+;
+; player.isJumping = 0;
+;
+	sta     _player+14
+;
+; player.jumpBufferTimer = 0; 
+;
+	sta     _player+15
+;
+; player.isDashing = 0;
+;
+	sta     _player+16
+	sta     _player+16+1
+;
+; player.dashTimer = 0;
+;
+	sta     _player+18
+;
+; player.dashCooldown = 0;
+;
+	sta     _player+19
+;
+; player.hasDashedInAir = 0;
+;
+	sta     _player+20
+;
+; player.dashDirection = 0;
+;
+	sta     _player+21
+	sta     _player+21+1
+;
+; player.damageTimer = 0;
+;
+	sta     _player+25
+	sta     _player+25+1
+;
+; }
+;
+	rts
+
+.endproc
+
+; ---------------------------------------------------------------
 ; unsigned int __near__ GetTileIndex (unsigned char playerX, unsigned char playerY)
 ; ---------------------------------------------------------------
 
@@ -8696,14 +9383,14 @@ L0002:	jsr     pushax
 .segment	"CODE"
 
 ;
-; if (CheckIfGoalTile(currentLevelData[GetTileIndex(player.left + 4, player.bottom)]) ||
+; if (CheckIfGoalTile(currentLevelData[GetTileIndex(player.left + 7, player.bottom)]) ||
 ;
 	lda     _currentLevelData
 	ldx     _currentLevelData+1
 	jsr     pushax
 	lda     _player+3
 	clc
-	adc     #$04
+	adc     #$07
 	jsr     pusha
 	lda     _player+9
 	jsr     _GetTileIndex
@@ -8716,16 +9403,36 @@ L0002:	jsr     pushax
 	tax
 	bne     L0004
 ;
-; CheckIfGoalTile(currentLevelData[GetTileIndex(player.right - 4, player.bottom)]))
+; CheckIfGoalTile(currentLevelData[GetTileIndex(player.right - 7, player.bottom)]) ||
 ;
 	lda     _currentLevelData
 	ldx     _currentLevelData+1
 	jsr     pushax
 	lda     _player+5
 	sec
-	sbc     #$04
+	sbc     #$07
 	jsr     pusha
 	lda     _player+9
+	jsr     _GetTileIndex
+	jsr     tosaddax
+	sta     ptr1
+	stx     ptr1+1
+	ldy     #$00
+	lda     (ptr1),y
+	jsr     _CheckIfGoalTile
+	tax
+	bne     L0004
+;
+; CheckIfGoalTile(currentLevelData[GetTileIndex(player.x, player.bottom - 4)]))
+;
+	lda     _currentLevelData
+	ldx     _currentLevelData+1
+	jsr     pushax
+	lda     _player
+	jsr     pusha
+	lda     _player+9
+	sec
+	sbc     #$04
 	jsr     _GetTileIndex
 	jsr     tosaddax
 	sta     ptr1
@@ -8751,10 +9458,10 @@ L0004:	lda     #$03
 ; if (currentLevel == 3)
 ;
 	lda     _currentLevel+1
-	bne     L0007
+	bne     L0008
 	lda     _currentLevel
 	cmp     #$03
-	bne     L0007
+	bne     L0008
 ;
 ; currentGameState = END_SCREEN;
 ;
@@ -8767,153 +9474,17 @@ L0004:	lda     #$03
 ;
 ; currentLevel++;
 ;
-L0007:	inc     _currentLevel
-	bne     L000A
+L0008:	inc     _currentLevel
+	bne     L000B
 	inc     _currentLevel+1
 ;
 ; SetPlayerValues();
 ;
-L000A:	jsr     _SetPlayerValues
+L000B:	jsr     _SetPlayerValues
 ;
 ; GameLoop();
 ;
 	jmp     _GameLoop
-
-.endproc
-
-; ---------------------------------------------------------------
-; void __near__ DrawEndScreen (void)
-; ---------------------------------------------------------------
-
-.segment	"CODE"
-
-.proc	_DrawEndScreen: near
-
-.segment	"CODE"
-
-;
-; ppu_off(); // screen off
-;
-	jsr     _ppu_off
-;
-; pal_bg(palette); // load the BG palette
-;
-	lda     #<(_palette)
-	ldx     #>(_palette)
-	jsr     _pal_bg
-;
-; oam_clear();
-;
-	jsr     _oam_clear
-;
-; currentLevel = 1;
-;
-	ldx     #$00
-	lda     #$01
-	sta     _currentLevel
-	stx     _currentLevel+1
-;
-; SetPlayerValues();
-;
-	jsr     _SetPlayerValues
-;
-; ChangeMusic(2);
-;
-	ldx     #$00
-	lda     #$02
-	jsr     _ChangeMusic
-;
-; vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
-;
-	ldx     #$20
-	lda     #$00
-	jsr     _vram_adr
-;
-; vram_fill(0x00, 1024);
-;
-	lda     #$00
-	jsr     pusha
-	ldx     #$04
-	jsr     _vram_fill
-;
-; vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
-;
-	ldx     #$20
-	lda     #$00
-	jsr     _vram_adr
-;
-; vram_write(WinScreen, 1024);
-;
-	lda     #<(_WinScreen)
-	ldx     #>(_WinScreen)
-	jsr     pushax
-	ldx     #$04
-	lda     #$00
-	jsr     _vram_write
-;
-; vram_adr(NTADR_A(12, 2)); // places text at screen position
-;
-	ldx     #$20
-	lda     #$4C
-	jsr     _vram_adr
-;
-; vram_write(title, sizeof(title) - 1); //write Title to screen
-;
-	lda     #<(_title)
-	ldx     #>(_title)
-	jsr     pushax
-	ldx     #$00
-	lda     #$08
-	jsr     _vram_write
-;
-; vram_adr(NTADR_A(12, 6)); // places text at screen position
-;
-	ldx     #$20
-	lda     #$CC
-	jsr     _vram_adr
-;
-; vram_write(endScreenTitle, sizeof(endScreenTitle) - 1); //write Title to screen
-;
-	lda     #<(_endScreenTitle)
-	ldx     #>(_endScreenTitle)
-	jsr     pushax
-	ldx     #$00
-	lda     #$08
-	jsr     _vram_write
-;
-; vram_adr(NTADR_A(11, 19));
-;
-	ldx     #$22
-	lda     #$6B
-	jsr     _vram_adr
-;
-; vram_write(titlePrompt2, sizeof(titlePrompt2) - 1);
-;
-	lda     #<(_titlePrompt2)
-	ldx     #>(_titlePrompt2)
-	jsr     pushax
-	ldx     #$00
-	lda     #$0B
-	jsr     _vram_write
-;
-; vram_adr(NTADR_A(10, 21));
-;
-	ldx     #$22
-	lda     #$AA
-	jsr     _vram_adr
-;
-; vram_write(endScreenPrompt, sizeof(endScreenPrompt) - 1);
-;
-	lda     #<(_endScreenPrompt)
-	ldx     #>(_endScreenPrompt)
-	jsr     pushax
-	ldx     #$00
-	lda     #$0D
-	jsr     _vram_write
-;
-; ppu_on_all(); // turn on screen
-;
-	jmp     _ppu_on_all
 
 .endproc
 
@@ -9209,101 +9780,6 @@ L0004:	lda     #$01
 .endproc
 
 ; ---------------------------------------------------------------
-; void __near__ UpdateColliderPositions (void)
-; ---------------------------------------------------------------
-
-.segment	"CODE"
-
-.proc	_UpdateColliderPositions: near
-
-.segment	"CODE"
-
-;
-; player.left = player.x - 8;
-;
-	ldx     #$00
-	lda     _player
-	sec
-	sbc     #$08
-	bcs     L0002
-	dex
-L0002:	sta     _player+3
-	stx     _player+3+1
-;
-; player.right = player.x + 8;
-;
-	ldx     #$00
-	lda     _player
-	clc
-	adc     #$08
-	bcc     L0003
-	inx
-L0003:	sta     _player+5
-	stx     _player+5+1
-;
-; player.top = player.y - 8;
-;
-	ldx     #$00
-	lda     _player+1
-	sec
-	sbc     #$08
-	bcs     L0004
-	dex
-L0004:	sta     _player+7
-	stx     _player+7+1
-;
-; player.bottom = player.y + 8;
-;
-	ldx     #$00
-	lda     _player+1
-	clc
-	adc     #$08
-	bcc     L0005
-	inx
-L0005:	sta     _player+9
-	stx     _player+9+1
-;
-; }
-;
-	rts
-
-.endproc
-
-; ---------------------------------------------------------------
-; void __near__ DashEnd (void)
-; ---------------------------------------------------------------
-
-.segment	"CODE"
-
-.proc	_DashEnd: near
-
-.segment	"CODE"
-
-;
-; if (player.isDashing)
-;
-	lda     _player+16
-	ora     _player+16+1
-	beq     L0002
-;
-; player.isDashing = 0;
-;
-	lda     #$00
-	sta     _player+16
-	sta     _player+16+1
-;
-; player.dashCooldown = DASH_COOLDOWN;
-;
-	lda     #$1E
-	sta     _player+19
-;
-; }
-;
-L0002:	rts
-
-.endproc
-
-; ---------------------------------------------------------------
 ; char __near__ CheckIfPlatformTile (unsigned char tile)
 ; ---------------------------------------------------------------
 
@@ -9357,241 +9833,6 @@ L0004:	lda     #$01
 ; }
 ;
 	jmp     incsp1
-
-.endproc
-
-; ---------------------------------------------------------------
-; void __near__ SetPlayerValues (void)
-; ---------------------------------------------------------------
-
-.segment	"CODE"
-
-.proc	_SetPlayerValues: near
-
-.segment	"CODE"
-
-;
-; player.x = currentLevel == 3 ? 232 : 30;
-;
-	lda     _currentLevel+1
-	bne     L0003
-	lda     _currentLevel
-	cmp     #$03
-	bne     L0003
-	lda     #$E8
-	jmp     L0008
-L0003:	lda     #$1E
-L0008:	sta     _player
-;
-; player.y = currentLevel == 3 ? 24 : 215;
-;
-	lda     _currentLevel+1
-	bne     L0009
-	lda     _currentLevel
-	cmp     #$03
-	bne     L0009
-	lda     #$18
-	jmp     L000A
-L0009:	lda     #$D7
-L000A:	sta     _player+1
-;
-; player.coyoteTime = 0;
-;
-	lda     #$00
-	sta     _player+2
-;
-; player.left = 0;
-;
-	sta     _player+3
-	sta     _player+3+1
-;
-; player.right = 0;
-;
-	sta     _player+5
-	sta     _player+5+1
-;
-; player.top = 0;
-;
-	sta     _player+7
-	sta     _player+7+1
-;
-; player.bottom = 0;
-;
-	sta     _player+9
-	sta     _player+9+1
-;
-; player.facingRight = 1;
-;
-	lda     #$01
-	sta     _player+11
-;
-; player.velocityY = 0;
-;
-	lda     #$00
-	sta     _player+12
-	sta     _player+12+1
-;
-; player.isJumping = 0;
-;
-	sta     _player+14
-;
-; player.jumpBufferTimer = 0; 
-;
-	sta     _player+15
-;
-; player.isDashing = 0;
-;
-	sta     _player+16
-	sta     _player+16+1
-;
-; player.dashTimer = 0;
-;
-	sta     _player+18
-;
-; player.dashCooldown = 0;
-;
-	sta     _player+19
-;
-; player.hasDashedInAir = 0;
-;
-	sta     _player+20
-;
-; player.dashDirection = 0;
-;
-	sta     _player+21
-	sta     _player+21+1
-;
-; player.damageTimer = 0;
-;
-	sta     _player+25
-	sta     _player+25+1
-;
-; }
-;
-	rts
-
-.endproc
-
-; ---------------------------------------------------------------
-; void __near__ ResetLevel (void)
-; ---------------------------------------------------------------
-
-.segment	"CODE"
-
-.proc	_ResetLevel: near
-
-.segment	"CODE"
-
-;
-; sfx_play(1 , 0);
-;
-	lda     #$01
-	jsr     pusha
-	lda     #$00
-	jsr     _sfx_play
-;
-; ppu_off(); // screen off
-;
-	jsr     _ppu_off
-;
-; pal_bg(palette); // load the BG palette
-;
-	lda     #<(_palette)
-	ldx     #>(_palette)
-	jsr     _pal_bg
-;
-; oam_clear();
-;
-	jsr     _oam_clear
-;
-; player.deathCounter++;
-;
-	inc     _player+23
-	bne     L0002
-	inc     _player+23+1
-;
-; vram_adr(NAMETABLE_A);      
-;
-L0002:	ldx     #$20
-	lda     #$00
-	jsr     _vram_adr
-;
-; vram_fill(0x00, 1024);
-;
-	lda     #$00
-	jsr     pusha
-	ldx     #$04
-	jsr     _vram_fill
-;
-; vram_adr(NAMETABLE_A);      
-;
-	ldx     #$20
-	lda     #$00
-	jsr     _vram_adr
-;
-; vram_write(DeathScreen, 1024);
-;
-	lda     #<(_DeathScreen)
-	ldx     #>(_DeathScreen)
-	jsr     pushax
-	ldx     #$04
-	lda     #$00
-	jsr     _vram_write
-;
-; vram_adr(NTADR_A(10, 8));
-;
-	ldx     #$21
-	lda     #$0A
-	jsr     _vram_adr
-;
-; vram_write(respawningText, sizeof(respawningText) - 1); 
-;
-	lda     #<(_respawningText)
-	ldx     #>(_respawningText)
-	jsr     pushax
-	ldx     #$00
-	lda     #$0D
-	jsr     _vram_write
-;
-; ppu_on_all();
-;
-	jsr     _ppu_on_all
-;
-; delay(60);
-;
-	lda     #$3C
-	jsr     _delay
-;
-; ppu_off();
-;
-	jsr     _ppu_off
-;
-; vram_adr(NAMETABLE_A);      
-;
-	ldx     #$20
-	lda     #$00
-	jsr     _vram_adr
-;
-; vram_write(currentLevelData, 1024);
-;
-	lda     _currentLevelData
-	ldx     _currentLevelData+1
-	jsr     pushax
-	ldx     #$04
-	lda     #$00
-	jsr     _vram_write
-;
-; WriteDeathCounter();
-;
-	jsr     _WriteDeathCounter
-;
-; SetPlayerValues();
-;
-	jsr     _SetPlayerValues
-;
-; ppu_on_all();
-;
-	jmp     _ppu_on_all
 
 .endproc
 
@@ -9787,215 +10028,6 @@ L0004:	ldy     #$00
 .endproc
 
 ; ---------------------------------------------------------------
-; void __near__ DrawCreditsScreen (void)
-; ---------------------------------------------------------------
-
-.segment	"CODE"
-
-.proc	_DrawCreditsScreen: near
-
-.segment	"CODE"
-
-;
-; ppu_off(); // screen off
-;
-	jsr     _ppu_off
-;
-; pal_bg(palette); // load the BG palette
-;
-	lda     #<(_palette)
-	ldx     #>(_palette)
-	jsr     _pal_bg
-;
-; oam_clear();
-;
-	jsr     _oam_clear
-;
-; vram_adr(NAMETABLE_A);      
-;
-	ldx     #$20
-	lda     #$00
-	jsr     _vram_adr
-;
-; vram_fill(0x00, 1024);
-;
-	lda     #$00
-	jsr     pusha
-	ldx     #$04
-	jsr     _vram_fill
-;
-; vram_adr(NAMETABLE_A);      
-;
-	ldx     #$20
-	lda     #$00
-	jsr     _vram_adr
-;
-; vram_write(WinScreen, 1024);
-;
-	lda     #<(_WinScreen)
-	ldx     #>(_WinScreen)
-	jsr     pushax
-	ldx     #$04
-	lda     #$00
-	jsr     _vram_write
-;
-; vram_adr(NTADR_A(13, 2));
-;
-	ldx     #$20
-	lda     #$4D
-	jsr     _vram_adr
-;
-; vram_write(creditsTitle, sizeof(creditsTitle) - 1); 
-;
-	lda     #<(_creditsTitle)
-	ldx     #>(_creditsTitle)
-	jsr     pushax
-	ldx     #$00
-	lda     #$07
-	jsr     _vram_write
-;
-; vram_adr(NTADR_A(4, 5));
-;
-	ldx     #$20
-	lda     #$A4
-	jsr     _vram_adr
-;
-; vram_write(credits1, sizeof(credits1) - 1); 
-;
-	lda     #<(_credits1)
-	ldx     #>(_credits1)
-	jsr     pushax
-	ldx     #$00
-	lda     #$18
-	jsr     _vram_write
-;
-; vram_adr(NTADR_A(14, 8));
-;
-	ldx     #$21
-	lda     #$0E
-	jsr     _vram_adr
-;
-; vram_write(credits2, sizeof(credits2) - 1); 
-;
-	lda     #<(_credits2)
-	ldx     #>(_credits2)
-	jsr     pushax
-	ldx     #$00
-	lda     #$03
-	jsr     _vram_write
-;
-; vram_adr(NTADR_A(5, 10));
-;
-	ldx     #$21
-	lda     #$45
-	jsr     _vram_adr
-;
-; vram_write(credits3, sizeof(credits3) - 1); 
-;
-	lda     #<(_credits3)
-	ldx     #>(_credits3)
-	jsr     pushax
-	ldx     #$00
-	lda     #$16
-	jsr     _vram_write
-;
-; vram_adr(NTADR_A(7, 12));
-;
-	ldx     #$21
-	lda     #$87
-	jsr     _vram_adr
-;
-; vram_write(credits4, sizeof(credits4) - 1); 
-;
-	lda     #<(_credits4)
-	ldx     #>(_credits4)
-	jsr     pushax
-	ldx     #$00
-	lda     #$12
-	jsr     _vram_write
-;
-; vram_adr(NTADR_A(13, 17));
-;
-	ldx     #$22
-	lda     #$2D
-	jsr     _vram_adr
-;
-; vram_write(credits5, sizeof(credits5) - 1); 
-;
-	lda     #<(_credits5)
-	ldx     #>(_credits5)
-	jsr     pushax
-	ldx     #$00
-	lda     #$05
-	jsr     _vram_write
-;
-; vram_adr(NTADR_A(5, 19));
-;
-	ldx     #$22
-	lda     #$65
-	jsr     _vram_adr
-;
-; vram_write(credits6, sizeof(credits6) - 1); 
-;
-	lda     #<(_credits6)
-	ldx     #>(_credits6)
-	jsr     pushax
-	ldx     #$00
-	lda     #$16
-	jsr     _vram_write
-;
-; vram_adr(NTADR_A(5, 21));
-;
-	ldx     #$22
-	lda     #$A5
-	jsr     _vram_adr
-;
-; vram_write(credits7, sizeof(credits7) - 1); 
-;
-	lda     #<(_credits7)
-	ldx     #>(_credits7)
-	jsr     pushax
-	ldx     #$00
-	lda     #$16
-	jsr     _vram_write
-;
-; vram_adr(NTADR_A(6, 25));
-;
-	ldx     #$23
-	lda     #$26
-	jsr     _vram_adr
-;
-; vram_write(titlePrompt, sizeof(titlePrompt) - 1); 
-;
-	lda     #<(_titlePrompt)
-	ldx     #>(_titlePrompt)
-	jsr     pushax
-	ldx     #$00
-	lda     #$13
-	jsr     _vram_write
-;
-; vram_adr(NTADR_A(1, 27));
-;
-	ldx     #$23
-	lda     #$61
-	jsr     _vram_adr
-;
-; vram_write(startScreenPrompt, sizeof(startScreenPrompt) - 1); 
-;
-	lda     #<(_startScreenPrompt)
-	ldx     #>(_startScreenPrompt)
-	jsr     pushax
-	ldx     #$00
-	lda     #$1F
-	jsr     _vram_write
-;
-; ppu_on_all();
-;
-	jmp     _ppu_on_all
-
-.endproc
-
-; ---------------------------------------------------------------
 ; void __near__ main (void)
 ; ---------------------------------------------------------------
 
@@ -10115,6 +10147,12 @@ L0014:	lda     _inputPad
 ;
 	lda     #$00
 	sta     _currentGameState
+;
+; ChangeMusic(3);
+;
+	tax
+	lda     #$03
+	jsr     _ChangeMusic
 ;
 ; DrawTitleScreen();
 ;
