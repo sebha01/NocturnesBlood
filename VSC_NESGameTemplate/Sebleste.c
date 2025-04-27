@@ -178,7 +178,6 @@ char CheckIfSpikes(unsigned char tile);
 void WriteDeathCounter(void);
 void ChangeMusic(unsigned int trackToChangeTo);
 
-
 /*
 ----------------
 -- -- MAIN -- --
@@ -187,7 +186,9 @@ void ChangeMusic(unsigned int trackToChangeTo);
 
 void main (void) 
 {
+	//Set the player object values so they spawn in right position
 	SetPlayerValues();
+	// Make sure to draw the title screen so player sees this when Sebleste loaded
 	DrawTitleScreen();
 
 	//0 - 4
@@ -199,9 +200,11 @@ void main (void)
 	{
 		//Waits for next frame
 		ppu_wait_nmi();
+		//Set both movement variables to recieve input
 		movementPad = pad_poll(0);
 		inputPad = get_pad_new(0);
 
+		//Switch statement to control game loop and which sections appear on screen
 		switch(currentGameState)
 		{
 			case START_SCREEN:
