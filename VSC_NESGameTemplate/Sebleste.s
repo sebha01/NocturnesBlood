@@ -7685,11 +7685,11 @@ _player:
 .segment	"CODE"
 
 ;
-; ppu_off(); // screen off
+; ppu_off(); 
 ;
 	jsr     _ppu_off
 ;
-; pal_bg(palette); // load the BG palette
+; pal_bg(palette); 
 ;
 	lda     #<(_palette)
 	ldx     #>(_palette)
@@ -7716,7 +7716,7 @@ _player:
 	lda     #$02
 	jsr     _ChangeMusic
 ;
-; vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
+; vram_adr(NAMETABLE_A);
 ;
 	ldx     #$20
 	lda     #$00
@@ -7729,7 +7729,7 @@ _player:
 	ldx     #$04
 	jsr     _vram_fill
 ;
-; vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
+; vram_adr(NAMETABLE_A);           
 ;
 	ldx     #$20
 	lda     #$00
@@ -7744,13 +7744,13 @@ _player:
 	lda     #$00
 	jsr     _vram_write
 ;
-; vram_adr(NTADR_A(12, 2)); // places text at screen position
+; vram_adr(NTADR_A(12, 2)); 
 ;
 	ldx     #$20
 	lda     #$4C
 	jsr     _vram_adr
 ;
-; vram_write(title, sizeof(title) - 1); //write Title to screen
+; vram_write(title, sizeof(title) - 1);
 ;
 	lda     #<(_title)
 	ldx     #>(_title)
@@ -7759,13 +7759,13 @@ _player:
 	lda     #$08
 	jsr     _vram_write
 ;
-; vram_adr(NTADR_A(12, 6)); // places text at screen position
+; vram_adr(NTADR_A(12, 6)); 
 ;
 	ldx     #$20
 	lda     #$CC
 	jsr     _vram_adr
 ;
-; vram_write(endScreenTitle, sizeof(endScreenTitle) - 1); //write Title to screen
+; vram_write(endScreenTitle, sizeof(endScreenTitle) - 1); 
 ;
 	lda     #<(_endScreenTitle)
 	ldx     #>(_endScreenTitle)
@@ -7804,7 +7804,7 @@ _player:
 	lda     #$0D
 	jsr     _vram_write
 ;
-; ppu_on_all(); // turn on screen
+; ppu_on_all(); 
 ;
 	jmp     _ppu_on_all
 
@@ -7828,11 +7828,11 @@ _player:
 	lda     #$00
 	jsr     _sfx_play
 ;
-; ppu_off(); // screen off
+; ppu_off();
 ;
 	jsr     _ppu_off
 ;
-; pal_bg(palette); // load the BG palette
+; pal_bg(palette); 
 ;
 	lda     #<(_palette)
 	ldx     #>(_palette)

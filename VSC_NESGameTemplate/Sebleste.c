@@ -1,15 +1,16 @@
 /*
 	Welcome to the code for Sebleste, a 2d Platformer with inspiration taken from 
 	Celeste, there are 3 levels, the player moves left or right, jumps and dashes.
+
+	This project was made by Sebastian Ha
 */	
- 
+
 #include "LIB/neslib.h"
 #include "LIB/nesdoug.h" 
 #include <stdlib.h>
 #include <stdio.h>
 #include "NES_ST/LevelData.h"
 #include "NES_ST/MenuData.h"
-
 
 //Define colours
 #define BLACK 			0x0f
@@ -59,7 +60,7 @@
 #pragma bss-name(push, "ZEROPAGE")
 
 //background palette colours using the colours defined above
-const unsigned char palette[]=
+const unsigned char palette[] =
 {
 	BLACK, DK_GY, LT_GY, WHITE,       
 	BLACK, DK_BLUE, BLUE, SKY_BLUE,  
@@ -156,7 +157,6 @@ Player player;
 void DrawTitleScreen(void);
 void DrawCreditsScreen(void);
 void DrawEndScreen(void);
-void DrawDeathScreen(void);
 void ResetLevel(void);
 //Game loop function
 void GameLoop(void);
@@ -269,155 +269,164 @@ void main (void)
 
 void DrawTitleScreen(void)
 {
-	ppu_off(); // screen off
-	pal_bg(palette); //	load the BG palette
-	// vram_adr and vram_put only work with screen off NOTE, you could replace everything between i = 0; and here with...
-	// vram_write(text,sizeof(text)); does the same thing
-	//Set VRAM address to row 10 and column 12
+	// screen off
+	ppu_off(); 
+	//	load the Background palette
+	pal_bg(palette); 
 
-	// //Clear the screen
+	// //Clear the screen to black
 	vram_adr(NAMETABLE_A);
 	vram_fill(0x00, 1024);
-
+	//Load title screen data in
 	vram_adr(NAMETABLE_A);
 	vram_write(TitleScreen, 1024);
 
-
-	vram_adr(NTADR_A(12, 5)); // places text at screen position
-	vram_write(title, sizeof(title) - 1); //write Title to screen
+	//Write title SEBLESTE to screen
+	vram_adr(NTADR_A(12, 5)); 
+	vram_write(title, sizeof(title) - 1); 
 	//Write prompt to start game
 	vram_adr(NTADR_A(6, 18));
 	vram_write(titlePrompt, sizeof(titlePrompt) - 1);
-
+	//Write prompt to go to credits screen
 	vram_adr(NTADR_A(4, 22));
 	vram_write(creditsPrompt, sizeof(creditsPrompt) - 1);
 	
-	ppu_on_all(); //	turn on screen
+	//Turn screen on
+	ppu_on_all();
 }
 
 void DrawCreditsScreen(void)
 {
-	ppu_off(); // screen off
-	pal_bg(palette); //	load the BG palette
+	// screen off
+	ppu_off(); 
+	//Load background paletter
+	pal_bg(palette);
 	//Clear all sprite data
 	oam_clear();
 
-	//Clear the screen
+	//Clear the screen to black
 	vram_adr(NAMETABLE_A);      
 	vram_fill(0x00, 1024);
 	
+	//Load win screen data to screen, ran out of memory to be able to have a credits screen
 	vram_adr(NAMETABLE_A);      
 	vram_write(WinScreen, 1024);
-
+	//Write Credits title to screen
 	vram_adr(NTADR_A(13, 2));
 	vram_write(creditsTitle, sizeof(creditsTitle) - 1); 
-
+	//Developer - Sebastian Ha
 	vram_adr(NTADR_A(4, 5));
 	vram_write(credits1, sizeof(credits1) - 1); 
-
+	// Art
 	vram_adr(NTADR_A(14, 8));
 	vram_write(credits2, sizeof(credits2) - 1); 
-
+	// Character - PixelFight
 	vram_adr(NTADR_A(5, 10));
 	vram_write(credits3, sizeof(credits3) - 1); 
-
+	//Map - Hexany Tiles
 	vram_adr(NTADR_A(7, 12));
 	vram_write(credits4, sizeof(credits4) - 1); 
-
+	// Music
 	vram_adr(NTADR_A(13, 17));
 	vram_write(credits5, sizeof(credits5) - 1); 
-
+	// Famitracker Demo songs
 	vram_adr(NTADR_A(5, 19));
 	vram_write(credits6, sizeof(credits6) - 1); 
-
+	//Fami Studio Demo Songs
 	vram_adr(NTADR_A(5, 21));
 	vram_write(credits7, sizeof(credits7) - 1); 
-
+	// Press START to play
 	vram_adr(NTADR_A(6, 25));
 	vram_write(titlePrompt, sizeof(titlePrompt) - 1); 
-
+	//Press SELECT to return to start
 	vram_adr(NTADR_A(1, 27));
 	vram_write(startScreenPrompt, sizeof(startScreenPrompt) - 1); 
 
+	//Turn screen on
 	ppu_on_all();
 }
 
 void DrawEndScreen()
 {
-	ppu_off(); // screen off
-	pal_bg(palette); //	load the BG palette
-
+	// screen off
+	ppu_off(); 
+	//	load the BG palette
+	pal_bg(palette); 
 	//Clear all sprite data
 	oam_clear();
 
-	//Set varirables back to their default value
+	//Set current level
 	currentLevel = 1;
+	//Reset current player variable values
 	SetPlayerValues();
+	//Change current background music
 	ChangeMusic(2);
 
-	//Clear the screen
-	vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
+	//Clear the screen to black
+	vram_adr(NAMETABLE_A);
 	vram_fill(0x00, 1024);
-
-	vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
+	//Draw Win screen data to screen
+	vram_adr(NAMETABLE_A);           
 	vram_write(WinScreen, 1024);
 
-	vram_adr(NTADR_A(12, 2)); // places text at screen position
-	vram_write(title, sizeof(title) - 1); //write Title to screen
-
-	vram_adr(NTADR_A(12, 6)); // places text at screen position
-	vram_write(endScreenTitle, sizeof(endScreenTitle) - 1); //write Title to screen
-	//Write prompt to start game
+	// Display end screen message
+	vram_adr(NTADR_A(12, 2)); 
+	vram_write(title, sizeof(title) - 1);
+	//Display YOU WON! message
+	vram_adr(NTADR_A(12, 6)); 
+	vram_write(endScreenTitle, sizeof(endScreenTitle) - 1); 
+	//Write prompt to go back to start menu
 	vram_adr(NTADR_A(11, 19));
 	vram_write(titlePrompt2, sizeof(titlePrompt2) - 1);
-
+	//Continuation of prompt to go back to start menu
 	vram_adr(NTADR_A(10, 21));
 	vram_write(endScreenPrompt, sizeof(endScreenPrompt) - 1);
 
-	ppu_on_all(); //	turn on screen
+	//turn on screen
+	ppu_on_all(); 
 }
 
 
 void ResetLevel(void)
 {
+	//Play death sound effect
 	sfx_play(1 , 0);
-	ppu_off(); // screen off
-	pal_bg(palette); //	load the BG palette
+	// screen off
+	ppu_off();
+	//Set background palette
+	pal_bg(palette); 
 	//Clear all sprite data
 	oam_clear();
 
+	//increment death counter ready for it to be written to screen
 	player.deathCounter++;
 
 	//Clear the screen
 	vram_adr(NAMETABLE_A);      
 	vram_fill(0x00, 1024);
+	//Display death screen to screen
 	vram_adr(NAMETABLE_A);      
 	vram_write(DeathScreen, 1024);
+	//Display respawning text
 	vram_adr(NTADR_A(10, 8));
 	vram_write(respawningText, sizeof(respawningText) - 1); 
+	//Turn on screen for player to see respawning message
 
 	ppu_on_all();
+	//Delay by 1 second
 	delay(60);
+	//turn screen off
 	ppu_off();
-
+	//Load current level data to screen
 	vram_adr(NAMETABLE_A);      
 	vram_write(currentLevelData, 1024);
-
+	//Write death counter to screen
 	WriteDeathCounter();
-
+	//Reset player variable values
 	SetPlayerValues();
-
+	//Turn screen on
 	ppu_on_all();
 }
-
-
-
-
-
-
-
-
-
 
 /*
 ------------------------------
@@ -429,14 +438,16 @@ void GameLoop(void)
 {
 	//Turn screen off
 	ppu_off(); 
+	//Clear sprite data
 	oam_clear();
-
-	//Load palette
+	//Load background palette
 	pal_bg(palette);
+	//Set sprite palette
 	pal_spr((const char*)spritePalette);
 
 	switch(currentLevel)
 	{
+		//Set current level data, music and or death counter depending on which level is currently is
 		case 1:
 			currentLevelData = Level1;
 			player.deathCounter = 0;
@@ -452,23 +463,28 @@ void GameLoop(void)
 			break;
 	}
 
-	//Clear the screen
+	//Clear the screen to black
 	vram_adr(NAMETABLE_A);      
 	vram_fill(0x00, 1024);
+	//Display loading screen data
 	vram_adr(NAMETABLE_A);      
 	vram_write(LoadingScreen, 1024);
+	//Display loading text
 	vram_adr(NTADR_A(11, 16));
 	vram_write(loadingText, sizeof(loadingText) - 1); 
 
+	//Turn on screen so player sees "loading message"
 	ppu_on_all();
+	//Delay by 1 second so that player sees it is "loading"
 	delay(60);
+	//Turn screen off
 	ppu_off();
-
+	//Draw the current level data to scren
 	vram_adr(NAMETABLE_A);      
 	vram_write(currentLevelData, 1024);
-
+	//Write the death counter to screen once per level load
 	WriteDeathCounter();
-
+	//Turn screen on
 	ppu_on_all();
 }
 
@@ -480,17 +496,20 @@ void GameLoop(void)
 
 void MovePlayer(void)
 {
+	//Set jump buffer timer if jump button is pressed and player is not dashing
 	if (inputPad & PAD_A && !player.isDashing) 
 	{
 		player.jumpBufferTimer = JUMP_BUFFER_FRAMES;
 	}
 
+	//Set the coyote time to be 6 frames if the player is on the ground
 	if (OnGround()) 
 	{
 		player.coyoteTime = COYOTE_FRAMES;
 		player.hasDashedInAir = 0;
 	} 
 	
+	//Decrement coyote Time if it is above 0
 	if (player.coyoteTime > 0) 
 	{
 		player.coyoteTime--;
@@ -502,9 +521,10 @@ void MovePlayer(void)
 	//left
     if (movementPad & PAD_LEFT)
     {
+		//Make sure player is not hitting a collidable tile
         if (!CheckIfCollidableTile(currentLevelData[GetTileIndex(player.left, player.y + 1)]))
         {
-			//Handle movement
+			//Handle movement to the left
 			player.x -= PLAYER_SPEED;
 			//Set facing right to false
 			player.facingRight = 0;
@@ -514,9 +534,10 @@ void MovePlayer(void)
 	//Right
     if (movementPad & PAD_RIGHT)
     {
+		//Make sure player is not hitting a collidable tile
         if (!CheckIfCollidableTile(currentLevelData[GetTileIndex(player.right, player.y + 1)]))
         {
-			//Handle Movement
+			//Handle Movement to the right
 			player.x += PLAYER_SPEED;
 			//Set facing right to true
 			player.facingRight = 1;
@@ -530,8 +551,10 @@ void MovePlayer(void)
 		// Only allow midair dash if the player has not dashed in the air yet
 		if (OnGround() || !player.hasDashedInAir)
 		{
+			//sets dash direction depending on which input is recieved or what direction player facing
 			player.dashDirection = (movementPad & PAD_LEFT ? -1 : movementPad & PAD_RIGHT ? 1 : 
 									player.facingRight ? 1 : -1);
+			//Set dashing to true and dash timer to duration of dash
 			player.isDashing = 1;
 			player.dashTimer = DASH_DURATION;
 
@@ -544,20 +567,21 @@ void MovePlayer(void)
 	}
 	else if (player.dashCooldown > 0) 
 	{
+		//Decrement dash cooldown if it is higher than 0
 		player.dashCooldown--;
 	}
 
 	// Check if jump button (A) is pressed, player is not already jumping, and player is currently standing on solid ground
 	if (player.jumpBufferTimer > 0 && (!player.isJumping || player.coyoteTime > 0))
 	{
+		//Play jump sound effect here so it only player once instead of repeated in the else block down below
 		sfx_play(2 , 0);
 		//Set the "bool" variable to true
 		player.isJumping = 1;
 		//Set the velocity to be the constant we defined applies an upward force to the player by being a negative value
 		player.velocityY = JUMP_VELOCITY;
-
+		//Reset jump buffer time and coyote time so player doesn't jump again accidently mid air
 		player.jumpBufferTimer = 0;
-
 		player.coyoteTime = 0;
 
 	}
@@ -571,6 +595,7 @@ void MovePlayer(void)
 	//-------------------------playerTop
 	if (player.isDashing) 
 	{
+		//Play dash sound effect
 		sfx_play(0 , 0);
 		//Decrement the dash timer so that when it runs out player stops dashing
 		player.dashTimer--;
@@ -598,12 +623,11 @@ void MovePlayer(void)
     else 
     {
         // ----------------------------
-		// Jumping mechanic only runs if player is not dashing on the ground
+		// Jumping mechanic ONLY runs if player is not dashing on the ground
 		// ----------------------------
 		//Checks for if the player is jumping
         if (player.isJumping && !player.isDashing) 
         {
-
 			//Apply gravity to bring the player back down
             player.velocityY += GRAVITY;
 
@@ -931,4 +955,3 @@ void ChangeMusic(unsigned int trackToChangeTo)
 	//Set the speed back to the highest now that track has changed
 	set_music_speed(MAX_FALL_SPEED);
 }
-
