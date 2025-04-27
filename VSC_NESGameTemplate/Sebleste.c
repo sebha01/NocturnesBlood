@@ -236,8 +236,9 @@ void main (void)
 				//Check if player has pressed start
 				if (inputPad & PAD_START)
 				{
-
+					//If so bring the player back to the starting screen
 					currentGameState = START_SCREEN;
+					//Change the music to title screen music
 					ChangeMusic(3);
 					DrawTitleScreen();
 				}
@@ -245,12 +246,15 @@ void main (void)
 			case CREDITS_SCREEN:
 				if (inputPad & PAD_START)
 				{
+					//Start the game from the credits
 					currentGameState = GAME_LOOP;
 					GameLoop();
 				}
 				else if (inputPad & PAD_SELECT)
 				{
+					//Change current state
 					currentGameState = START_SCREEN;
+					//Don't need to change music as same as title screen, just need to draw
 					DrawTitleScreen();
 				}
 		}
@@ -259,7 +263,7 @@ void main (void)
 	
 /*
 ---------------------------
--- -- OTHER FUNCTIONS -- --
+-- -- FUNCTIONS -- --
 ---------------------------
 */
 
@@ -290,6 +294,132 @@ void DrawTitleScreen(void)
 	
 	ppu_on_all(); //	turn on screen
 }
+
+void DrawCreditsScreen(void)
+{
+	ppu_off(); // screen off
+	pal_bg(palette); //	load the BG palette
+	//Clear all sprite data
+	oam_clear();
+
+	//Clear the screen
+	vram_adr(NAMETABLE_A);      
+	vram_fill(0x00, 1024);
+	
+	vram_adr(NAMETABLE_A);      
+	vram_write(WinScreen, 1024);
+
+	vram_adr(NTADR_A(13, 2));
+	vram_write(creditsTitle, sizeof(creditsTitle) - 1); 
+
+	vram_adr(NTADR_A(4, 5));
+	vram_write(credits1, sizeof(credits1) - 1); 
+
+	vram_adr(NTADR_A(14, 8));
+	vram_write(credits2, sizeof(credits2) - 1); 
+
+	vram_adr(NTADR_A(5, 10));
+	vram_write(credits3, sizeof(credits3) - 1); 
+
+	vram_adr(NTADR_A(7, 12));
+	vram_write(credits4, sizeof(credits4) - 1); 
+
+	vram_adr(NTADR_A(13, 17));
+	vram_write(credits5, sizeof(credits5) - 1); 
+
+	vram_adr(NTADR_A(5, 19));
+	vram_write(credits6, sizeof(credits6) - 1); 
+
+	vram_adr(NTADR_A(5, 21));
+	vram_write(credits7, sizeof(credits7) - 1); 
+
+	vram_adr(NTADR_A(6, 25));
+	vram_write(titlePrompt, sizeof(titlePrompt) - 1); 
+
+	vram_adr(NTADR_A(1, 27));
+	vram_write(startScreenPrompt, sizeof(startScreenPrompt) - 1); 
+
+	ppu_on_all();
+}
+
+void DrawEndScreen()
+{
+	ppu_off(); // screen off
+	pal_bg(palette); //	load the BG palette
+
+	//Clear all sprite data
+	oam_clear();
+
+	//Set varirables back to their default value
+	currentLevel = 1;
+	SetPlayerValues();
+	ChangeMusic(2);
+
+	//Clear the screen
+	vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
+	vram_fill(0x00, 1024);
+
+	vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
+	vram_write(WinScreen, 1024);
+
+	vram_adr(NTADR_A(12, 2)); // places text at screen position
+	vram_write(title, sizeof(title) - 1); //write Title to screen
+
+	vram_adr(NTADR_A(12, 6)); // places text at screen position
+	vram_write(endScreenTitle, sizeof(endScreenTitle) - 1); //write Title to screen
+	//Write prompt to start game
+	vram_adr(NTADR_A(11, 19));
+	vram_write(titlePrompt2, sizeof(titlePrompt2) - 1);
+
+	vram_adr(NTADR_A(10, 21));
+	vram_write(endScreenPrompt, sizeof(endScreenPrompt) - 1);
+
+	ppu_on_all(); //	turn on screen
+}
+
+
+void ResetLevel(void)
+{
+	sfx_play(1 , 0);
+	ppu_off(); // screen off
+	pal_bg(palette); //	load the BG palette
+	//Clear all sprite data
+	oam_clear();
+
+	player.deathCounter++;
+
+	//Clear the screen
+	vram_adr(NAMETABLE_A);      
+	vram_fill(0x00, 1024);
+	vram_adr(NAMETABLE_A);      
+	vram_write(DeathScreen, 1024);
+	vram_adr(NTADR_A(10, 8));
+	vram_write(respawningText, sizeof(respawningText) - 1); 
+
+	ppu_on_all();
+	delay(60);
+	ppu_off();
+
+	vram_adr(NAMETABLE_A);      
+	vram_write(currentLevelData, 1024);
+
+	WriteDeathCounter();
+
+	SetPlayerValues();
+
+	ppu_on_all();
+}
+
+
+
+
+
+
+
+
+
+
+
 
 void GameLoop(void)
 {
@@ -592,6 +722,64 @@ void DrawPlayer(void)
 	}
 }
 
+void UpdateColliderPositions(void)
+{
+	//update player colliders
+	player.left = player.x - 8;
+	player.right = player.x + 8;
+	player.top = player.y - 8;
+	player.bottom = player.y + 8;
+}
+
+void DashEnd(void)
+{
+	if (player.isDashing)
+	{
+		player.isDashing = 0;
+		player.dashCooldown = DASH_COOLDOWN;
+	}
+}
+
+void SetPlayerValues(void)
+{
+	player.x = currentLevel == 3 ? 232 : 30;
+	player.y = currentLevel == 3 ? 24 : 215;
+	player.coyoteTime = 0;
+	player.left = 0;
+	player.right = 0;
+	player.top = 0;
+	player.bottom = 0;
+	player.facingRight = 1;
+	player.velocityY = 0;
+	player.isJumping = 0;
+	player.jumpBufferTimer = 0; 
+	player.isDashing = 0;
+	player.dashTimer = 0;
+	player.dashCooldown = 0;
+	player.hasDashedInAir = 0;
+	player.dashDirection = 0;
+	player.damageTimer = 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 unsigned int GetTileIndex(unsigned char playerX, unsigned char playerY)
 {
     // Get the x and y tile that the player is currently on Divide by 8 as the players current position is in
@@ -629,41 +817,6 @@ void CheckIfEnd()
 	}
 }
 
-void DrawEndScreen()
-{
-	ppu_off(); // screen off
-	pal_bg(palette); //	load the BG palette
-
-	//Clear all sprite data
-	oam_clear();
-
-	//Set varirables back to their default value
-	currentLevel = 1;
-	SetPlayerValues();
-	ChangeMusic(2);
-
-	//Clear the screen
-	vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
-	vram_fill(0x00, 1024);
-
-	vram_adr(NAMETABLE_A);            // Set VRAM address to start of screen
-	vram_write(WinScreen, 1024);
-
-	vram_adr(NTADR_A(12, 2)); // places text at screen position
-	vram_write(title, sizeof(title) - 1); //write Title to screen
-
-	vram_adr(NTADR_A(12, 6)); // places text at screen position
-	vram_write(endScreenTitle, sizeof(endScreenTitle) - 1); //write Title to screen
-	//Write prompt to start game
-	vram_adr(NTADR_A(11, 19));
-	vram_write(titlePrompt2, sizeof(titlePrompt2) - 1);
-
-	vram_adr(NTADR_A(10, 21));
-	vram_write(endScreenPrompt, sizeof(endScreenPrompt) - 1);
-
-	ppu_on_all(); //	turn on screen
-}
-
 char OnGround(void) 
 {
 	//Make sure player does not land on top of the bottom of the screen
@@ -695,24 +848,6 @@ char CheckIfGoalTile(unsigned char tile)
     return tile == 0x04 || tile == 0x05 || tile == 0x14 || tile == 0x15;
 }
 
-void UpdateColliderPositions(void)
-{
-	//update player colliders
-	player.left = player.x - 8;
-	player.right = player.x + 8;
-	player.top = player.y - 8;
-	player.bottom = player.y + 8;
-}
-
-void DashEnd(void)
-{
-	if (player.isDashing)
-	{
-		player.isDashing = 0;
-		player.dashCooldown = DASH_COOLDOWN;
-	}
-}
-
 char CheckIfPlatformTile(unsigned char tile) 
 {
 	//Stores all of the tiles that are collidable and is used to calculate collisions
@@ -721,65 +856,25 @@ char CheckIfPlatformTile(unsigned char tile)
 			tile == 0xF5 || tile == 0xF6;
 }
 
-void SetPlayerValues(void)
-{
-	player.x = currentLevel == 3 ? 232 : 30;
-	player.y = currentLevel == 3 ? 24 : 215;
-	player.coyoteTime = 0;
-	player.left = 0;
-	player.right = 0;
-	player.top = 0;
-	player.bottom = 0;
-	player.facingRight = 1;
-	player.velocityY = 0;
-	player.isJumping = 0;
-	player.jumpBufferTimer = 0; 
-	player.isDashing = 0;
-	player.dashTimer = 0;
-	player.dashCooldown = 0;
-	player.hasDashedInAir = 0;
-	player.dashDirection = 0;
-	player.damageTimer = 0;
-}
-
-void ResetLevel(void)
-{
-	sfx_play(1 , 0);
-	ppu_off(); // screen off
-	pal_bg(palette); //	load the BG palette
-	//Clear all sprite data
-	oam_clear();
-
-	player.deathCounter++;
-
-	//Clear the screen
-	vram_adr(NAMETABLE_A);      
-	vram_fill(0x00, 1024);
-	vram_adr(NAMETABLE_A);      
-	vram_write(DeathScreen, 1024);
-	vram_adr(NTADR_A(10, 8));
-	vram_write(respawningText, sizeof(respawningText) - 1); 
-
-	ppu_on_all();
-	delay(60);
-	ppu_off();
-
-	vram_adr(NAMETABLE_A);      
-	vram_write(currentLevelData, 1024);
-
-	WriteDeathCounter();
-
-	SetPlayerValues();
-
-	ppu_on_all();
-}
-
 char CheckIfSpikes(unsigned char tile)
 {
 	return tile == 0x8A || tile == 0x8B || tile == 0x8C || tile == 0x8D ||
 		tile == 0x9A || tile == 0x9B || tile == 0xAA || tile == 0xAB ||
 		tile == 0xC8 || tile == 0xC9 || tile == 0xD8 || tile == 0xD9;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void WriteDeathCounter(void)
 {
@@ -805,49 +900,3 @@ void ChangeMusic(unsigned int trackToChangeTo)
 	set_music_speed(MAX_FALL_SPEED);
 }
 
-void DrawCreditsScreen(void)
-{
-	ppu_off(); // screen off
-	pal_bg(palette); //	load the BG palette
-	//Clear all sprite data
-	oam_clear();
-
-	//Clear the screen
-	vram_adr(NAMETABLE_A);      
-	vram_fill(0x00, 1024);
-	
-	vram_adr(NAMETABLE_A);      
-	vram_write(WinScreen, 1024);
-
-	vram_adr(NTADR_A(13, 2));
-	vram_write(creditsTitle, sizeof(creditsTitle) - 1); 
-
-	vram_adr(NTADR_A(4, 5));
-	vram_write(credits1, sizeof(credits1) - 1); 
-
-	vram_adr(NTADR_A(14, 8));
-	vram_write(credits2, sizeof(credits2) - 1); 
-
-	vram_adr(NTADR_A(5, 10));
-	vram_write(credits3, sizeof(credits3) - 1); 
-
-	vram_adr(NTADR_A(7, 12));
-	vram_write(credits4, sizeof(credits4) - 1); 
-
-	vram_adr(NTADR_A(13, 17));
-	vram_write(credits5, sizeof(credits5) - 1); 
-
-	vram_adr(NTADR_A(5, 19));
-	vram_write(credits6, sizeof(credits6) - 1); 
-
-	vram_adr(NTADR_A(5, 21));
-	vram_write(credits7, sizeof(credits7) - 1); 
-
-	vram_adr(NTADR_A(6, 25));
-	vram_write(titlePrompt, sizeof(titlePrompt) - 1); 
-
-	vram_adr(NTADR_A(1, 27));
-	vram_write(startScreenPrompt, sizeof(startScreenPrompt) - 1); 
-
-	ppu_on_all();
-}
